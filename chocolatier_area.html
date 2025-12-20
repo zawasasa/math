@@ -3,2024 +3,661 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>算数ショコラティエ 〜図形面積の達人〜</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=M+PLUS+Rounded+1c:wght@800&display=swap" rel="stylesheet">
+    <title>図形の面積ショコラティエ 〜情報の取捨選択〜</title>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&family=Sawarabi+Mincho&display=swap" rel="stylesheet">
     <style>
         :root {
-            --chocolate-dark: #5d3a1a;
-            --chocolate-medium: #8b4513;
-            --chocolate-light: #d2691e;
-            --gold: #ffd700;
-            --cream: #fff8dc;
-            --text: #2c1810;
-            --white: #FFFFF0;
-            --font-main: 'M PLUS Rounded 1c', sans-serif;
-            --font-title: 'Kiwi Maru', serif;
+            --choco-dark: #2d1b15;
+            --choco-mid: #4e342e;
+            --choco-light: #8d6e63;
+            --gold: #fbc02d;
+            --cream: #fff9c4;
+            --white: #ffffff;
+            --accent: #e64a19;
+            --memo-bg: rgba(255, 255, 255, 0.08);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            touch-action: manipulation;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; user-select: none; }
 
         body {
-            font-family: var(--font-main);
-            background: linear-gradient(135deg, #8B6F47 0%, #5D4E37 100%);
-            background-image:
-                radial-gradient(rgba(255,255,255,0.15) 15%, transparent 16%),
-                radial-gradient(rgba(255,255,255,0.15) 15%, transparent 16%);
-            background-size: 40px 40px;
-            background-position: 0 0, 20px 20px;
-            color: var(--text);
-            overflow-x: hidden;
-            min-height: 100vh;
-            max-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
-            overflow: hidden;
-        }
-
-        .game-wrapper {
-            width: 100%;
-            max-width: 900px;
-            max-height: 100vh;
-            background: var(--white);
-            border-radius: 20px;
-            box-shadow: 0 8px 0 rgba(0,0,0,0.2);
-            padding: 10px;
-            position: relative;
-            overflow: hidden;
-            border: 4px solid var(--cream);
-        }
-
-        /* インデックスボタン */
-        .index-btn {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            background: var(--gold);
-            border: 2px solid var(--chocolate-dark);
-            color: var(--chocolate-dark);
-            border-radius: 12px;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            font-family: var(--font-main);
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.2);
-            z-index: 100;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
-        }
-
-        .index-btn:active {
-            transform: translateY(3px);
-            box-shadow: none;
-        }
-
-        /* ホームボタン（リセット） */
-        .home-btn {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            background: #fff;
-            border: 2px solid var(--chocolate-dark);
-            color: var(--chocolate-dark);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            font-size: 1.3rem;
-            cursor: pointer;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.2);
-            z-index: 100;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.2s;
-        }
-
-        .home-btn:active {
-            transform: translateY(3px);
-            box-shadow: none;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        /* タイトル画面 */
-        #title-screen {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        #title-screen h1 {
-            font-family: var(--font-title);
-            font-size: 2.2rem;
-            color: var(--chocolate-dark);
-            margin-bottom: 20px;
-            text-shadow: 2px 2px 0 var(--gold);
-            line-height: 1.4;
-        }
-
-        .title-icon {
-            font-size: 5rem;
-            margin: 20px 0;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .game-description {
-            background: rgba(139, 69, 19, 0.1);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 30px 0;
-            border: 3px solid var(--gold);
-        }
-
-        .game-description h2 {
-            color: var(--chocolate-dark);
-            margin-bottom: 15px;
-            font-size: 1.3rem;
-        }
-
-        .game-description p {
-            line-height: 1.8;
-            margin-bottom: 15px;
-            font-size: 1rem;
-        }
-
-        .feature-list {
-            list-style: none;
-            text-align: left;
-            margin: 20px auto;
-            max-width: 500px;
-        }
-
-        .feature-list li {
-            padding: 8px 0;
-            padding-left: 30px;
-            position: relative;
-            font-size: 0.95rem;
-        }
-
-        .feature-list li::before {
-            content: '🍫';
-            position: absolute;
-            left: 0;
-        }
-
-        .start-btn {
-            background: linear-gradient(135deg, var(--gold) 0%, #ffed4e 100%);
-            color: var(--chocolate-dark);
-            border: 3px solid var(--chocolate-dark);
-            border-radius: 15px;
-            padding: 18px 50px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            font-family: var(--font-title);
-            cursor: pointer;
-            box-shadow: 0 6px 0 rgba(139, 69, 19, 0.5);
-            transition: all 0.2s;
-            margin-top: 30px;
-        }
-
-        .start-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 0 rgba(139, 69, 19, 0.5);
-        }
-
-        .start-btn:active {
-            transform: translateY(6px);
-            box-shadow: none;
-        }
-
-        /* ゲーム画面 */
-        #game-screen {
-            padding: 5px;
-            display: flex;
-            flex-direction: column;
-            height: calc(100vh - 60px);
-            max-height: 800px;
-            overflow: hidden;
-        }
-
-        .header {
-            text-align: center;
-            padding: 8px 10px;
-            background: rgba(139, 69, 19, 0.1);
-            border-radius: 10px;
-            margin-bottom: 5px;
-            border: 2px solid var(--gold);
-            flex-shrink: 0;
-        }
-
-        .header h1 {
-            font-size: 1rem;
-            color: var(--chocolate-dark);
-            font-family: var(--font-title);
-            margin-bottom: 5px;
-        }
-
-        .score-board {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 3px;
-        }
-
-        .score-item {
-            background: rgba(255, 215, 0, 0.2);
-            padding: 4px 10px;
-            border-radius: 8px;
-            border: 2px solid var(--gold);
-        }
-
-        .score-item .label {
-            font-size: 0.65rem;
-            color: var(--chocolate-medium);
-        }
-
-        .score-item .value {
-            font-size: 1rem;
-            font-weight: bold;
-            color: var(--chocolate-dark);
-        }
-
-        .combo-indicator {
-            font-size: 0.9rem;
-            color: #ff6b6b;
-            font-weight: bold;
-        }
-
-        /* ギャルソンエリア */
-        .garcon-area {
-            position: relative;
-            height: 60px;
-            margin: 3px 0;
-            perspective: 1000px;
-            flex-shrink: 0;
-        }
-
-        .garcon {
-            position: absolute;
-            left: -200px;
-            bottom: 0;
-            font-size: 2em;
-            transition: left 1.5s ease-in-out;
-            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
-        }
-
-        .garcon.serving {
-            left: 50%;
-            transform: translateX(-50%);
-        }
-
-        .garcon-message {
-            position: absolute;
-            top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 255, 255, 0.95);
-            color: var(--chocolate-dark);
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 0.75rem;
-            opacity: 0;
-            transition: opacity 0.5s;
-            border: 2px solid var(--gold);
-            white-space: normal;
-            max-width: 85%;
-            text-align: center;
-            line-height: 1.3;
-            z-index: 20;
-        }
-
-        .garcon-message.show {
-            opacity: 1;
-        }
-
-        /* 大きなフィードバック表示 */
-        .big-feedback {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0);
-            z-index: 2000;
-            font-size: 3rem;
-            font-weight: bold;
-            text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
-            pointer-events: none;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        @media (max-height: 700px) {
-            .big-feedback {
-                font-size: 2.5rem;
-            }
-        }
-
-        .big-feedback.show {
-            transform: translate(-50%, -50%) scale(1);
-        }
-
-        .big-feedback.correct {
-            color: #4CAF50;
-            animation: correctPulse 0.6s ease-out;
-        }
-
-        .big-feedback.wrong {
-            color: #f44336;
-            animation: wrongShake 0.6s ease-out;
-        }
-
-        @keyframes correctPulse {
-            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); }
-            50% { transform: translate(-50%, -50%) scale(1.3) rotate(10deg); }
-            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-        }
-
-        @keyframes wrongShake {
-            0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-            25% { transform: translate(-50%, -50%) scale(1) rotate(-5deg); }
-            75% { transform: translate(-50%, -50%) scale(1) rotate(5deg); }
-        }
-
-        /* メモ機能 */
-        .memo-btn {
-            position: fixed;
-            top: 15px;
-            right: 15px;
-            background: var(--chocolate-dark);
-            color: #fff;
-            border: 2px solid var(--gold);
-            border-radius: 12px;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            font-family: var(--font-main);
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.2);
-            z-index: 100;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: all 0.2s;
-        }
-
-        .memo-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 0 rgba(0,0,0,0.2);
-        }
-
-        .memo-btn:active {
-            transform: translateY(3px);
-            box-shadow: none;
-        }
-
-        .memo-panel {
-            position: fixed;
-            top: 0;
-            right: 0;
-            width: 100%;
-            max-width: 400px;
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            background: var(--choco-dark);
+            color: var(--white);
             height: 100vh;
-            background: var(--white);
-            border-left: 4px solid var(--gold);
-            box-shadow: -4px 0 15px rgba(0,0,0,0.3);
-            z-index: 1000;
-            transition: right 0.3s ease;
             display: flex;
             flex-direction: column;
-            padding: 15px;
+            overflow: hidden;
         }
 
-        .memo-panel.closed {
-            right: -100%;
+        /* --- Screens --- */
+        #title-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, var(--choco-mid), var(--choco-dark));
+            z-index: 2000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px; text-align: center;
         }
 
-        .memo-header {
+        .logo-area { margin-bottom: 30px; }
+        .logo-title { font-size: 3rem; font-weight: 800; color: var(--gold); text-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .logo-sub { font-size: 1.2rem; letter-spacing: 0.2rem; margin-top: 10px; color: var(--cream); }
+
+        .menu-container {
+            background: rgba(0,0,0,0.3); padding: 30px; border-radius: 30px;
+            border: 2px solid var(--gold); max-width: 900px; width: 100%;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .menu-container { grid-template-columns: 1fr; overflow-y: auto; max-height: 80vh; }
+            .logo-title { font-size: 2rem; }
+        }
+
+        .instruction-box {
+            text-align: left; background: rgba(255,255,255,0.05); padding: 25px; border-radius: 20px;
+            font-size: 0.9rem; line-height: 1.8; color: var(--white);
+            border: 1px solid rgba(251, 192, 45, 0.3);
+        }
+        .instruction-box h3 { color: var(--gold); margin-bottom: 12px; border-bottom: 1px solid var(--gold); display: inline-block; font-size: 1.1rem; }
+        .step-label { color: var(--gold); font-weight: 800; margin-right: 5px; }
+
+        .mode-selection { display: flex; flex-direction: column; gap: 12px; }
+        .mode-group-label { font-size: 0.85rem; color: var(--cream); margin-top: 10px; margin-bottom: 4px; border-left: 3px solid var(--gold); padding-left: 8px; text-align: left; }
+        
+        .mode-btn {
+            background: var(--choco-light); border: none; padding: 14px; border-radius: 12px;
+            color: white; font-weight: 800; cursor: pointer; transition: 0.2s;
+            box-shadow: 0 4px 0 #5d4037; font-size: 0.95rem; text-align: center;
+        }
+        .mode-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .mode-btn.special { background: var(--accent); box-shadow: 0 4px 0 #bf360c; }
+        .mode-btn.alacarte { background: var(--choco-mid); border: 1px solid var(--gold); }
+
+        /* --- Main Game Layout --- */
+        header {
+            background: linear-gradient(to bottom, #3e2723, #2d1b15);
+            padding: 10px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--gold);
+            border-bottom: 3px solid var(--gold);
+            z-index: 100;
         }
 
-        .memo-title {
-            font-family: var(--font-title);
-            font-size: 1.2rem;
-            color: var(--chocolate-dark);
-            font-weight: bold;
-        }
+        .badges { display: flex; gap: 8px; margin-left: 15px; }
+        .badge { width: 34px; height: 34px; background: radial-gradient(circle, #ffd700, #b8860b); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; border: 2px solid white; box-shadow: 0 3px 6px rgba(0,0,0,0.4); }
 
-        .memo-close-btn {
-            background: var(--chocolate-dark);
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            font-size: 1.2rem;
-            cursor: pointer;
-            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.2s;
-        }
+        .stats { font-size: 1rem; color: var(--gold); display: flex; gap: 20px; align-items: center; }
+        .score-val { font-size: 1.4rem; font-weight: 800; }
 
-        .memo-close-btn:active {
-            transform: translateY(2px);
-            box-shadow: none;
-        }
-
-        .memo-canvas-container {
+        main {
             flex: 1;
-            min-height: 0;
-            background: #fafafa;
-            border: 3px solid var(--gold);
-            border-radius: 15px;
-            padding: 10px;
-            margin-bottom: 15px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #memo-canvas {
-            width: 100%;
-            height: 100%;
-            touch-action: none;
-            cursor: crosshair;
-            background: #fff;
-            border-radius: 10px;
-            display: block;
-        }
-
-        .memo-controls {
-            display: flex;
-            gap: 10px;
-        }
-
-        .memo-control-btn {
-            flex: 1;
-            background: var(--chocolate-dark);
-            color: #fff;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            font-family: var(--font-main);
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            box-shadow: 0 3px 0 rgba(0,0,0,0.2);
-            transition: all 0.2s;
-        }
-
-        .memo-control-btn:hover {
-            background: var(--chocolate-medium);
-        }
-
-        .memo-control-btn:active {
-            transform: translateY(3px);
-            box-shadow: none;
-        }
-
-        .memo-control-btn.clear {
-            background: #ff6b6b;
-        }
-
-        .memo-control-btn.clear:hover {
-            background: #ff5252;
-        }
-
-        /* チョコレート表示エリア */
-        .chocolate-area {
-            background: rgba(139, 69, 19, 0.05);
-            border-radius: 10px;
-            padding: 8px;
-            margin: 3px 0;
-            min-height: 0;
-            height: 140px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 2px solid var(--gold);
-            position: relative;
-            flex-shrink: 0;
-        }
-
-        .plate {
-            width: 180px;
-            height: 25px;
-            background: linear-gradient(to bottom, #e8e8e8, #c0c0c0);
-            border-radius: 50%;
-            position: absolute;
-            bottom: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
-
-        .shape-canvas {
-            position: relative;
-            z-index: 10;
-        }
-
-        canvas {
-            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.2));
-            max-width: 100%;
-            max-height: 120px;
-        }
-
-        /* 立式エリア */
-        .formula-area {
-            background: rgba(139, 69, 19, 0.05);
-            border-radius: 10px;
-            padding: 8px;
-            margin: 3px 0;
-            border: 2px solid var(--gold);
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            min-height: 0;
-            overflow-y: auto;
-        }
-
-        .formula-title {
-            text-align: center;
-            font-size: 0.85rem;
-            color: var(--chocolate-dark);
-            margin-bottom: 5px;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-
-        .formula-slots {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 4px;
-            min-height: 40px;
-            flex-wrap: wrap;
-            margin-bottom: 8px;
-            flex-shrink: 0;
-        }
-
-        .slot {
-            width: 35px;
-            height: 35px;
-            background: rgba(255, 255, 255, 0.5);
-            border: 2px dashed var(--gold);
-            border-radius: 6px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.9rem;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .slot.filled {
-            background: rgba(255, 215, 0, 0.3);
-            border: 2px solid var(--gold);
-        }
-
-        .slot.operator {
-            width: 28px;
-            color: var(--chocolate-dark);
-        }
-
-        .block-palette {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            margin-bottom: 8px;
-            flex-shrink: 0;
-        }
-
-        .palette-row {
-            display: flex;
-            justify-content: center;
-            gap: 4px;
-            flex-wrap: wrap;
-        }
-
-        .palette-label {
-            font-size: 0.7rem;
-            color: var(--chocolate-dark);
-            font-weight: bold;
-            margin-bottom: 3px;
-            text-align: center;
-        }
-
-        .block-section {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .block {
-            min-width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, var(--chocolate-medium) 0%, var(--chocolate-dark) 100%);
-            border: 2px solid var(--gold);
-            border-radius: 6px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.9rem;
-            font-weight: bold;
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.2s;
-            user-select: none;
-            padding: 4px 6px;
-            box-shadow: 0 2px 0 rgba(139, 69, 19, 0.4);
-        }
-
-        .block:active {
-            transform: translateY(3px);
-            box-shadow: 0 0px 0 rgba(139, 69, 19, 0.4);
-        }
-
-        .block:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 0 rgba(139, 69, 19, 0.4), 0 0 15px rgba(255, 215, 0, 0.3);
-        }
-
-        .block.operator {
-            background: linear-gradient(135deg, var(--gold) 0%, #ffed4e 100%);
-            color: var(--chocolate-dark);
-            border-color: var(--chocolate-dark);
-            box-shadow: 0 3px 0 rgba(139, 69, 19, 0.3);
-        }
-
-        /* 計算モード */
-        .calculation-area {
-            background: rgba(139, 69, 19, 0.05);
-            border-radius: 10px;
-            padding: 8px;
-            margin: 3px 0;
-            border: 2px solid var(--gold);
-            display: none;
-            flex: 1;
-            flex-direction: column;
-            min-height: 0;
-        }
-
-        .calculation-area.active {
-            display: flex;
-        }
-
-        .formula-display {
-            text-align: center;
-            font-size: 1.1rem;
-            color: var(--chocolate-dark);
-            margin-bottom: 8px;
-            padding: 8px;
-            background: rgba(255, 215, 0, 0.2);
-            border-radius: 8px;
-            font-weight: bold;
-            flex-shrink: 0;
-        }
-
-        .answer-input {
-            text-align: center;
-            margin-bottom: 8px;
-            flex-shrink: 0;
-        }
-
-        .answer-input input {
-            width: 150px;
-            padding: 8px;
-            font-size: 1.2rem;
-            text-align: center;
-            border: 2px solid var(--gold);
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.9);
-            color: var(--chocolate-dark);
-            font-family: var(--font-main);
-        }
-
-        .numpad {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 6px;
-            max-width: 200px;
-            margin: 0 auto 8px;
-            flex-shrink: 0;
+            grid-template-columns: 360px 1fr;
+            gap: 15px;
+            padding: 15px;
+            position: relative;
         }
 
-        .numpad button {
-            padding: 10px;
-            font-size: 1rem;
-            border: 2px solid var(--gold);
-            border-radius: 8px;
-            background: linear-gradient(135deg, var(--chocolate-medium) 0%, var(--chocolate-dark) 100%);
-            color: #fff;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: bold;
+        @media (max-width: 900px) {
+            main { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
         }
 
-        .numpad button:hover {
-            background: linear-gradient(135deg, var(--chocolate-light) 0%, var(--chocolate-medium) 100%);
-            transform: scale(1.05);
-        }
-
-        .numpad button:active {
-            transform: scale(0.95);
-        }
-
-        .numpad button.zero {
-            grid-column: span 2;
-        }
-
-        /* ボタン */
-        .action-buttons {
+        #canvas-section {
+            position: relative;
+            background: #1e120e;
+            border-radius: 25px;
             display: flex;
-            justify-content: center;
-            gap: 6px;
-            margin-top: 5px;
-            flex-wrap: wrap;
-            flex-shrink: 0;
-        }
-
-        .btn {
-            padding: 8px 16px;
-            font-size: 0.85rem;
-            border: 2px solid;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-weight: bold;
-            box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
-            font-family: var(--font-main);
-            min-width: 100px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, var(--gold) 0%, #ffed4e 100%);
-            color: var(--chocolate-dark);
-            border-color: var(--chocolate-dark);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 7px 0 rgba(0, 0, 0, 0.25);
-        }
-
-        .btn-primary:active {
-            transform: translateY(5px);
-            box-shadow: 0 0px 0 rgba(0, 0, 0, 0.25);
-        }
-
-        .btn-secondary {
-            background: linear-gradient(135deg, var(--chocolate-medium) 0%, var(--chocolate-dark) 100%);
-            color: #fff;
-            border-color: var(--gold);
-        }
-
-        .btn-secondary:hover {
-            background: linear-gradient(135deg, var(--chocolate-light) 0%, var(--chocolate-medium) 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 7px 0 rgba(0, 0, 0, 0.25);
-        }
-
-        .btn-secondary:active {
-            transform: translateY(5px);
-            box-shadow: 0 0px 0 rgba(0, 0, 0, 0.25);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
-        /* 解説モーダル */
-        .explanation-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: flex-start;
             align-items: center;
-            padding: 20px;
+            overflow: hidden;
+            border: 3px solid var(--choco-mid);
         }
 
-        .explanation-modal.show {
-            display: flex;
-        }
+        #game-canvas { width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+        #memo-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; pointer-events: none; }
+        #memo-layer.active { pointer-events: auto; cursor: crosshair; }
 
-        .explanation-content {
-            background: var(--white);
-            color: var(--chocolate-dark);
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
-            border: 4px solid var(--gold);
-        }
-
-        .explanation-content h2 {
-            color: var(--chocolate-dark);
-            margin-bottom: 20px;
-            text-align: center;
-            font-family: var(--font-title);
-        }
-
-        .explanation-content canvas {
-            display: block;
-            margin: 20px auto;
-            border: 2px solid var(--gold);
-            border-radius: 10px;
-        }
-
-        .explanation-content p {
-            line-height: 1.8;
-            margin-bottom: 15px;
-            font-size: 1.05rem;
-        }
-
-        /* アニメーション */
-        @keyframes eating {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(0.3); opacity: 0.5; }
-        }
-
-        .eating-animation {
-            animation: eating 1s ease-in-out;
-        }
-
-        @keyframes sparkle {
-            0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
-            50% { opacity: 1; transform: scale(1.5) rotate(180deg); }
-        }
-
-        .sparkle {
+        .garcon-container {
             position: absolute;
-            width: 30px;
-            height: 30px;
-            color: var(--gold);
-            font-size: 2em;
-            animation: sparkle 1s ease-out;
+            bottom: 25px;
+            left: 25px;
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            z-index: 50;
             pointer-events: none;
         }
+        .speech-bubble {
+            background: white;
+            color: var(--choco-dark);
+            padding: 12px 18px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+            width: 450px;
+            max-width: 60vw;
+            border: 3px solid var(--gold);
+            line-height: 1.4;
+            position: relative;
+        }
 
-        /* レスポンシブ */
-        @media (max-width: 768px) {
-            .game-wrapper {
-                padding: 15px;
-            }
+        .input-section {
+            background: rgba(30, 20, 15, 0.9);
+            border-radius: 25px;
+            padding: 20px;
+            border: 2px solid var(--choco-light);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 20;
+            overflow-y: auto;
+        }
 
-            #title-screen h1 {
-                font-size: 1.6rem;
-            }
+        .display-zone {
+            min-height: 60px;
+            background: #000;
+            border: 2px solid var(--choco-light);
+            border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; color: var(--gold); font-weight: 800;
+        }
 
-            .title-icon {
-                font-size: 3.5rem;
-            }
+        .formula-preview {
+            font-size: 1.2rem;
+            color: var(--cream);
+            text-align: center;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px dashed var(--gold);
+            border-radius: 8px;
+            margin-bottom: 5px;
+            min-height: 40px;
+            display: flex; align-items: center; justify-content: center;
+        }
 
-            .header h1 {
-                font-size: 1.2rem;
-            }
+        .bank-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+        .token { height: 42px; background: var(--gold); color: var(--choco-dark); border-radius: 8px; font-weight: 800; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; box-shadow: 0 3px 0 #b79100; }
+        .token.symbol { background: var(--choco-light); color: white; box-shadow: 0 3px 0 #5d4037; }
 
-            .score-board {
-                flex-direction: column;
-                gap: 8px;
-            }
+        .btn { padding: 12px; border-radius: 12px; border: none; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .btn-check { background: var(--gold); color: #3e2723; box-shadow: 0 4px 0 #b79100; font-size: 1.1rem; }
+        .btn-memo-toggle { background: #4e342e; color: white; border: 1px solid var(--gold); }
+        .btn-memo-toggle.active { background: #d84315; }
 
-            .formula-slots {
-                gap: 5px;
-            }
+        .hint-section {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px dashed var(--choco-light);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .hint-btns { display: flex; gap: 5px; }
+        .btn-hint-small { flex: 1; padding: 8px; font-size: 0.75rem; background: #673ab7; color: white; border-radius: 8px; border: none; }
+        .hint-box {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 10px;
+            font-size: 0.85rem;
+            color: #fff9c4;
+            min-height: 60px;
+            border-left: 4px solid #673ab7;
+            display: none;
+            line-height: 1.5;
+        }
 
-            .slot {
-                width: 45px;
-                height: 45px;
-                font-size: 1.1rem;
-            }
-
-            .block {
-                min-width: 48px;
-                height: 48px;
-                font-size: 1.3rem;
-                padding: 6px 10px;
-            }
-
-            .palette-row {
-                gap: 6px;
-            }
-
-            .palette-label {
-                font-size: 0.85rem;
-            }
-
-            .start-btn {
-                font-size: 1.2rem;
-                padding: 15px 35px;
-            }
+        #message {
+            position: fixed; top: 30%; left: 50%; transform: translate(-50%, -50%);
+            padding: 20px 40px; border-radius: 50px; font-size: 1.8rem; font-weight: 800;
+            display: none; z-index: 2000; text-align: center; color: white;
         }
     </style>
 </head>
 <body>
-    <div class="game-wrapper">
-        <a href="index.html" class="index-btn">🏠 一覧へ</a>
-        <button class="home-btn" onclick="resetToTitle()">🏠</button>
 
-        <!-- タイトル画面 -->
-        <div id="title-screen">
-            <h1>🍫 算数ショコラティエ<br>〜図形面積の達人〜</h1>
-            <div class="title-icon">🤵</div>
-
-            <div class="game-description">
-                <h2>✨ ゲーム説明</h2>
-                <p>高級ショコラティエの世界へようこそ！ギャルソンが運んでくる美しいチョコレートの形を見て、面積を求めましょう。</p>
-
-                <ul class="feature-list">
-                    <li>平行四辺形・三角形・台形の3種類の図形</li>
-                    <li>ブロックを並べて公式を組み立てるパズル</li>
-                    <li>テンキーで答えを入力する計算モード</li>
-                    <li>連続正解でコンボボーナス（最大2.0倍！）</li>
-                    <li>図形変形のアニメーション解説</li>
-                    <li>面積（㎠）がそのままスコア（pt）になる</li>
-                </ul>
-
-                <p style="margin-top: 20px; font-weight: bold; color: var(--chocolate-medium);">
-                    🎯 対象：小学5年生の図形面積学習<br>
-                    📐 公式を理解して、楽しく学ぼう！
-                </p>
-            </div>
-
-            <button class="start-btn" onclick="startGame()">スタート！</button>
+    <!-- タイトル画面 -->
+    <div id="title-screen">
+        <div class="logo-area">
+            <h1 class="logo-title">🍫 面積ショコラティエ</h1>
+            <p class="logo-sub">Area Calculation Gastronomy</p>
         </div>
-
-        <!-- ゲーム画面 -->
-        <div id="game-screen" class="hidden">
-            <!-- ヘッダー -->
-            <div class="header">
-                <h1>🍫 算数ショコラティエ</h1>
-                <div class="score-board">
-                    <div class="score-item">
-                        <div class="label">総スコア</div>
-                        <div class="value" id="totalScore">0</div>
-                    </div>
-                    <div class="score-item">
-                        <div class="label">連続正解</div>
-                        <div class="value combo-indicator" id="comboCount">0</div>
-                    </div>
-                    <div class="score-item">
-                        <div class="label">倍率</div>
-                        <div class="value" id="multiplier">×1.0</div>
-                    </div>
-                </div>
+        
+        <div class="menu-container">
+            <div class="instruction-box">
+                <h3>🍴 前付け（遊び方のご案内）</h3>
+                <p><span class="step-label">Step 1:</span> 図形の面積を求める「正しい式」を組み立ててください。不要な数値は残すのが一流の嗜みです。</p>
+                <p><span class="step-label">Step 2:</span> 式が認められたら、次は「計算結果」を提示してください。正確な面積が求められれば合格です。</p>
+                <p><span class="step-label">📝 画面メモ:</span> 画面に直接計算や補助線を書き込めます。お客様の思考の跡をお残しください。</p>
+                <p><span class="step-label">💡 ヒント:</span> ギャルソンが適切な助言をいたします。いつでもお声がけを。</p>
             </div>
-
-            <!-- ギャルソンエリア -->
-            <div class="garcon-area">
-                <div class="garcon" id="garcon">🤵</div>
-                <div class="garcon-message" id="garconMessage"></div>
-            </div>
-
-            <!-- チョコレート表示エリア -->
-            <div class="chocolate-area">
-                <div class="plate"></div>
-                <div class="shape-canvas">
-                    <canvas id="shapeCanvas" width="240" height="120"></canvas>
+            
+            <div class="mode-selection">
+                <div class="mode-group-label">Recommended</div>
+                <button class="mode-btn special" onclick="startGame('all')">本日のおまかせ全図形コース</button>
+                
+                <div class="mode-group-label">À la carte（アラカルト）</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                    <button class="mode-btn alacarte" onclick="startGame('triangle')">三角形</button>
+                    <button class="mode-btn alacarte" onclick="startGame('parallelogram')">平行四辺形</button>
+                    <button class="mode-btn alacarte" onclick="startGame('rhombus')">ひし形</button>
+                    <button class="mode-btn alacarte" onclick="startGame('trapezoid')">台形</button>
                 </div>
-            </div>
-
-            <!-- 立式エリア -->
-            <div class="formula-area" id="formulaArea">
-                <div class="formula-title">🧩 式を組み立てよう</div>
-                <div class="formula-slots" id="formulaSlots"></div>
-                <div class="block-palette">
-                    <div class="block-section">
-                        <div class="palette-label">🔢 数字</div>
-                        <div class="palette-row" id="numberBlocks"></div>
-                    </div>
-                    <div class="block-section">
-                        <div class="palette-label">➗ 演算</div>
-                        <div class="palette-row" id="operatorBlocks"></div>
-                    </div>
-                </div>
-                <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="clearFormula()">クリア</button>
-                    <button class="btn btn-primary" id="checkFormulaBtn" onclick="checkFormula()" disabled>この式で計算する</button>
-                </div>
-            </div>
-
-            <!-- 計算モード -->
-            <div class="calculation-area" id="calculationArea">
-                <div class="formula-title">🍴 実食タイム！</div>
-                <div class="formula-display" id="formulaDisplay"></div>
-                <div class="answer-input">
-                    <input type="text" id="answerInput" readonly placeholder="答えを入力">
-                </div>
-                <div class="numpad">
-                    <button onclick="inputNumber('1')">1</button>
-                    <button onclick="inputNumber('2')">2</button>
-                    <button onclick="inputNumber('3')">3</button>
-                    <button onclick="inputNumber('4')">4</button>
-                    <button onclick="inputNumber('5')">5</button>
-                    <button onclick="inputNumber('6')">6</button>
-                    <button onclick="inputNumber('7')">7</button>
-                    <button onclick="inputNumber('8')">8</button>
-                    <button onclick="inputNumber('9')">9</button>
-                    <button class="zero" onclick="inputNumber('0')">0</button>
-                    <button onclick="deleteNumber()">⌫</button>
-                </div>
-                <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="backToFormula()">式に戻る</button>
-                    <button class="btn btn-primary" onclick="checkAnswer()">答え合わせ</button>
-                </div>
-            </div>
-
-            <!-- 次の問題ボタン -->
-            <div class="action-buttons" id="nextProblemArea" style="display: none;">
-                <button class="btn btn-primary" onclick="nextProblem()">次のチョコレートへ ➜</button>
             </div>
         </div>
     </div>
 
-    <!-- メモパネル -->
-    <div id="memo-panel" class="memo-panel closed">
-        <div class="memo-header">
-            <div class="memo-title">✏️ メモコーナー</div>
-            <button class="memo-close-btn" onclick="toggleMemoPanel()" title="閉じる">×</button>
+    <header>
+        <div style="display: flex; align-items: center;">
+            <button onclick="exitGame()" style="background:transparent; border:1px solid var(--gold); color:var(--gold); padding:4px 10px; border-radius:10px; cursor:pointer; margin-right:15px; font-size:0.8rem;">◀ メニューへ戻る</button>
+            <div style="font-weight: 800; color: var(--gold); font-size: 1.2rem;">🍫 面積ショコラティエ</div>
+            <div class="badges" id="badge-container"></div>
         </div>
-        <div class="memo-canvas-container">
-            <canvas id="memo-canvas"></canvas>
+        <div class="stats">
+            <div id="combo-container" style="display:none; color: #ff5252; font-weight:800;"><span id="combo">0</span> Combo!</div>
+            <div>Score: <span id="score" class="score-val">0</span> pts</div>
         </div>
-        <div class="memo-controls">
-            <button class="memo-control-btn clear" onclick="clearMemoCanvas()">消去</button>
-            <button class="memo-control-btn" onclick="toggleMemoPanel()">閉じる</button>
-        </div>
-    </div>
+    </header>
 
-    <!-- 解説モーダル -->
-    <div class="explanation-modal" id="explanationModal">
-        <div class="explanation-content">
-            <h2 id="explanationTitle"></h2>
-            <canvas id="explanationCanvas" width="400" height="300"></canvas>
-            <p id="explanationText"></p>
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="closeExplanation()">次へ進む</button>
+    <main>
+        <div class="input-section">
+            <div id="phase1-ui">
+                <p style="font-size: 0.8rem; color: var(--gold); margin-bottom:4px;">Step 1: 面積を求める式を立てる</p>
+                <div class="display-zone" id="formula-zone"></div>
             </div>
+            <div id="phase2-ui" style="display: none;">
+                <p style="font-size: 0.8rem; color: var(--gold); margin-bottom:4px;">確定した式</p>
+                <div class="formula-preview" id="confirmed-formula"></div>
+                <p style="font-size: 0.8rem; color: var(--gold); margin-bottom:4px; margin-top: 10px;">Step 2: 計算結果を入力する</p>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div class="display-zone" id="answer-zone" style="flex: 1;"></div>
+                    <span style="font-weight:800; color:var(--gold);">cm²</span>
+                </div>
+            </div>
+
+            <div class="bank-grid" id="token-bank"></div>
+
+            <div style="display: flex; gap: 6px;">
+                <button class="btn" style="flex:1; background:#5d4037; color:white; padding:8px;" onclick="popToken()">戻す</button>
+                <button class="btn" style="flex:1; background:#3e2723; color:white; padding:8px;" onclick="clearCurrentZone()">消す</button>
+            </div>
+            <button class="btn btn-check" id="check-btn" onclick="handleCheck()">この式で注文する</button>
+            <button class="btn" id="back-btn" style="display: none; background: transparent; color: #aaa; text-decoration: underline; font-size:0.8rem;" onclick="goBackToStep1()">式を書き直す</button>
+            
+            <div class="hint-section">
+                <div class="hint-btns">
+                    <button class="btn-hint-small" onclick="showHint(1)">💡 ヒント1</button>
+                    <button class="btn-hint-small" style="background:#4527a0;" onclick="showHint(2)">🎁 ヒント2</button>
+                </div>
+                <div id="hint-display" class="hint-box"></div>
+            </div>
+
+            <button class="btn btn-memo-toggle active" id="memo-btn" onclick="toggleMemo()" style="margin-top:5px; font-size:0.8rem;">📝 画面メモ：ON</button>
         </div>
-    </div>
+
+        <div id="canvas-section">
+            <canvas id="game-canvas"></canvas>
+            <canvas id="memo-layer" class="active"></canvas>
+            
+            <div class="garcon-container">
+                <div style="display: flex; flex-direction: column; align-items: center; filter: drop-shadow(0(0,0,0,0.5));">
+                    <div style="font-size: 45px; line-height: 1;">👨🏻‍💼</div>
+                    <div style="width: 40px; height: 50px; background: #eee; border-radius: 8px; border: 2px solid #333;"></div>
+                </div>
+                <div class="speech-bubble" id="garcon-text">いらっしゃいませ。本日も面積の特定に励んでまいりましょう。</div>
+            </div>
+            
+            <button class="btn" style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.6); color: white; padding: 6px 12px; font-size: 0.75rem; z-index: 100;" onclick="clearMemo()">メモを消す</button>
+        </div>
+    </main>
+
+    <div id="message"></div>
 
     <script>
-        // ゲーム状態
-        let gameState = {
-            currentProblem: null,
-            totalScore: 0,
-            comboCount: 0,
-            multiplier: 1.0,
-            formula: [],
-            mode: 'formula'
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+            if (type === 'correct') {
+                osc.frequency.setValueAtTime(523, now); osc.frequency.exponentialRampToValueAtTime(1046, now + 0.3);
+                gain.gain.setValueAtTime(0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.4);
+                osc.start(); osc.stop(now + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, now);
+                gain.gain.setValueAtTime(0.1, now); gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(); osc.stop(now + 0.2);
+            }
+        }
+
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const memoCanvas = document.getElementById('memo-layer');
+        const mCtx = memoCanvas.getContext('2d');
+        
+        let state = {
+            score: 0,
+            combo: 0,
+            currentShape: null,
+            phase: 1,
+            memoActive: true,
+            currentInput: [],
+            badgesEarned: [],
+            currentMode: 'all',
+            confirmedFormulaString: ""
         };
 
-        // 図形タイプの定義
-        const shapeTypes = {
-            parallelogram: {
-                name: '平行四辺形',
-                color: '#8b4513',
-                formula: ['底辺', '×', '高さ'],
-                explanation: '平行四辺形を切って移動させると、長方形になります。だから「底辺 × 高さ」で面積が求められます。'
-            },
-            triangle: {
-                name: '三角形',
-                color: '#d2691e',
-                formula: ['底辺', '×', '高さ', '÷', '2'],
-                explanation: '三角形は平行四辺形のちょうど半分です。だから「底辺 × 高さ ÷ 2」で面積が求められます。'
-            },
-            trapezoid: {
-                name: '台形',
-                color: '#cd853f',
-                formula: ['(', '上底', '+', '下底', ')', '×', '高さ', '÷', '2'],
-                explanation: '台形を2つ合わせると平行四辺形になります。だから「(上底 + 下底) × 高さ ÷ 2」で面積が求められます。'
-            }
-        };
+        const SHAPES_JA = { 'parallelogram': '平行四辺形', 'triangle': '三角形', 'trapezoid': '台形', 'rhombus': 'ひし形' };
 
-        // タイトルに戻る
-        function resetToTitle() {
-            document.getElementById('title-screen').classList.remove('hidden');
-            document.getElementById('game-screen').classList.add('hidden');
-
-            // ゲーム状態をリセット
-            gameState = {
-                currentProblem: null,
-                totalScore: 0,
-                comboCount: 0,
-                multiplier: 1.0,
-                formula: [],
-                mode: 'formula'
-            };
-            updateScoreDisplay();
+        function startGame(mode) {
+            state.currentMode = mode;
+            document.getElementById('title-screen').style.display = 'none';
+            state.score = 0;
+            state.combo = 0;
+            state.badgesEarned = [];
+            document.getElementById('score').innerText = '0';
+            document.getElementById('badge-container').innerHTML = '';
+            newQuestion();
         }
 
-        // ゲーム開始
-        function startGame() {
-            document.getElementById('title-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
+        function exitGame() { document.getElementById('title-screen').style.display = 'flex'; }
 
-            // 初期化
-            gameState.totalScore = 0;
-            gameState.comboCount = 0;
-            gameState.multiplier = 1.0;
-            updateScoreDisplay();
-
-            startProblem();
+        function init() {
+            renderBank();
+            resize();
+            window.addEventListener('resize', resize);
+            setupDrawing();
         }
 
-        // 新しい問題を生成
-        function generateProblem() {
-            const types = Object.keys(shapeTypes);
-            const type = types[Math.floor(Math.random() * types.length)];
-            const shapeInfo = shapeTypes[type];
-
-            let problem = {
-                type: type,
-                name: shapeInfo.name,
-                color: shapeInfo.color,
-                correctFormula: shapeInfo.formula,
-                explanation: shapeInfo.explanation
-            };
-
-            if (type === 'parallelogram') {
-                problem.base = Math.floor(Math.random() * 10 + 5);
-                problem.height = Math.floor(Math.random() * 8 + 4);
-                problem.side = Math.floor(Math.random() * 5 + problem.height + 2);
-                problem.answer = problem.base * problem.height;
-                problem.values = {
-                    '底辺': problem.base,
-                    '高さ': problem.height,
-                    '斜辺': problem.side
-                };
-            } else if (type === 'triangle') {
-                problem.base = Math.floor(Math.random() * 12 + 6);
-                problem.height = Math.floor(Math.random() * 10 + 4);
-                problem.side1 = Math.floor(Math.random() * 5 + problem.height + 1);
-                problem.side2 = Math.floor(Math.random() * 5 + problem.height + 1);
-                problem.answer = problem.base * problem.height / 2;
-                problem.values = {
-                    '底辺': problem.base,
-                    '高さ': problem.height,
-                    '辺1': problem.side1,
-                    '辺2': problem.side2
-                };
-            } else if (type === 'trapezoid') {
-                problem.upperBase = Math.floor(Math.random() * 6 + 4);
-                problem.lowerBase = problem.upperBase + Math.floor(Math.random() * 6 + 3);
-                problem.height = Math.floor(Math.random() * 8 + 5);
-                problem.side1 = Math.floor(Math.random() * 5 + problem.height + 1);
-                problem.side2 = Math.floor(Math.random() * 5 + problem.height + 1);
-                problem.answer = (problem.upperBase + problem.lowerBase) * problem.height / 2;
-                problem.values = {
-                    '上底': problem.upperBase,
-                    '下底': problem.lowerBase,
-                    '高さ': problem.height,
-                    '辺1': problem.side1,
-                    '辺2': problem.side2
-                };
-            }
-
-            return problem;
+        function renderBank() {
+            const bank = document.getElementById('token-bank');
+            bank.innerHTML = '';
+            [1,2,3,4,5,6,7,8,9,0].forEach(v => bank.appendChild(createBankToken(v)));
+            ['.', '×', '÷', '(', ')', '+'].forEach(s => bank.appendChild(createBankToken(s, true)));
         }
 
-        // 図形を描画
-        function drawShape(problem) {
-            const canvas = document.getElementById('shapeCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const centerX = canvas.width / 2;
-            const centerY = canvas.height / 2 - 20;
-
-            ctx.save();
-
-            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            gradient.addColorStop(0, problem.color);
-            gradient.addColorStop(1, '#3e2723');
-            ctx.fillStyle = gradient;
-            ctx.strokeStyle = '#d4a574';
-            ctx.lineWidth = 3;
-
-            ctx.beginPath();
-
-            if (problem.type === 'parallelogram') {
-                const basePixels = problem.base * 10;
-                const heightPixels = problem.height * 10;
-                const slant = 30;
-
-                ctx.moveTo(centerX - basePixels/2, centerY + heightPixels/2);
-                ctx.lineTo(centerX + basePixels/2, centerY + heightPixels/2);
-                ctx.lineTo(centerX + basePixels/2 + slant, centerY - heightPixels/2);
-                ctx.lineTo(centerX - basePixels/2 + slant, centerY - heightPixels/2);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-
-                // 底辺の寸法
-                drawDimension(ctx, centerX - basePixels/2, centerY + heightPixels/2 + 20,
-                             centerX + basePixels/2, centerY + heightPixels/2 + 20,
-                             problem.base, false);
-                // 高さの寸法（垂直マーク付き）
-                drawDimension(ctx, centerX - basePixels/2 - 40, centerY + heightPixels/2,
-                             centerX - basePixels/2 - 40, centerY - heightPixels/2,
-                             problem.height, true);
-                // 垂直マークを底辺と高さの交点に描画
-                drawPerpendicularMark(ctx, centerX - basePixels/2, centerY + heightPixels/2);
-                // 斜辺（引っかけ）
-                drawDimension(ctx, centerX + basePixels/2, centerY + heightPixels/2,
-                             centerX + basePixels/2 + slant, centerY - heightPixels/2,
-                             problem.side, false, '#ff6b6b');
-
-            } else if (problem.type === 'triangle') {
-                const basePixels = problem.base * 10;
-                const heightPixels = problem.height * 10;
-
-                ctx.moveTo(centerX - basePixels/2, centerY + heightPixels/2);
-                ctx.lineTo(centerX + basePixels/2, centerY + heightPixels/2);
-                ctx.lineTo(centerX, centerY - heightPixels/2);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-
-                // 底辺の寸法
-                drawDimension(ctx, centerX - basePixels/2, centerY + heightPixels/2 + 20,
-                             centerX + basePixels/2, centerY + heightPixels/2 + 20,
-                             problem.base, false);
-                // 高さの寸法（垂直マーク付き）
-                drawDimension(ctx, centerX + 5, centerY + heightPixels/2,
-                             centerX + 5, centerY - heightPixels/2,
-                             problem.height, true);
-                // 垂直マークを底辺と高さの交点に描画
-                drawPerpendicularMark(ctx, centerX, centerY + heightPixels/2);
-
-            } else if (problem.type === 'trapezoid') {
-                const upperPixels = problem.upperBase * 10;
-                const lowerPixels = problem.lowerBase * 10;
-                const heightPixels = problem.height * 10;
-
-                ctx.moveTo(centerX - lowerPixels/2, centerY + heightPixels/2);
-                ctx.lineTo(centerX + lowerPixels/2, centerY + heightPixels/2);
-                ctx.lineTo(centerX + upperPixels/2, centerY - heightPixels/2);
-                ctx.lineTo(centerX - upperPixels/2, centerY - heightPixels/2);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-
-                // 上底の寸法
-                drawDimension(ctx, centerX - upperPixels/2, centerY - heightPixels/2 - 20,
-                             centerX + upperPixels/2, centerY - heightPixels/2 - 20,
-                             problem.upperBase, false);
-                // 下底の寸法
-                drawDimension(ctx, centerX - lowerPixels/2, centerY + heightPixels/2 + 20,
-                             centerX + lowerPixels/2, centerY + heightPixels/2 + 20,
-                             problem.lowerBase, false);
-                // 高さの寸法（垂直マーク付き）
-                drawDimension(ctx, centerX - lowerPixels/2 - 40, centerY + heightPixels/2,
-                             centerX - lowerPixels/2 - 40, centerY - heightPixels/2,
-                             problem.height, true);
-                // 垂直マークを底辺と高さの交点に描画
-                drawPerpendicularMark(ctx, centerX - lowerPixels/2, centerY + heightPixels/2);
-            }
-
-            ctx.restore();
+        function createBankToken(val, isSymbol = false) {
+            const div = document.createElement('div');
+            div.className = 'token' + (isSymbol ? ' symbol' : '');
+            div.innerText = val;
+            div.onclick = () => { state.currentInput.push(val); updateDisplay(); };
+            return div;
         }
 
-        // 寸法線を描画
-        function drawDimension(ctx, x1, y1, x2, y2, value, isHeight = false, color = '#ffd700') {
-            ctx.save();
-            ctx.strokeStyle = color;
-            ctx.fillStyle = color;
-            ctx.lineWidth = 3;
+        function popToken() { state.currentInput.pop(); updateDisplay(); }
+        function clearCurrentZone() { state.currentInput = []; updateDisplay(); }
+        function updateDisplay() { document.getElementById(state.phase === 1 ? 'formula-zone' : 'answer-zone').innerText = state.currentInput.join(''); }
 
-            // 寸法線
-            ctx.beginPath();
-            ctx.moveTo(x1, y1);
-            ctx.lineTo(x2, y2);
-            ctx.stroke();
+        function resize() {
+            const container = document.getElementById('canvas-section');
+            canvas.width = container.clientWidth; canvas.height = container.clientHeight;
+            memoCanvas.width = canvas.width; memoCanvas.height = canvas.height;
+            if(state.currentShape) drawShape();
+        }
 
-            // 矢印
-            const angle = Math.atan2(y2 - y1, x2 - x1);
-            drawArrow(ctx, x1, y1, angle + Math.PI);
-            drawArrow(ctx, x2, y2, angle);
-
-            // 数値表示（大きく）
-            ctx.font = 'bold 18px sans-serif';
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            const midX = (x1 + x2) / 2;
-            const midY = (y1 + y2) / 2;
-
-            // 背景を追加して見やすく
-            const text = `${value}cm`;
-            const metrics = ctx.measureText(text);
-            const padding = 6;
-            const bgWidth = metrics.width + padding * 2;
-            const bgHeight = 24;
-
-            if (isHeight) {
-                // 垂直な寸法（高さ）
-                ctx.save();
-                ctx.translate(midX - 25, midY);
-                ctx.rotate(-Math.PI / 2);
-
-                // 背景
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-                ctx.fillRect(-bgWidth/2, -bgHeight/2, bgWidth, bgHeight);
-
-                // テキスト
-                ctx.fillStyle = color;
-                ctx.fillText(text, 0, 0);
-                ctx.restore();
+        function toggleMemo() {
+            state.memoActive = !state.memoActive;
+            const btn = document.getElementById('memo-btn');
+            const layer = document.getElementById('memo-layer');
+            if(state.memoActive) {
+                btn.innerText = "📝 画面メモ：ON"; btn.classList.add('active'); layer.classList.add('active');
             } else {
-                // 水平な寸法（底辺）
-                // 背景
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-                ctx.fillRect(midX - bgWidth/2, midY - 15 - bgHeight/2, bgWidth, bgHeight);
-
-                // テキスト
-                ctx.fillStyle = color;
-                ctx.fillText(text, midX, midY - 15);
+                btn.innerText = "📝 画面メモ：OFF"; btn.classList.remove('active'); layer.classList.remove('active');
             }
-
-            ctx.restore();
         }
 
-        // 垂直マークを描画（底辺と高さの交点に）
-        function drawPerpendicularMark(ctx, x, y) {
+        function clearMemo() { mCtx.clearRect(0, 0, memoCanvas.width, memoCanvas.height); }
+
+        function setupDrawing() {
+            let drawing = false;
+            const getPos = (e) => {
+                const rect = memoCanvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return { x: clientX - rect.left, y: clientY - rect.top };
+            };
+            const start = (e) => { if(!state.memoActive) return; drawing = true; mCtx.beginPath(); const p = getPos(e); mCtx.moveTo(p.x, p.y); };
+            const move = (e) => { if(!drawing || !state.memoActive) return; const p = getPos(e); mCtx.lineTo(p.x, p.y); mCtx.strokeStyle = "rgba(255, 255, 255, 0.7)"; mCtx.lineWidth = 4; mCtx.lineCap = "round"; mCtx.stroke(); };
+            memoCanvas.addEventListener('mousedown', start);
+            memoCanvas.addEventListener('mousemove', move);
+            window.addEventListener('mouseup', () => drawing = false);
+            memoCanvas.addEventListener('touchstart', (e) => { start(e); e.preventDefault(); }, {passive: false});
+            memoCanvas.addEventListener('touchmove', (e) => { move(e); e.preventDefault(); }, {passive: false});
+        }
+
+        function newQuestion() {
+            state.phase = 1; state.currentInput = []; 
+            updateDisplay();
+            document.getElementById('phase1-ui').style.display = 'block';
+            document.getElementById('phase2-ui').style.display = 'none';
+            document.getElementById('back-btn').style.display = 'none';
+            document.getElementById('check-btn').innerText = "この式で注文する";
+            document.getElementById('hint-display').style.display = 'none';
+            
+            let type;
+            if (state.currentMode === 'all') {
+                const keys = Object.keys(SHAPES_JA);
+                type = keys[Math.floor(Math.random() * keys.length)];
+            } else {
+                type = state.currentMode;
+            }
+
+            let s = { 
+                type: type, 
+                rotation: (Math.random() - 0.5) * 0.1, // 回転角を最小限に（はみ出し防止）
+                hasDummy: Math.random() > 0.4 
+            };
+            const getVal = () => Math.floor(Math.random() * 8) + 4;
+
+            if (type === 'parallelogram') { 
+                s.base = getVal(); s.height = getVal(); s.side = s.height + 2; 
+                s.ans = s.base * s.height;
+            } else if (type === 'triangle') { 
+                s.base = getVal(); s.height = getVal(); s.side = s.height + 3;
+                s.ans = (s.base * s.height) / 2; s.isOuterHeight = Math.random() > 0.4;
+            } else if (type === 'trapezoid') { 
+                s.top = getVal(); s.bottom = s.top + 3; s.height = getVal(); s.side = s.height + 1;
+                s.ans = ((s.top + s.bottom) * s.height) / 2;
+            } else if (type === 'rhombus') { 
+                s.d1 = getVal(); s.d2 = Math.floor(getVal()/2)*2; s.edge = Math.floor(getVal() + 5);
+                s.ans = (s.d1 * s.d2) / 2;
+            }
+            
+            state.currentShape = s;
+            
+            // ギャルソンのセリフ生成
+            let flavorText = `本日のアラカルト「${SHAPES_JA[type]}」でございます。`;
+            if (s.type === 'triangle' && s.isOuterHeight) {
+                flavorText = `本日のお勧めは、高さが外側に飛び出した「鋭い」三角形でございます。高さを取り違えぬよう、ご注意ください。`;
+            } else if (s.hasDummy) {
+                flavorText = `本日の${SHAPES_JA[type]}には、少々「雑味（不要な数値）」が混ざっております。純粋な面積のみを抽出してください。`;
+            } else if (s.type === 'rhombus') {
+                flavorText = `美しい「ひし形」が入荷いたしました。対角線の交わりに、真実が隠されております。`;
+            } else if (s.type === 'trapezoid') {
+                flavorText = `二つの平行な辺を持つ「台形」をご用意しました。上と下の調和を、式に込めてください。`;
+            }
+            
+            document.getElementById('garcon-text').innerText = flavorText;
+            drawShape();
+        }
+
+        function drawShape() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            const s = state.currentShape;
+            
+            // 図形が絶対にはみ出さないように、より保守的なスケーリングを適用
+            // 余白を十分に確保（キャンバスサイズの約25%〜30%を最大サイズに制限）
+            const cx = canvas.width / 2;
+            const cy = canvas.height * 0.45; // 縦位置を少し下げて上部のラベルスペースを確保
+            const minDim = Math.min(canvas.width, canvas.height);
+            const sc = minDim / 22; // スケールをさらに小さく調整
+            
             ctx.save();
-            const size = 15;
+            ctx.translate(cx, cy);
+            ctx.rotate(s.rotation);
+            ctx.fillStyle = 'rgba(141, 110, 99, 0.4)'; 
+            ctx.strokeStyle = '#ffffff'; 
+            ctx.lineWidth = 4; ctx.lineJoin = "round";
 
-            // 垂直マークの位置
-            ctx.translate(x, y);
-            ctx.strokeStyle = '#ffd700';
-            ctx.lineWidth = 3;
-
-            // 直角記号（小さな正方形）
-            ctx.beginPath();
-            ctx.moveTo(-size, 0);
-            ctx.lineTo(-size, -size);
-            ctx.lineTo(0, -size);
-            ctx.stroke();
-
-            // 四角を塗りつぶして強調
-            ctx.fillStyle = 'rgba(255, 215, 0, 0.5)';
-            ctx.fillRect(-size, -size, size, size);
-
+            let pts = [];
+            if (s.type === 'parallelogram') {
+                const w = s.base * sc, h = s.height * sc, off = sc * 2;
+                pts = [{x:-w/2-off/2, y:h/2, l:'A'}, {x:w/2-off/2, y:h/2, l:'B'}, {x:w/2+off/2, y:-h/2, l:'C'}, {x:-w/2+off/2, y:-h/2, l:'D'}];
+                drawPoly(pts);
+                drawDim(pts[0], pts[1], 40, s.base + "cm");
+                if(s.hasDummy) drawDim(pts[1], pts[2], 40, s.side + "cm");
+                ctx.setLineDash([6,6]); ctx.strokeStyle = "rgba(255,255,255,0.6)"; ctx.beginPath(); ctx.moveTo(pts[3].x, pts[3].y); ctx.lineTo(pts[3].x, pts[0].y); ctx.stroke(); ctx.setLineDash([]);
+                drawRightAngle(pts[3].x, pts[0].y, 0, 15); drawDim({x:pts[3].x, y:pts[0].y}, pts[3], 35, s.height + "cm");
+            } else if (s.type === 'triangle') {
+                const w = s.base * sc, h = s.height * sc;
+                const peakX = s.isOuterHeight ? -w/2 - sc*4 : -w/2 + sc*3;
+                pts = [{x:-w/2, y:h/2, l:'A'}, {x:w/2, y:h/2, l:'B'}, {x:peakX, y:-h/2, l:'C'}];
+                drawPoly(pts);
+                drawDim(pts[0], pts[1], 50, s.base + "cm");
+                if(s.hasDummy) drawDim(pts[1], pts[2], 40, s.side + "cm");
+                ctx.setLineDash([6,6]); ctx.strokeStyle = "rgba(255,255,255,0.6)";
+                const dPt = {x:pts[2].x, y:pts[0].y, l:'D'};
+                if(s.isOuterHeight) {
+                    ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); ctx.lineTo(dPt.x, dPt.y); ctx.lineTo(pts[2].x, pts[2].y); ctx.stroke();
+                    drawRightAngle(dPt.x, dPt.y, 0, 15); drawDim(dPt, pts[2], -35, s.height + "cm");
+                } else {
+                    const hPt = {x:pts[2].x, y:pts[0].y};
+                    ctx.beginPath(); ctx.moveTo(pts[2].x, pts[2].y); ctx.lineTo(hPt.x, hPt.y); ctx.stroke();
+                    drawRightAngle(hPt.x, hPt.y, 0, 15); drawDim(hPt, pts[2], 35, s.height + "cm");
+                }
+            } else if (s.type === 'trapezoid') {
+                const tw = s.top * sc, bw = s.bottom * sc, h = s.height * sc;
+                pts = [{x:-bw/2, y:h/2, l:'A'}, {x:bw/2, y:h/2, l:'B'}, {x:tw/2, y:-h/2, l:'C'}, {x:-tw/2, y:-h/2, l:'D'}];
+                drawPoly(pts);
+                drawDim(pts[3], pts[2], -40, s.top + "cm"); drawDim(pts[0], pts[1], 40, s.bottom + "cm");
+                if(s.hasDummy) drawDim(pts[1], pts[2], 40, s.side + "cm");
+                ctx.setLineDash([6,6]); ctx.strokeStyle = "rgba(255,255,255,0.6)"; 
+                const ePt = {x:pts[2].x, y:pts[1].y, l:'E'};
+                ctx.beginPath(); ctx.moveTo(pts[2].x, pts[2].y); ctx.lineTo(ePt.x, ePt.y); ctx.stroke();
+                drawRightAngle(ePt.x, ePt.y, 0, 15, -1); drawDim(ePt, pts[2], 35, s.height + "cm");
+            } else if (s.type === 'rhombus') {
+                const d1 = s.d1 * sc, d2 = s.d2 * sc;
+                pts = [{x:0, y:-d2/2, l:'A'}, {x:d1/2, y:0, l:'B'}, {x:0, y:d2/2, l:'C'}, {x:-d1/2, y:0, l:'D'}];
+                drawPoly(pts);
+                ctx.setLineDash([5,5]); ctx.strokeStyle = "rgba(255,255,255,0.6)"; ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.moveTo(pts[3].x, pts[3].y); ctx.lineTo(pts[1].x, pts[1].y); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); ctx.lineTo(pts[2].x, pts[2].y); ctx.stroke();
+                drawRightAngle(0,0,0, 15);
+                drawDim(pts[3], pts[1], 35, s.d1 + "cm"); drawDim(pts[0], pts[2], 35, s.d2 + "cm");
+                if(s.hasDummy) drawDim(pts[1], pts[2], 40, s.edge + "cm");
+            }
+            pts.forEach(p => drawLabel(p, s));
             ctx.restore();
         }
 
-        function drawArrow(ctx, x, y, angle) {
-            const len = 8;
-            ctx.beginPath();
-            ctx.moveTo(x, y);
-            ctx.lineTo(x + len * Math.cos(angle - Math.PI/6), y + len * Math.sin(angle - Math.PI/6));
-            ctx.moveTo(x, y);
-            ctx.lineTo(x + len * Math.cos(angle + Math.PI/6), y + len * Math.sin(angle + Math.PI/6));
-            ctx.stroke();
+        function drawPoly(pts) {
+            ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y);
+            pts.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+            ctx.closePath(); ctx.fill(); ctx.stroke();
         }
 
-        // ブロックパレットを作成
-        function createBlockPalette() {
-            const numberBlocks = document.getElementById('numberBlocks');
-            const operatorBlocks = document.getElementById('operatorBlocks');
-
-            numberBlocks.innerHTML = '';
-            operatorBlocks.innerHTML = '';
-
-            // 数字ブロック 0-9（何度でも使用可能）
-            for (let i = 0; i <= 9; i++) {
-                const block = document.createElement('div');
-                block.className = 'block';
-                block.textContent = i;
-                block.dataset.value = i;
-                block.dataset.type = 'number';
-                block.onclick = () => addToFormula(i, 'number');
-                numberBlocks.appendChild(block);
-            }
-
-            // 演算子ブロック（何度でも使用可能）
-            const operators = ['×', '÷', '+', '-', '(', ')'];
-            operators.forEach(op => {
-                const block = document.createElement('div');
-                block.className = 'block operator';
-                block.textContent = op;
-                block.dataset.value = op;
-                block.dataset.type = 'operator';
-                block.onclick = () => addToFormula(op, 'operator');
-                operatorBlocks.appendChild(block);
-            });
+        function drawLabel(p, s) {
+            ctx.font = "bold 18px sans-serif"; ctx.fillStyle = "#fff"; ctx.textAlign = "center";
+            const offset = 1.4; 
+            ctx.fillText(p.l, p.x * offset, p.y * offset + (p.y > 0 ? 10 : -10));
         }
 
-        // スロットを作成
-        function createFormulaSlots() {
-            const slotsContainer = document.getElementById('formulaSlots');
-            slotsContainer.innerHTML = '';
-            gameState.formula = [];
+        function drawDim(p1, p2, off, txt) {
+            const angle = Math.atan2(p2.y-p1.y, p2.x-p1.x), d = Math.sqrt((p2.x-p1.x)**2 + (p2.y-p1.y)**2);
+            ctx.save(); ctx.translate(p1.x, p1.y); ctx.rotate(angle); ctx.strokeStyle = "rgba(255,255,255,0.7)"; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.moveTo(0,8); ctx.lineTo(0, off+8); ctx.moveTo(d,8); ctx.lineTo(d, off+8); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(0, off); ctx.lineTo(d, off); ctx.stroke();
+            ctx.rotate(-angle);
+            const mx = (d/2)*Math.cos(angle) + (off+22)*Math.cos(angle+Math.PI/2), my = (d/2)*Math.sin(angle) + (off+22)*Math.sin(angle+Math.PI/2);
+            ctx.font = "bold 16px sans-serif"; ctx.textAlign="center"; ctx.fillStyle="#ffd700"; ctx.fillText(txt, mx, my); ctx.restore();
+        }
 
-            for (let i = 0; i < 20; i++) {
-                const slot = document.createElement('div');
-                slot.className = 'slot';
-                slot.dataset.index = i;
-                slotsContainer.appendChild(slot);
+        function drawRightAngle(px, py, ang, sz=12, flip=1) {
+            ctx.save(); ctx.translate(px, py); ctx.rotate(ang); ctx.setLineDash([]); ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 2;
+            ctx.beginPath(); ctx.moveTo(sz*flip, 0); ctx.lineTo(sz*flip, -sz); ctx.lineTo(0, -sz); ctx.stroke(); ctx.restore();
+        }
+
+        function showHint(level) {
+            const box = document.getElementById('hint-display'); const s = state.currentShape; box.style.display = 'block';
+            if(level === 1) {
+                let msg = "【鑑定のヒント】<br>";
+                if(s.type === 'parallelogram') msg += "底辺と、それに対して垂直な高さを見極めてください。";
+                if(s.type === 'triangle') msg += "底辺の延長に高さが示されている場合、その長さを使います。";
+                if(s.type === 'trapezoid') msg += "平行な二辺を足し、高さをかけて半分にします。";
+                if(s.type === 'rhombus') msg += "二本の対角線を掛け合わせたあと、半分にするのが正しい作法です。";
+                box.innerHTML = msg;
+            } else {
+                let msg = "【秘伝の公式】<br>";
+                if(s.type === 'parallelogram') msg += `底辺 × 高さ`;
+                if(s.type === 'triangle') msg += `底辺 × 高さ ÷ 2`;
+                if(s.type === 'trapezoid') msg += `(上底 + 下底) × 高さ ÷ 2`;
+                if(s.type === 'rhombus') msg += `対角線 × 対角線 ÷ 2`;
+                box.innerHTML = msg;
             }
         }
 
-        // 式にブロックを追加（何度でも追加可能）
-        function addToFormula(value, type) {
-            if (gameState.formula.length >= 20) return;
+        function handleCheck() { if(state.phase === 1) checkFormula(); else checkFinalAnswer(); }
 
-            gameState.formula.push({ value, type });
-            updateFormulaDisplay();
-        }
-
-        // 式の表示を更新
-        function updateFormulaDisplay() {
-            const slots = document.querySelectorAll('.formula-slots .slot');
-            slots.forEach((slot, index) => {
-                if (index < gameState.formula.length) {
-                    slot.textContent = gameState.formula[index].value;
-                    slot.classList.add('filled');
-                    if (gameState.formula[index].type === 'operator') {
-                        slot.classList.add('operator');
-                    }
-                } else {
-                    slot.textContent = '';
-                    slot.classList.remove('filled', 'operator');
-                }
-            });
-
-            document.getElementById('checkFormulaBtn').disabled = gameState.formula.length === 0;
-        }
-
-        // 式をクリア
-        function clearFormula() {
-            gameState.formula = [];
-            updateFormulaDisplay();
-        }
-
-        // 式をチェック
         function checkFormula() {
-            // ユーザーが組み立てた式を文字列として取得
-            // 数字を連続して結合し、演算子の前後にはスペースを入れる
-            let userFormulaString = '';
-            for (let i = 0; i < gameState.formula.length; i++) {
-                const current = gameState.formula[i];
-                const prev = i > 0 ? gameState.formula[i - 1] : null;
-                const next = i < gameState.formula.length - 1 ? gameState.formula[i + 1] : null;
-
-                if (current.type === 'number') {
-                    // 前が数字なら結合、前が演算子ならスペースを入れる
-                    if (prev && prev.type === 'number') {
-                        userFormulaString += current.value;
-                    } else {
-                        if (userFormulaString && !userFormulaString.endsWith(' ')) {
-                            userFormulaString += ' ';
-                        }
-                        userFormulaString += current.value;
-                    }
-                } else {
-                    // 演算子の前後にスペースを入れる
-                    if (userFormulaString && !userFormulaString.endsWith(' ')) {
-                        userFormulaString += ' ';
-                    }
-                    userFormulaString += current.value;
-                    if (next && next.type === 'number') {
-                        userFormulaString += ' ';
-                    }
-                }
-            }
-
-            // 式を評価して計算結果を取得
-            let calculatedValue;
+            if(!state.currentInput.length) return;
+            const formulaStr = state.currentInput.join('');
+            const evalStr = formulaStr.replace(/×/g,'*').replace(/÷/g,'/').replace(/（/g,'(').replace(/）/g,')');
             try {
-                // × を * に、÷ を / に変換
-                const evalString = userFormulaString.replace(/×/g, '*').replace(/÷/g, '/');
-                calculatedValue = eval(evalString);
-            } catch (e) {
-                showGarconMessage('式が正しくありません。もう一度確認してください。', 'error');
-                resetCombo();
-                return;
-            }
-
-            // 正解の答えと比較（小数点以下の誤差を考慮）
-            const correctAnswer = gameState.currentProblem.answer;
-            const isCorrect = Math.abs(calculatedValue - correctAnswer) < 0.01;
-
-            if (isCorrect) {
-                showBigFeedback('式OK！', 'correct');
-                showGarconMessage('素晴らしい式です！では計算をお願いします。', 'success');
-                setTimeout(() => {
-                    switchToCalculationMode();
-                }, 1500);
-            } else {
-                showBigFeedback('式NG', 'wrong');
-                showGarconMessage('その式では正しく計算できません。もう一度考えてみましょう。', 'error');
-                resetCombo();
-            }
+                if(Math.abs(eval(evalStr) - state.currentShape.ans) < 0.001) {
+                    state.confirmedFormulaString = formulaStr; 
+                    document.getElementById('confirmed-formula').innerText = state.confirmedFormulaString;
+                    
+                    playSound('correct'); notify("正しい式でございます✨", "#4caf50");
+                    state.phase = 2; state.currentInput = []; updateDisplay();
+                    document.getElementById('phase1-ui').style.display = 'none'; document.getElementById('phase2-ui').style.display = 'block';
+                    document.getElementById('check-btn').innerText = "面積を特定する"; document.getElementById('back-btn').style.display = 'block';
+                    document.getElementById('garcon-text').innerText = "素晴らしい式です。では、正確な数値へと「精製（計算）」していただけますか？";
+                } else { playSound('wrong'); state.combo = 0; updateCombo(); notify("式が異なります🤔", "#f44336"); }
+            } catch(e) { playSound('wrong'); notify("式が成立しておりません💦", "#f44336"); }
         }
 
-        // 計算モードに切り替え
-        function switchToCalculationMode() {
-            gameState.mode = 'calculation';
-            document.getElementById('formulaArea').style.display = 'none';
-            document.getElementById('calculationArea').classList.add('active');
+        function checkFinalAnswer() {
+            if(!state.currentInput.length) return;
+            if(Math.abs(parseFloat(state.currentInput.join('')) - state.currentShape.ans) < 0.01) {
+                playSound('correct'); state.combo++; updateCombo();
+                state.score += Math.ceil(state.currentShape.ans); document.getElementById('score').innerText = state.score;
+                checkBadges(); notify(`面積特定、お見事です！✨`, "#ffc107");
+                setTimeout(() => { clearMemo(); newQuestion(); }, 1500);
+            } else { playSound('wrong'); state.combo = 0; updateCombo(); notify("数値が異なるようです...", "#f44336"); }
+        }
 
-            // 数値を連続して結合して表示
-            let displayFormula = '';
-            for (let i = 0; i < gameState.formula.length; i++) {
-                const current = gameState.formula[i];
-                const prev = i > 0 ? gameState.formula[i - 1] : null;
-                const next = i < gameState.formula.length - 1 ? gameState.formula[i + 1] : null;
+        function updateCombo() {
+            const cont = document.getElementById('combo-container');
+            if(state.combo > 1) { cont.style.display = 'block'; document.getElementById('combo').innerText = state.combo; }
+            else cont.style.display = 'none';
+        }
 
-                if (current.type === 'number') {
-                    // 前が数字なら結合、前が演算子ならスペースを入れる
-                    if (prev && prev.type === 'number') {
-                        displayFormula += current.value;
-                    } else {
-                        if (displayFormula && !displayFormula.endsWith(' ')) {
-                            displayFormula += ' ';
-                        }
-                        displayFormula += current.value;
-                    }
-                } else {
-                    // 演算子の前後にスペースを入れる
-                    if (displayFormula && !displayFormula.endsWith(' ')) {
-                        displayFormula += ' ';
-                    }
-                    displayFormula += current.value;
-                    if (next && next.type === 'number') {
-                        displayFormula += ' ';
-                    }
+        function checkBadges() {
+            const targets = [200, 500, 1000], icons = ['🍫', '🍪', '🏆'];
+            targets.forEach((t, i) => {
+                if(state.score >= t && !state.badgesEarned.includes(i)) {
+                    state.badgesEarned.push(i);
+                    const b = document.createElement('div'); b.className = 'badge'; b.innerText = icons[i];
+                    document.getElementById('badge-container').appendChild(b);
                 }
-            }
-
-            document.getElementById('formulaDisplay').textContent = displayFormula + ' = ?';
-            document.getElementById('answerInput').value = '';
+            });
         }
 
-        // 立式モードに戻る
-        function backToFormula() {
-            gameState.mode = 'formula';
-            document.getElementById('calculationArea').classList.remove('active');
-            document.getElementById('formulaArea').style.display = 'block';
+        function notify(msg, color) {
+            const m = document.getElementById('message'); m.innerText = msg; m.style.background = color;
+            m.style.display = 'block'; setTimeout(() => m.style.display = 'none', 1500);
         }
 
-        // テンキー入力
-        function inputNumber(num) {
-            const input = document.getElementById('answerInput');
-            if (input.value.length < 6) {
-                input.value += num;
-            }
+        function goBackToStep1() {
+            state.phase = 1; state.currentInput = []; updateDisplay();
+            document.getElementById('phase1-ui').style.display = 'block'; document.getElementById('phase2-ui').style.display = 'none';
+            document.getElementById('check-btn').innerText = "この式で注文する"; document.getElementById('back-btn').style.display = 'none';
         }
 
-        // 数字を削除
-        function deleteNumber() {
-            const input = document.getElementById('answerInput');
-            input.value = input.value.slice(0, -1);
-        }
-
-        // 答え合わせ
-        function checkAnswer() {
-            const userAnswer = parseFloat(document.getElementById('answerInput').value);
-            const correctAnswer = gameState.currentProblem.answer;
-
-            if (isNaN(userAnswer)) {
-                showGarconMessage('答えを入力してください。', 'error');
-                return;
-            }
-
-            if (Math.abs(userAnswer - correctAnswer) < 0.01) {
-                gameState.comboCount++;
-                updateComboMultiplier();
-
-                const baseScore = correctAnswer;
-                const earnedScore = Math.round(baseScore * gameState.multiplier);
-                gameState.totalScore += earnedScore;
-
-                updateScoreDisplay();
-                playEatingAnimation();
-                showBigFeedback('正解！', 'correct');
-                showGarconMessage(`正解です！${earnedScore}pt獲得！`, 'success');
-
-                setTimeout(() => {
-                    showExplanation();
-                }, 1500);
-
-            } else {
-                showBigFeedback('不正解', 'wrong');
-                showGarconMessage(`惜しい！正解は ${correctAnswer} ㎠でした。`, 'error');
-                resetCombo();
-
-                setTimeout(() => {
-                    showExplanation();
-                }, 2000);
-            }
-        }
-
-        // コンボ倍率を更新
-        function updateComboMultiplier() {
-            if (gameState.comboCount >= 5) {
-                gameState.multiplier = 2.0;
-            } else if (gameState.comboCount >= 4) {
-                gameState.multiplier = 1.8;
-            } else if (gameState.comboCount >= 3) {
-                gameState.multiplier = 1.5;
-            } else if (gameState.comboCount >= 2) {
-                gameState.multiplier = 1.2;
-            } else {
-                gameState.multiplier = 1.0;
-            }
-        }
-
-        // コンボをリセット
-        function resetCombo() {
-            gameState.comboCount = 0;
-            gameState.multiplier = 1.0;
-            updateScoreDisplay();
-        }
-
-        // スコア表示を更新
-        function updateScoreDisplay() {
-            document.getElementById('totalScore').textContent = gameState.totalScore;
-            document.getElementById('comboCount').textContent = gameState.comboCount;
-            document.getElementById('multiplier').textContent = `×${gameState.multiplier.toFixed(1)}`;
-
-            const comboElement = document.getElementById('comboCount');
-            if (gameState.comboCount >= 3) {
-                comboElement.style.color = '#ff6b6b';
-                comboElement.style.textShadow = '0 0 10px #ff6b6b';
-            } else {
-                comboElement.style.color = '#ffd700';
-                comboElement.style.textShadow = 'none';
-            }
-        }
-
-        // チョコを食べるアニメーション
-        function playEatingAnimation() {
-            const canvas = document.getElementById('shapeCanvas');
-            canvas.classList.add('eating-animation');
-
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    createSparkle(canvas);
-                }, i * 100);
-            }
-
-            setTimeout(() => {
-                canvas.classList.remove('eating-animation');
-            }, 1000);
-        }
-
-        // キラキラエフェクトを作成
-        function createSparkle(element) {
-            const sparkle = document.createElement('div');
-            sparkle.className = 'sparkle';
-            sparkle.textContent = '✨';
-            sparkle.style.left = (element.offsetLeft + Math.random() * element.width) + 'px';
-            sparkle.style.top = (element.offsetTop + Math.random() * element.height) + 'px';
-            element.parentElement.appendChild(sparkle);
-
-            setTimeout(() => {
-                sparkle.remove();
-            }, 1000);
-        }
-
-        // 大きなフィードバック表示
-        function showBigFeedback(text, type) {
-            // 既存のフィードバックを削除
-            const existing = document.querySelector('.big-feedback');
-            if (existing) {
-                existing.remove();
-            }
-
-            // 新しいフィードバックを作成
-            const feedback = document.createElement('div');
-            feedback.className = `big-feedback ${type}`;
-            feedback.textContent = text;
-            document.body.appendChild(feedback);
-
-            // 表示アニメーション
-            setTimeout(() => {
-                feedback.classList.add('show');
-            }, 10);
-
-            // 自動で削除
-            setTimeout(() => {
-                feedback.classList.remove('show');
-                setTimeout(() => {
-                    feedback.remove();
-                }, 300);
-            }, 1000);
-        }
-
-        // ギャルソンのメッセージを表示
-        function showGarconMessage(message, type) {
-            const messageElement = document.getElementById('garconMessage');
-            messageElement.textContent = message;
-            messageElement.classList.add('show');
-
-            if (type === 'error') {
-                messageElement.style.borderColor = '#ff6b6b';
-                messageElement.style.background = 'rgba(255, 107, 107, 0.95)';
-                messageElement.style.color = '#fff';
-            } else {
-                messageElement.style.borderColor = '#d4a574';
-                messageElement.style.background = 'rgba(255, 255, 255, 0.95)';
-                messageElement.style.color = '#2c1810';
-            }
-
-            setTimeout(() => {
-                messageElement.classList.remove('show');
-            }, 3000);
-        }
-
-        // 解説を表示
-        function showExplanation() {
-            const modal = document.getElementById('explanationModal');
-            const title = document.getElementById('explanationTitle');
-            const text = document.getElementById('explanationText');
-
-            title.textContent = gameState.currentProblem.name + 'の面積の求め方';
-            text.textContent = gameState.currentProblem.explanation;
-
-            drawExplanationShape();
-
-            modal.classList.add('show');
-        }
-
-        // 解説用の図形を描画
-        function drawExplanationShape() {
-            const canvas = document.getElementById('explanationCanvas');
-            const ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const problem = gameState.currentProblem;
-            ctx.fillStyle = problem.color;
-            ctx.strokeStyle = '#2c1810';
-            ctx.lineWidth = 2;
-
-            if (problem.type === 'parallelogram') {
-                ctx.globalAlpha = 0.7;
-                ctx.beginPath();
-                ctx.moveTo(50, 150);
-                ctx.lineTo(150, 150);
-                ctx.lineTo(180, 100);
-                ctx.lineTo(80, 100);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-
-                ctx.fillStyle = '#2c1810';
-                ctx.font = 'bold 30px sans-serif';
-                ctx.fillText('→', 200, 130);
-
-                ctx.fillStyle = problem.color;
-                ctx.fillRect(250, 100, 100, 50);
-                ctx.strokeRect(250, 100, 100, 50);
-
-            } else if (problem.type === 'triangle') {
-                ctx.globalAlpha = 0.7;
-                ctx.beginPath();
-                ctx.moveTo(50, 150);
-                ctx.lineTo(150, 150);
-                ctx.lineTo(100, 100);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-
-                ctx.setLineDash([5, 5]);
-                ctx.beginPath();
-                ctx.moveTo(150, 150);
-                ctx.lineTo(100, 100);
-                ctx.lineTo(200, 100);
-                ctx.closePath();
-                ctx.stroke();
-
-                ctx.setLineDash([]);
-                ctx.fillStyle = '#2c1810';
-                ctx.font = 'bold 30px sans-serif';
-                ctx.fillText('=', 220, 130);
-
-                ctx.fillStyle = problem.color;
-                ctx.beginPath();
-                ctx.moveTo(270, 150);
-                ctx.lineTo(370, 150);
-                ctx.lineTo(390, 100);
-                ctx.lineTo(290, 100);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-
-                ctx.fillStyle = '#2c1810';
-                ctx.font = 'bold 20px sans-serif';
-                ctx.fillText('÷ 2', 330, 180);
-
-            } else if (problem.type === 'trapezoid') {
-                ctx.globalAlpha = 0.7;
-                ctx.beginPath();
-                ctx.moveTo(50, 150);
-                ctx.lineTo(130, 150);
-                ctx.lineTo(110, 100);
-                ctx.lineTo(70, 100);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-
-                ctx.setLineDash([5, 5]);
-                ctx.beginPath();
-                ctx.moveTo(130, 150);
-                ctx.lineTo(70, 100);
-                ctx.lineTo(110, 100);
-                ctx.lineTo(150, 150);
-                ctx.closePath();
-                ctx.stroke();
-
-                ctx.setLineDash([]);
-                ctx.fillStyle = '#2c1810';
-                ctx.font = 'bold 30px sans-serif';
-                ctx.fillText('=', 170, 130);
-
-                ctx.fillStyle = problem.color;
-                ctx.beginPath();
-                ctx.moveTo(220, 150);
-                ctx.lineTo(330, 150);
-                ctx.lineTo(310, 100);
-                ctx.lineTo(200, 100);
-                ctx.closePath();
-                ctx.fill();
-                ctx.stroke();
-
-                ctx.fillStyle = '#2c1810';
-                ctx.font = 'bold 20px sans-serif';
-                ctx.fillText('÷ 2', 270, 180);
-            }
-
-            ctx.globalAlpha = 1.0;
-        }
-
-        // 解説を閉じる
-        function closeExplanation() {
-            document.getElementById('explanationModal').classList.remove('show');
-            document.getElementById('calculationArea').classList.remove('active');
-            document.getElementById('nextProblemArea').style.display = 'block';
-        }
-
-        // 次の問題へ
-        function nextProblem() {
-            document.getElementById('nextProblemArea').style.display = 'none';
-            startProblem();
-        }
-
-        // ギャルソンのアニメーション
-        function animateGarcon() {
-            const garcon = document.getElementById('garcon');
-            garcon.classList.add('serving');
-
-            setTimeout(() => {
-                showGarconMessage('本日のショコラでございます。どうぞお召し上がりください。', 'success');
-            }, 1000);
-
-            setTimeout(() => {
-                garcon.classList.remove('serving');
-            }, 3000);
-        }
-
-        // 問題開始
-        function startProblem() {
-            gameState.currentProblem = generateProblem();
-            gameState.mode = 'formula';
-
-            document.getElementById('formulaArea').style.display = 'block';
-            document.getElementById('calculationArea').classList.remove('active');
-            clearFormula();
-
-            drawShape(gameState.currentProblem);
-            createBlockPalette(); // 0-9と演算子は常に同じ
-            createFormulaSlots();
-
-            animateGarcon();
-        }
-
-        // メモパネルの制御
-        const memoPanel = document.getElementById('memo-panel');
-        const memoCanvas = document.getElementById('memo-canvas');
-        let memoIsDrawing = false;
-        let memoLastX = 0;
-        let memoLastY = 0;
-
-        function toggleMemoPanel() {
-            memoPanel.classList.toggle('closed');
-            if (!memoPanel.classList.contains('closed')) {
-                initMemoCanvas();
-            }
-        }
-
-        function initMemoCanvas() {
-            const container = memoCanvas.parentElement;
-            const rect = container.getBoundingClientRect();
-            memoCanvas.width = rect.width - 20;
-            memoCanvas.height = rect.height - 20;
-            
-            const ctx = memoCanvas.getContext('2d');
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 3;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
-        }
-
-        function getMemoCanvasCoordinates(e) {
-            const rect = memoCanvas.getBoundingClientRect();
-            const scaleX = memoCanvas.width / rect.width;
-            const scaleY = memoCanvas.height / rect.height;
-            
-            if (e.touches) {
-                return {
-                    x: (e.touches[0].clientX - rect.left) * scaleX,
-                    y: (e.touches[0].clientY - rect.top) * scaleY
-                };
-            } else {
-                return {
-                    x: (e.clientX - rect.left) * scaleX,
-                    y: (e.clientY - rect.top) * scaleY
-                };
-            }
-        }
-
-        function startMemoDrawing(e) {
-            e.preventDefault();
-            memoIsDrawing = true;
-            const coords = getMemoCanvasCoordinates(e);
-            memoLastX = coords.x;
-            memoLastY = coords.y;
-        }
-
-        function drawMemo(e) {
-            if (!memoIsDrawing) return;
-            e.preventDefault();
-            
-            const ctx = memoCanvas.getContext('2d');
-            const coords = getMemoCanvasCoordinates(e);
-            
-            ctx.beginPath();
-            ctx.moveTo(memoLastX, memoLastY);
-            ctx.lineTo(coords.x, coords.y);
-            ctx.stroke();
-            
-            memoLastX = coords.x;
-            memoLastY = coords.y;
-        }
-
-        function stopMemoDrawing(e) {
-            e.preventDefault();
-            memoIsDrawing = false;
-        }
-
-        function clearMemoCanvas() {
-            const ctx = memoCanvas.getContext('2d');
-            ctx.clearRect(0, 0, memoCanvas.width, memoCanvas.height);
-        }
-
-        // Canvasイベントリスナー
-        memoCanvas.addEventListener('mousedown', startMemoDrawing);
-        memoCanvas.addEventListener('mousemove', drawMemo);
-        memoCanvas.addEventListener('mouseup', stopMemoDrawing);
-        memoCanvas.addEventListener('mouseleave', stopMemoDrawing);
-
-        memoCanvas.addEventListener('touchstart', startMemoDrawing);
-        memoCanvas.addEventListener('touchmove', drawMemo);
-        memoCanvas.addEventListener('touchend', stopMemoDrawing);
-        memoCanvas.addEventListener('touchcancel', stopMemoDrawing);
-
-        // ウィンドウリサイズ時にCanvasを再初期化
-        window.addEventListener('resize', () => {
-            if (!memoPanel.classList.contains('closed')) {
-                setTimeout(initMemoCanvas, 100);
-            }
-        });
+        init();
     </script>
 </body>
 </html>
