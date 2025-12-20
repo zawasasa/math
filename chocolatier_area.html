@@ -387,68 +387,66 @@
 
         .block-palette {
             display: flex;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
+            flex-direction: column;
+            gap: 15px;
             margin-bottom: 15px;
+        }
+
+        .palette-row {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .palette-label {
+            font-size: 0.9rem;
+            color: var(--chocolate-dark);
+            font-weight: bold;
+            margin-bottom: 8px;
+            text-align: center;
         }
 
         .block-section {
             display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-            align-items: center;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .block {
-            width: 65px;
-            height: 65px;
+            min-width: 55px;
+            height: 55px;
             background: linear-gradient(135deg, var(--chocolate-medium) 0%, var(--chocolate-dark) 100%);
-            border: 2px solid var(--gold);
-            border-radius: 8px;
+            border: 3px solid var(--gold);
+            border-radius: 10px;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            font-size: 1.1rem;
+            font-size: 1.5rem;
             font-weight: bold;
             color: #fff;
             cursor: pointer;
             transition: all 0.2s;
             user-select: none;
-            padding: 4px;
-        }
-
-        .block-number {
-            font-size: 1.4rem;
-            line-height: 1;
-        }
-
-        .block-label {
-            font-size: 0.65rem;
-            opacity: 0.85;
-            margin-top: 2px;
-            line-height: 1;
-        }
-
-        .block:hover {
-            transform: scale(1.1);
-            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.5);
+            padding: 8px 12px;
+            box-shadow: 0 3px 0 rgba(139, 69, 19, 0.4);
         }
 
         .block:active {
-            transform: scale(0.95);
+            transform: translateY(3px);
+            box-shadow: 0 0px 0 rgba(139, 69, 19, 0.4);
+        }
+
+        .block:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 rgba(139, 69, 19, 0.4), 0 0 15px rgba(255, 215, 0, 0.3);
         }
 
         .block.operator {
             background: linear-gradient(135deg, var(--gold) 0%, #ffed4e 100%);
             color: var(--chocolate-dark);
-            width: 45px;
-        }
-
-        .block.used {
-            opacity: 0.3;
-            pointer-events: none;
+            border-color: var(--chocolate-dark);
+            box-shadow: 0 3px 0 rgba(139, 69, 19, 0.3);
         }
 
         /* 計算モード */
@@ -536,46 +534,49 @@
         }
 
         .btn {
-            padding: 12px 25px;
-            font-size: 1.1rem;
-            border: none;
-            border-radius: 10px;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: 3px solid;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
             font-weight: bold;
-            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 0 rgba(0, 0, 0, 0.25);
             font-family: var(--font-main);
+            min-width: 150px;
         }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--gold) 0%, #ffed4e 100%);
             color: var(--chocolate-dark);
+            border-color: var(--chocolate-dark);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+            box-shadow: 0 7px 0 rgba(0, 0, 0, 0.25);
         }
 
         .btn-primary:active {
-            transform: translateY(4px);
-            box-shadow: none;
+            transform: translateY(5px);
+            box-shadow: 0 0px 0 rgba(0, 0, 0, 0.25);
         }
 
         .btn-secondary {
             background: linear-gradient(135deg, var(--chocolate-medium) 0%, var(--chocolate-dark) 100%);
             color: #fff;
+            border-color: var(--gold);
         }
 
         .btn-secondary:hover {
             background: linear-gradient(135deg, var(--chocolate-light) 0%, var(--chocolate-medium) 100%);
             transform: translateY(-2px);
-            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+            box-shadow: 0 7px 0 rgba(0, 0, 0, 0.25);
         }
 
         .btn-secondary:active {
-            transform: translateY(4px);
-            box-shadow: none;
+            transform: translateY(5px);
+            box-shadow: 0 0px 0 rgba(0, 0, 0, 0.25);
         }
 
         .btn:disabled {
@@ -693,17 +694,18 @@
             }
 
             .block {
-                width: 55px;
-                height: 55px;
-                font-size: 1rem;
+                min-width: 48px;
+                height: 48px;
+                font-size: 1.3rem;
+                padding: 6px 10px;
             }
 
-            .block-number {
-                font-size: 1.2rem;
+            .palette-row {
+                gap: 6px;
             }
 
-            .block-label {
-                font-size: 0.6rem;
+            .palette-label {
+                font-size: 0.85rem;
             }
 
             .start-btn {
@@ -785,8 +787,14 @@
                 <div class="formula-title">🧩 式を組み立てよう</div>
                 <div class="formula-slots" id="formulaSlots"></div>
                 <div class="block-palette">
-                    <div class="block-section" id="numberBlocks"></div>
-                    <div class="block-section" id="operatorBlocks"></div>
+                    <div class="block-section">
+                        <div class="palette-label">🔢 数字</div>
+                        <div class="palette-row" id="numberBlocks"></div>
+                    </div>
+                    <div class="block-section">
+                        <div class="palette-label">➗ 演算</div>
+                        <div class="palette-row" id="operatorBlocks"></div>
+                    </div>
                 </div>
                 <div class="action-buttons">
                     <button class="btn btn-secondary" onclick="clearFormula()">クリア</button>
@@ -847,8 +855,7 @@
             comboCount: 0,
             multiplier: 1.0,
             formula: [],
-            mode: 'formula',
-            availableBlocks: {}
+            mode: 'formula'
         };
 
         // 図形タイプの定義
@@ -885,8 +892,7 @@
                 comboCount: 0,
                 multiplier: 1.0,
                 formula: [],
-                mode: 'formula',
-                availableBlocks: {}
+                mode: 'formula'
             };
             updateScoreDisplay();
         }
@@ -1094,41 +1100,25 @@
         }
 
         // ブロックパレットを作成
-        function createBlockPalette(problem) {
+        function createBlockPalette() {
             const numberBlocks = document.getElementById('numberBlocks');
             const operatorBlocks = document.getElementById('operatorBlocks');
 
             numberBlocks.innerHTML = '';
             operatorBlocks.innerHTML = '';
 
-            gameState.availableBlocks = {};
-
-            // 数値ブロックを作成（実際の数値を表示）
-            const valueKeys = Object.keys(problem.values);
-            valueKeys.forEach(key => {
+            // 数字ブロック 0-9（何度でも使用可能）
+            for (let i = 0; i <= 9; i++) {
                 const block = document.createElement('div');
                 block.className = 'block';
-
-                // 数値とラベルを2段表示
-                const numberSpan = document.createElement('div');
-                numberSpan.className = 'block-number';
-                numberSpan.textContent = problem.values[key];
-
-                const labelSpan = document.createElement('div');
-                labelSpan.className = 'block-label';
-                labelSpan.textContent = key;
-
-                block.appendChild(numberSpan);
-                block.appendChild(labelSpan);
-
-                block.dataset.value = problem.values[key]; // 数値を保存
-                block.dataset.label = key; // ラベルも保存
+                block.textContent = i;
+                block.dataset.value = i;
                 block.dataset.type = 'number';
-                block.onclick = () => addToFormula(problem.values[key], 'number', key);
+                block.onclick = () => addToFormula(i, 'number');
                 numberBlocks.appendChild(block);
-                gameState.availableBlocks[key] = { used: false, element: block };
-            });
+            }
 
+            // 演算子ブロック（何度でも使用可能）
             const operators = ['×', '÷', '+', '-', '(', ')'];
             operators.forEach(op => {
                 const block = document.createElement('div');
@@ -1138,7 +1128,6 @@
                 block.dataset.type = 'operator';
                 block.onclick = () => addToFormula(op, 'operator');
                 operatorBlocks.appendChild(block);
-                gameState.availableBlocks[op] = { used: false, element: block, multiUse: true };
             });
         }
 
@@ -1148,7 +1137,7 @@
             slotsContainer.innerHTML = '';
             gameState.formula = [];
 
-            for (let i = 0; i < 15; i++) {
+            for (let i = 0; i < 20; i++) {
                 const slot = document.createElement('div');
                 slot.className = 'slot';
                 slot.dataset.index = i;
@@ -1156,20 +1145,11 @@
             }
         }
 
-        // 式にブロックを追加
-        function addToFormula(value, type, label) {
-            if (gameState.formula.length >= 15) return;
+        // 式にブロックを追加（何度でも追加可能）
+        function addToFormula(value, type) {
+            if (gameState.formula.length >= 20) return;
 
-            // 数値ブロックは1回のみ使用可能（labelで判定）
-            if (type === 'number' && label && gameState.availableBlocks[label].used) return;
-
-            gameState.formula.push({ value, type, label });
-
-            if (type === 'number' && label) {
-                gameState.availableBlocks[label].used = true;
-                gameState.availableBlocks[label].element.classList.add('used');
-            }
-
+            gameState.formula.push({ value, type });
             updateFormulaDisplay();
         }
 
@@ -1195,12 +1175,6 @@
         // 式をクリア
         function clearFormula() {
             gameState.formula = [];
-
-            Object.keys(gameState.availableBlocks).forEach(key => {
-                gameState.availableBlocks[key].used = false;
-                gameState.availableBlocks[key].element.classList.remove('used');
-            });
-
             updateFormulaDisplay();
         }
 
@@ -1557,7 +1531,7 @@
             clearFormula();
 
             drawShape(gameState.currentProblem);
-            createBlockPalette(gameState.currentProblem);
+            createBlockPalette(); // 0-9と演算子は常に同じ
             createFormulaSlots();
 
             animateGarcon();
