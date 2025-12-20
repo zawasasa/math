@@ -4,17 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ささっと算数アプリ。学ぼう</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=M+PLUS+Rounded+1c:wght@800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;800&family=Sawarabi+Mincho&display=swap" rel="stylesheet">
     <style>
         :root {
-            --orange: #FF9AA2;
-            --yellow: #FFDAC1;
-            --light-green: #E2F0CB;
-            --light-blue: #B5EAD7;
-            --text: #6B5B95;
-            --white: #FFFFF0;
+            --choco-dark: #2d1b15;
+            --choco-mid: #4e342e;
+            --choco-light: #8d6e63;
+            --gold: #fbc02d;
+            --cream: #fff9c4;
+            --white: #ffffff;
+            --accent: #e64a19;
+            --text: #fff9c4;
             --font-main: 'M PLUS Rounded 1c', sans-serif;
-            --font-title: 'Kiwi Maru', serif;
+            --font-title: 'Sawarabi Mincho', sans-serif;
         }
 
         * {
@@ -25,14 +27,9 @@
 
         body {
             font-family: var(--font-main);
-            background: linear-gradient(135deg, var(--light-green) 0%, var(--light-blue) 100%);
-            background-image: 
-                radial-gradient(rgba(255,255,255,0.3) 15%, transparent 16%),
-                radial-gradient(rgba(255,255,255,0.3) 15%, transparent 16%);
-            background-size: 40px 40px;
-            background-position: 0 0, 20px 20px;
+            background: radial-gradient(circle, var(--choco-mid), var(--choco-dark));
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
             color: var(--text);
         }
 
@@ -44,47 +41,49 @@
         /* ヘッダー */
         .header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 25px;
         }
 
         .header-image {
             width: 100%;
-            max-width: 800px;
+            max-width: 600px;
             height: auto;
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            margin-bottom: 15px;
+            border: 2px solid var(--gold);
         }
 
         .main-title {
             font-family: var(--font-title);
-            font-size: 2.5rem;
-            color: var(--text);
-            text-shadow: 2px 2px 0 var(--white);
-            margin-bottom: 10px;
+            font-size: 1.8rem;
+            color: var(--gold);
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            margin-bottom: 8px;
+            font-weight: 500;
         }
 
         .subtitle {
-            font-size: 1.2rem;
-            color: var(--text);
-            opacity: 0.8;
+            font-size: 0.9rem;
+            color: var(--cream);
+            opacity: 0.9;
         }
 
         /* ゲームカードグリッド */
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-top: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-top: 25px;
         }
 
         .game-card {
-            background: var(--white);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            background: rgba(30, 20, 15, 0.8);
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            border: 3px solid transparent;
+            border: 2px solid var(--choco-light);
             position: relative;
             overflow: hidden;
         }
@@ -95,132 +94,117 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 5px;
-            background: linear-gradient(90deg, var(--orange), var(--yellow), var(--light-green), var(--light-blue));
+            height: 3px;
+            background: linear-gradient(90deg, var(--gold), var(--accent));
         }
 
         .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            border-color: var(--orange);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(251, 192, 45, 0.3);
+            border-color: var(--gold);
         }
 
         .game-icon {
-            font-size: 4rem;
+            font-size: 2.5rem;
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             animation: bounce 2s infinite;
         }
 
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-8px); }
         }
 
         .game-title {
             font-family: var(--font-title);
-            font-size: 1.8rem;
-            color: var(--text);
+            font-size: 1.2rem;
+            color: var(--gold);
             text-align: center;
-            margin-bottom: 15px;
-            line-height: 1.3;
+            margin-bottom: 10px;
+            line-height: 1.4;
+            font-weight: 500;
         }
 
         .game-description {
-            font-size: 1rem;
-            line-height: 1.8;
-            color: var(--text);
-            margin-bottom: 20px;
+            font-size: 0.8rem;
+            line-height: 1.6;
+            color: var(--cream);
+            margin-bottom: 12px;
             text-align: left;
         }
 
         .game-features {
             list-style: none;
-            margin-bottom: 25px;
+            margin-bottom: 15px;
         }
 
         .game-features li {
-            font-size: 0.9rem;
-            color: var(--text);
-            padding: 5px 0;
-            padding-left: 25px;
+            font-size: 0.7rem;
+            color: var(--cream);
+            padding: 3px 0;
+            padding-left: 20px;
             position: relative;
+            opacity: 0.9;
         }
 
         .game-features li::before {
             content: '✨';
             position: absolute;
             left: 0;
+            font-size: 0.7rem;
         }
 
         .play-button {
             display: block;
             width: 100%;
-            background: linear-gradient(135deg, var(--orange) 0%, #FF8A95 100%);
-            color: white;
+            background: var(--choco-light);
+            color: var(--white);
             text-align: center;
-            padding: 15px 30px;
-            border-radius: 15px;
+            padding: 10px 20px;
+            border-radius: 10px;
             text-decoration: none;
-            font-size: 1.2rem;
-            font-weight: bold;
-            box-shadow: 0 4px 0 #E07A86;
+            font-size: 0.85rem;
+            font-weight: 800;
+            box-shadow: 0 3px 0 #5d4037;
             transition: all 0.2s;
-            border: none;
-            cursor: pointer;
+            border: 1px solid var(--gold);
         }
 
         .play-button:hover {
             transform: translateY(2px);
-            box-shadow: 0 2px 0 #E07A86;
+            box-shadow: 0 1px 0 #5d4037;
+            background: var(--choco-mid);
         }
 
         .play-button:active {
-            transform: translateY(4px);
+            transform: translateY(3px);
             box-shadow: none;
         }
 
         /* フッター */
         .footer {
             text-align: center;
-            margin-top: 60px;
-            padding: 20px;
-            color: var(--text);
+            margin-top: 30px;
+            padding: 15px;
+            color: var(--cream);
             opacity: 0.7;
-            font-size: 0.9rem;
+            font-size: 0.75rem;
         }
 
         /* レスポンシブ */
         @media (max-width: 768px) {
             .main-title {
-                font-size: 2rem;
+                font-size: 1.5rem;
             }
 
             .subtitle {
-                font-size: 1rem;
+                font-size: 0.8rem;
             }
 
             .games-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
-            }
-
-            .game-card {
-                padding: 20px;
-            }
-
-            .game-title {
-                font-size: 1.5rem;
-            }
-
-            .game-icon {
-                font-size: 3rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .main-title {
-                font-size: 1.5rem;
+                gap: 15px;
             }
 
             .game-card {
@@ -228,7 +212,25 @@
             }
 
             .game-title {
+                font-size: 1.1rem;
+            }
+
+            .game-icon {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
                 font-size: 1.3rem;
+            }
+
+            .game-card {
+                padding: 12px;
+            }
+
+            .game-title {
+                font-size: 1rem;
             }
         }
     </style>
