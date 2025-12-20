@@ -2365,16 +2365,21 @@
         }
 
         function initMemoCanvas() {
-            const container = memoCanvas.parentElement;
-            const rect = container.getBoundingClientRect();
-            memoCanvas.width = rect.width - 20;
-            memoCanvas.height = rect.height - 20;
-            
-            const ctx = memoCanvas.getContext('2d');
-            ctx.strokeStyle = '#333';
-            ctx.lineWidth = 3;
-            ctx.lineCap = 'round';
-            ctx.lineJoin = 'round';
+            // 少し遅延させて、パネルが完全に開いてからサイズを取得
+            setTimeout(() => {
+                const container = memoCanvas.parentElement;
+                const rect = container.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0) {
+                    memoCanvas.width = rect.width - 20;
+                    memoCanvas.height = rect.height - 20;
+                    
+                    const ctx = memoCanvas.getContext('2d');
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 3;
+                    ctx.lineCap = 'round';
+                    ctx.lineJoin = 'round';
+                }
+            }, 100);
         }
 
         function getMemoCanvasCoordinates(e) {
