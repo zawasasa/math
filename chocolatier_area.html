@@ -1244,7 +1244,34 @@
         // 式をチェック
         function checkFormula() {
             // ユーザーが組み立てた式を文字列として取得
-            const userFormulaString = gameState.formula.map(f => f.value).join(' ');
+            // 数字を連続して結合し、演算子の前後にはスペースを入れる
+            let userFormulaString = '';
+            for (let i = 0; i < gameState.formula.length; i++) {
+                const current = gameState.formula[i];
+                const prev = i > 0 ? gameState.formula[i - 1] : null;
+                const next = i < gameState.formula.length - 1 ? gameState.formula[i + 1] : null;
+
+                if (current.type === 'number') {
+                    // 前が数字なら結合、前が演算子ならスペースを入れる
+                    if (prev && prev.type === 'number') {
+                        userFormulaString += current.value;
+                    } else {
+                        if (userFormulaString && !userFormulaString.endsWith(' ')) {
+                            userFormulaString += ' ';
+                        }
+                        userFormulaString += current.value;
+                    }
+                } else {
+                    // 演算子の前後にスペースを入れる
+                    if (userFormulaString && !userFormulaString.endsWith(' ')) {
+                        userFormulaString += ' ';
+                    }
+                    userFormulaString += current.value;
+                    if (next && next.type === 'number') {
+                        userFormulaString += ' ';
+                    }
+                }
+            }
 
             // 式を評価して計算結果を取得
             let calculatedValue;
@@ -1279,8 +1306,34 @@
             document.getElementById('formulaArea').style.display = 'none';
             document.getElementById('calculationArea').classList.add('active');
 
-            // 数値はそのまま表示（すでに数値が入っている）
-            const displayFormula = gameState.formula.map(f => f.value).join(' ');
+            // 数値を連続して結合して表示
+            let displayFormula = '';
+            for (let i = 0; i < gameState.formula.length; i++) {
+                const current = gameState.formula[i];
+                const prev = i > 0 ? gameState.formula[i - 1] : null;
+                const next = i < gameState.formula.length - 1 ? gameState.formula[i + 1] : null;
+
+                if (current.type === 'number') {
+                    // 前が数字なら結合、前が演算子ならスペースを入れる
+                    if (prev && prev.type === 'number') {
+                        displayFormula += current.value;
+                    } else {
+                        if (displayFormula && !displayFormula.endsWith(' ')) {
+                            displayFormula += ' ';
+                        }
+                        displayFormula += current.value;
+                    }
+                } else {
+                    // 演算子の前後にスペースを入れる
+                    if (displayFormula && !displayFormula.endsWith(' ')) {
+                        displayFormula += ' ';
+                    }
+                    displayFormula += current.value;
+                    if (next && next.type === 'number') {
+                        displayFormula += ' ';
+                    }
+                }
+            }
 
             document.getElementById('formulaDisplay').textContent = displayFormula + ' = ?';
             document.getElementById('answerInput').value = '';
