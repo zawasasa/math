@@ -227,29 +227,6 @@
         }
 
         .index-btn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--secondary);
-            border: 2px solid var(--text);
-            color: var(--text);
-            border-radius: 12px;
-            padding: 6px 12px;
-            font-size: 0.85rem;
-            font-family: var(--font-main);
-            cursor: pointer;
-            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
-            z-index: 50;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            text-decoration: none;
-        }
-        .index-btn:active {
-            transform: translateY(2px);
-            box-shadow: none;
-        }
-
         .index-btn {
             position: absolute;
             top: 10px;
@@ -1173,6 +1150,7 @@
         <div class="game-container">
             <button class="home-btn" onclick="confirmReset()" title="タイトルに戻る">🏠</button>
 
+            <a href="index.html" class="index-btn" title="ホームに戻る">🏠 ホーム</a>
             <h1>🛍️ パーセントマスター！お買い物クエスト</h1>
 
             <!-- タイトル画面 -->
@@ -1209,7 +1187,6 @@
 
             <!-- ゲームプレイ画面 -->
             <div id="game-screen" class="screen hidden">
-                <a href="index.html" class="index-btn" title="ホームに戻る">🏠 ホーム</a>
                 <button class="calc-btn" id="calc-open-btn" onclick="toggleCalcPanel()" title="筆算コーナーを開く">✏️ 筆算コーナー</button>
                 <div style="text-align:center;">
                     <div class="level-display">Lv.<span id="level-num">1</span></div>
