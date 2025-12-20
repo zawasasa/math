@@ -2,44 +2,224 @@
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>算数ショコラティエ 〜図形面積の達人〜</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=M+PLUS+Rounded+1c:wght@800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --chocolate-dark: #5d3a1a;
+            --chocolate-medium: #8b4513;
+            --chocolate-light: #d2691e;
+            --gold: #ffd700;
+            --cream: #fff8dc;
+            --text: #2c1810;
+            --white: #FFFFF0;
+            --font-main: 'M PLUS Rounded 1c', sans-serif;
+            --font-title: 'Kiwi Maru', serif;
+        }
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            touch-action: manipulation;
         }
 
         body {
-            font-family: 'Segoe UI', 'Yu Gothic', sans-serif;
-            background: linear-gradient(135deg, #2c1810 0%, #5d3a1a 100%);
-            color: #fff;
+            font-family: var(--font-main);
+            background: linear-gradient(135deg, #8B6F47 0%, #5D4E37 100%);
+            background-image:
+                radial-gradient(rgba(255,255,255,0.15) 15%, transparent 16%),
+                radial-gradient(rgba(255,255,255,0.15) 15%, transparent 16%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            color: var(--text);
             overflow-x: hidden;
             min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
         }
 
-        .game-container {
-            max-width: 1000px;
-            margin: 0 auto;
+        .game-wrapper {
+            width: 100%;
+            max-width: 900px;
+            background: var(--white);
+            border-radius: 20px;
+            box-shadow: 0 8px 0 rgba(0,0,0,0.2);
             padding: 20px;
             position: relative;
+            border: 4px solid var(--cream);
         }
 
-        /* ヘッダー */
+        /* インデックスボタン */
+        .index-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: var(--gold);
+            border: 2px solid var(--chocolate-dark);
+            color: var(--chocolate-dark);
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-family: var(--font-main);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+            z-index: 100;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .index-btn:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        /* ホームボタン（リセット） */
+        .home-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #fff;
+            border: 2px solid var(--chocolate-dark);
+            color: var(--chocolate-dark);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 1.3rem;
+            cursor: pointer;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .home-btn:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* タイトル画面 */
+        #title-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        #title-screen h1 {
+            font-family: var(--font-title);
+            font-size: 2.2rem;
+            color: var(--chocolate-dark);
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 0 var(--gold);
+            line-height: 1.4;
+        }
+
+        .title-icon {
+            font-size: 5rem;
+            margin: 20px 0;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .game-description {
+            background: rgba(139, 69, 19, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            border: 3px solid var(--gold);
+        }
+
+        .game-description h2 {
+            color: var(--chocolate-dark);
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .game-description p {
+            line-height: 1.8;
+            margin-bottom: 15px;
+            font-size: 1rem;
+        }
+
+        .feature-list {
+            list-style: none;
+            text-align: left;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+
+        .feature-list li {
+            padding: 8px 0;
+            padding-left: 30px;
+            position: relative;
+            font-size: 0.95rem;
+        }
+
+        .feature-list li::before {
+            content: '🍫';
+            position: absolute;
+            left: 0;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, var(--gold) 0%, #ffed4e 100%);
+            color: var(--chocolate-dark);
+            border: 3px solid var(--chocolate-dark);
+            border-radius: 15px;
+            padding: 18px 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            font-family: var(--font-title);
+            cursor: pointer;
+            box-shadow: 0 6px 0 rgba(139, 69, 19, 0.5);
+            transition: all 0.2s;
+            margin-top: 30px;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 0 rgba(139, 69, 19, 0.5);
+        }
+
+        .start-btn:active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+
+        /* ゲーム画面 */
+        #game-screen {
+            padding: 10px;
+        }
+
         .header {
             text-align: center;
-            padding: 20px;
-            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            background: rgba(139, 69, 19, 0.1);
             border-radius: 15px;
             margin-bottom: 20px;
-            border: 2px solid #d4a574;
+            border: 2px solid var(--gold);
         }
 
         .header h1 {
-            font-size: 2em;
-            color: #ffd700;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            font-size: 1.5rem;
+            color: var(--chocolate-dark);
+            font-family: var(--font-title);
             margin-bottom: 10px;
         }
 
@@ -47,31 +227,31 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             flex-wrap: wrap;
-            margin-top: 15px;
+            margin-top: 10px;
         }
 
         .score-item {
             background: rgba(255, 215, 0, 0.2);
-            padding: 10px 20px;
+            padding: 8px 15px;
             border-radius: 10px;
-            border: 2px solid #ffd700;
+            border: 2px solid var(--gold);
         }
 
         .score-item .label {
-            font-size: 0.9em;
-            color: #d4a574;
+            font-size: 0.8rem;
+            color: var(--chocolate-medium);
         }
 
         .score-item .value {
-            font-size: 1.5em;
+            font-size: 1.3rem;
             font-weight: bold;
-            color: #ffd700;
+            color: var(--chocolate-dark);
         }
 
         .combo-indicator {
-            font-size: 1.2em;
+            font-size: 1.1rem;
             color: #ff6b6b;
             font-weight: bold;
         }
@@ -79,8 +259,8 @@
         /* ギャルソンエリア */
         .garcon-area {
             position: relative;
-            height: 150px;
-            margin: 20px 0;
+            height: 120px;
+            margin: 15px 0;
             perspective: 1000px;
         }
 
@@ -88,9 +268,9 @@
             position: absolute;
             left: -200px;
             bottom: 0;
-            font-size: 5em;
+            font-size: 4em;
             transition: left 1.5s ease-in-out;
-            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.5));
+            filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
         }
 
         .garcon.serving {
@@ -100,18 +280,20 @@
 
         .garcon-message {
             position: absolute;
-            top: 20px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(255, 255, 255, 0.95);
-            color: #2c1810;
-            padding: 15px 25px;
-            border-radius: 20px;
-            font-size: 1.2em;
+            color: var(--chocolate-dark);
+            padding: 12px 20px;
+            border-radius: 15px;
+            font-size: 1rem;
             opacity: 0;
             transition: opacity 0.5s;
-            border: 2px solid #d4a574;
+            border: 2px solid var(--gold);
             white-space: nowrap;
+            max-width: 90%;
+            text-align: center;
         }
 
         .garcon-message.show {
@@ -120,26 +302,26 @@
 
         /* チョコレート表示エリア */
         .chocolate-area {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 20px 0;
-            min-height: 350px;
+            background: rgba(139, 69, 19, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 15px 0;
+            min-height: 300px;
             display: flex;
             justify-content: center;
             align-items: center;
-            border: 3px solid #d4a574;
+            border: 3px solid var(--gold);
             position: relative;
         }
 
         .plate {
-            width: 300px;
-            height: 50px;
+            width: 250px;
+            height: 40px;
             background: linear-gradient(to bottom, #e8e8e8, #c0c0c0);
             border-radius: 50%;
             position: absolute;
-            bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            bottom: 25px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         .shape-canvas {
@@ -148,83 +330,85 @@
         }
 
         canvas {
-            filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
         }
 
         /* 立式エリア */
         .formula-area {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(139, 69, 19, 0.05);
             border-radius: 15px;
             padding: 20px;
-            margin: 20px 0;
-            border: 2px solid #d4a574;
+            margin: 15px 0;
+            border: 2px solid var(--gold);
         }
 
         .formula-title {
             text-align: center;
-            font-size: 1.3em;
-            color: #ffd700;
+            font-size: 1.2rem;
+            color: var(--chocolate-dark);
             margin-bottom: 15px;
+            font-weight: bold;
         }
 
         .formula-slots {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 10px;
-            min-height: 80px;
+            gap: 8px;
+            min-height: 70px;
             flex-wrap: wrap;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .slot {
-            width: 60px;
-            height: 60px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px dashed #ffd700;
+            width: 55px;
+            height: 55px;
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px dashed var(--gold);
             border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5em;
+            font-size: 1.3rem;
             font-weight: bold;
             transition: all 0.3s;
         }
 
         .slot.filled {
             background: rgba(255, 215, 0, 0.3);
-            border: 2px solid #ffd700;
+            border: 2px solid var(--gold);
         }
 
         .slot.operator {
-            width: 50px;
-            color: #ffd700;
+            width: 45px;
+            color: var(--chocolate-dark);
         }
 
         .block-palette {
             display: flex;
             justify-content: center;
-            gap: 15px;
+            gap: 12px;
             flex-wrap: wrap;
+            margin-bottom: 15px;
         }
 
         .block-section {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
             align-items: center;
         }
 
         .block {
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
-            border: 2px solid #d4a574;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, var(--chocolate-medium) 0%, var(--chocolate-dark) 100%);
+            border: 2px solid var(--gold);
             border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.3em;
+            font-size: 1.1rem;
             font-weight: bold;
             color: #fff;
             cursor: pointer;
@@ -234,7 +418,7 @@
 
         .block:hover {
             transform: scale(1.1);
-            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.5);
         }
 
         .block:active {
@@ -242,9 +426,9 @@
         }
 
         .block.operator {
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            color: #2c1810;
-            width: 50px;
+            background: linear-gradient(135deg, var(--gold) 0%, #ffed4e 100%);
+            color: var(--chocolate-dark);
+            width: 45px;
         }
 
         .block.used {
@@ -254,11 +438,11 @@
 
         /* 計算モード */
         .calculation-area {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(139, 69, 19, 0.05);
             border-radius: 15px;
             padding: 20px;
-            margin: 20px 0;
-            border: 2px solid #d4a574;
+            margin: 15px 0;
+            border: 2px solid var(--gold);
             display: none;
         }
 
@@ -268,12 +452,13 @@
 
         .formula-display {
             text-align: center;
-            font-size: 2em;
-            color: #ffd700;
+            font-size: 1.8rem;
+            color: var(--chocolate-dark);
             margin-bottom: 20px;
             padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(255, 215, 0, 0.2);
             border-radius: 10px;
+            font-weight: bold;
         }
 
         .answer-input {
@@ -283,36 +468,38 @@
 
         .answer-input input {
             width: 200px;
-            padding: 15px;
-            font-size: 2em;
+            padding: 12px;
+            font-size: 1.8rem;
             text-align: center;
-            border: 3px solid #ffd700;
+            border: 3px solid var(--gold);
             border-radius: 10px;
             background: rgba(255, 255, 255, 0.9);
-            color: #2c1810;
+            color: var(--chocolate-dark);
+            font-family: var(--font-main);
         }
 
         .numpad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 10px;
-            max-width: 300px;
+            max-width: 280px;
             margin: 0 auto;
         }
 
         .numpad button {
-            padding: 20px;
-            font-size: 1.5em;
-            border: 2px solid #d4a574;
+            padding: 18px;
+            font-size: 1.4rem;
+            border: 2px solid var(--gold);
             border-radius: 10px;
-            background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
+            background: linear-gradient(135deg, var(--chocolate-medium) 0%, var(--chocolate-dark) 100%);
             color: #fff;
             cursor: pointer;
             transition: all 0.2s;
+            font-weight: bold;
         }
 
         .numpad button:hover {
-            background: linear-gradient(135deg, #a0522d 0%, #8b4513 100%);
+            background: linear-gradient(135deg, var(--chocolate-light) 0%, var(--chocolate-medium) 100%);
             transform: scale(1.05);
         }
 
@@ -328,41 +515,52 @@
         .action-buttons {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
+            gap: 12px;
+            margin-top: 15px;
             flex-wrap: wrap;
         }
 
         .btn {
-            padding: 15px 30px;
-            font-size: 1.2em;
+            padding: 12px 25px;
+            font-size: 1.1rem;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             font-weight: bold;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 0 rgba(0, 0, 0, 0.2);
+            font-family: var(--font-main);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            color: #2c1810;
+            background: linear-gradient(135deg, var(--gold) 0%, #ffed4e 100%);
+            color: var(--chocolate-dark);
         }
 
         .btn-primary:hover {
-            background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%);
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(255, 215, 0, 0.5);
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:active {
+            transform: translateY(4px);
+            box-shadow: none;
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #8b4513 0%, #654321 100%);
+            background: linear-gradient(135deg, var(--chocolate-medium) 0%, var(--chocolate-dark) 100%);
             color: #fff;
         }
 
         .btn-secondary:hover {
-            background: linear-gradient(135deg, #a0522d 0%, #8b4513 100%);
+            background: linear-gradient(135deg, var(--chocolate-light) 0%, var(--chocolate-medium) 100%);
             transform: translateY(-2px);
+            box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-secondary:active {
+            transform: translateY(4px);
+            box-shadow: none;
         }
 
         .btn:disabled {
@@ -383,6 +581,7 @@
             z-index: 1000;
             justify-content: center;
             align-items: center;
+            padding: 20px;
         }
 
         .explanation-modal.show {
@@ -390,31 +589,34 @@
         }
 
         .explanation-content {
-            background: linear-gradient(135deg, #fff 0%, #f5f5f5 100%);
-            color: #2c1810;
+            background: var(--white);
+            color: var(--chocolate-dark);
             padding: 30px;
             border-radius: 20px;
             max-width: 600px;
             max-height: 80vh;
             overflow-y: auto;
-            border: 4px solid #d4a574;
+            border: 4px solid var(--gold);
         }
 
         .explanation-content h2 {
-            color: #8b4513;
+            color: var(--chocolate-dark);
             margin-bottom: 20px;
             text-align: center;
+            font-family: var(--font-title);
         }
 
         .explanation-content canvas {
             display: block;
             margin: 20px auto;
+            border: 2px solid var(--gold);
+            border-radius: 10px;
         }
 
         .explanation-content p {
             line-height: 1.8;
             margin-bottom: 15px;
-            font-size: 1.1em;
+            font-size: 1.05rem;
         }
 
         /* アニメーション */
@@ -436,45 +638,33 @@
             position: absolute;
             width: 30px;
             height: 30px;
-            color: #ffd700;
+            color: var(--gold);
             font-size: 2em;
             animation: sparkle 1s ease-out;
             pointer-events: none;
         }
 
-        /* インデックスボタン */
-        .index-btn {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
-            color: #2c1810;
-            text-decoration: none;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 1.1em;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-            transition: all 0.3s;
-            z-index: 100;
-            border: 2px solid #d4a574;
-        }
-
-        .index-btn:hover {
-            background: linear-gradient(135deg, #ffed4e 0%, #ffd700 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(255, 215, 0, 0.5);
-        }
-
         /* レスポンシブ */
         @media (max-width: 768px) {
+            .game-wrapper {
+                padding: 15px;
+            }
+
+            #title-screen h1 {
+                font-size: 1.6rem;
+            }
+
+            .title-icon {
+                font-size: 3.5rem;
+            }
+
             .header h1 {
-                font-size: 1.5em;
+                font-size: 1.2rem;
             }
 
             .score-board {
                 flex-direction: column;
-                gap: 10px;
+                gap: 8px;
             }
 
             .formula-slots {
@@ -482,99 +672,135 @@
             }
 
             .slot {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2em;
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
             }
 
             .block {
-                width: 50px;
-                height: 50px;
-                font-size: 1.1em;
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+
+            .start-btn {
+                font-size: 1.2rem;
+                padding: 15px 35px;
             }
         }
     </style>
 </head>
 <body>
-    <a href="index.html" class="index-btn">🏠 ゲーム一覧へ</a>
+    <div class="game-wrapper">
+        <a href="index.html" class="index-btn">🏠 一覧へ</a>
+        <button class="home-btn" onclick="resetToTitle()">🏠</button>
 
-    <div class="game-container">
-        <!-- ヘッダー -->
-        <div class="header">
-            <h1>🍫 算数ショコラティエ 〜図形面積の達人〜</h1>
-            <div class="score-board">
-                <div class="score-item">
-                    <div class="label">総スコア</div>
-                    <div class="value" id="totalScore">0</div>
+        <!-- タイトル画面 -->
+        <div id="title-screen">
+            <h1>🍫 算数ショコラティエ<br>〜図形面積の達人〜</h1>
+            <div class="title-icon">🤵</div>
+
+            <div class="game-description">
+                <h2>✨ ゲーム説明</h2>
+                <p>高級ショコラティエの世界へようこそ！ギャルソンが運んでくる美しいチョコレートの形を見て、面積を求めましょう。</p>
+
+                <ul class="feature-list">
+                    <li>平行四辺形・三角形・台形の3種類の図形</li>
+                    <li>ブロックを並べて公式を組み立てるパズル</li>
+                    <li>テンキーで答えを入力する計算モード</li>
+                    <li>連続正解でコンボボーナス（最大2.0倍！）</li>
+                    <li>図形変形のアニメーション解説</li>
+                    <li>面積（㎠）がそのままスコア（pt）になる</li>
+                </ul>
+
+                <p style="margin-top: 20px; font-weight: bold; color: var(--chocolate-medium);">
+                    🎯 対象：小学5年生の図形面積学習<br>
+                    📐 公式を理解して、楽しく学ぼう！
+                </p>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">スタート！</button>
+        </div>
+
+        <!-- ゲーム画面 -->
+        <div id="game-screen" class="hidden">
+            <!-- ヘッダー -->
+            <div class="header">
+                <h1>🍫 算数ショコラティエ</h1>
+                <div class="score-board">
+                    <div class="score-item">
+                        <div class="label">総スコア</div>
+                        <div class="value" id="totalScore">0</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="label">連続正解</div>
+                        <div class="value combo-indicator" id="comboCount">0</div>
+                    </div>
+                    <div class="score-item">
+                        <div class="label">倍率</div>
+                        <div class="value" id="multiplier">×1.0</div>
+                    </div>
                 </div>
-                <div class="score-item">
-                    <div class="label">連続正解</div>
-                    <div class="value combo-indicator" id="comboCount">0</div>
+            </div>
+
+            <!-- ギャルソンエリア -->
+            <div class="garcon-area">
+                <div class="garcon" id="garcon">🤵</div>
+                <div class="garcon-message" id="garconMessage"></div>
+            </div>
+
+            <!-- チョコレート表示エリア -->
+            <div class="chocolate-area">
+                <div class="plate"></div>
+                <div class="shape-canvas">
+                    <canvas id="shapeCanvas" width="300" height="250"></canvas>
                 </div>
-                <div class="score-item">
-                    <div class="label">倍率</div>
-                    <div class="value" id="multiplier">×1.0</div>
+            </div>
+
+            <!-- 立式エリア -->
+            <div class="formula-area" id="formulaArea">
+                <div class="formula-title">🧩 式を組み立てよう</div>
+                <div class="formula-slots" id="formulaSlots"></div>
+                <div class="block-palette">
+                    <div class="block-section" id="numberBlocks"></div>
+                    <div class="block-section" id="operatorBlocks"></div>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="clearFormula()">クリア</button>
+                    <button class="btn btn-primary" id="checkFormulaBtn" onclick="checkFormula()" disabled>この式で計算する</button>
                 </div>
             </div>
-        </div>
 
-        <!-- ギャルソンエリア -->
-        <div class="garcon-area">
-            <div class="garcon" id="garcon">🤵</div>
-            <div class="garcon-message" id="garconMessage"></div>
-        </div>
+            <!-- 計算モード -->
+            <div class="calculation-area" id="calculationArea">
+                <div class="formula-title">🍴 実食タイム！</div>
+                <div class="formula-display" id="formulaDisplay"></div>
+                <div class="answer-input">
+                    <input type="text" id="answerInput" readonly placeholder="答えを入力">
+                </div>
+                <div class="numpad">
+                    <button onclick="inputNumber('1')">1</button>
+                    <button onclick="inputNumber('2')">2</button>
+                    <button onclick="inputNumber('3')">3</button>
+                    <button onclick="inputNumber('4')">4</button>
+                    <button onclick="inputNumber('5')">5</button>
+                    <button onclick="inputNumber('6')">6</button>
+                    <button onclick="inputNumber('7')">7</button>
+                    <button onclick="inputNumber('8')">8</button>
+                    <button onclick="inputNumber('9')">9</button>
+                    <button class="zero" onclick="inputNumber('0')">0</button>
+                    <button onclick="deleteNumber()">⌫</button>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary" onclick="backToFormula()">式に戻る</button>
+                    <button class="btn btn-primary" onclick="checkAnswer()">答え合わせ</button>
+                </div>
+            </div>
 
-        <!-- チョコレート表示エリア -->
-        <div class="chocolate-area">
-            <div class="plate"></div>
-            <div class="shape-canvas">
-                <canvas id="shapeCanvas" width="300" height="250"></canvas>
+            <!-- 次の問題ボタン -->
+            <div class="action-buttons" id="nextProblemArea" style="display: none;">
+                <button class="btn btn-primary" onclick="nextProblem()">次のチョコレートへ ➜</button>
             </div>
-        </div>
-
-        <!-- 立式エリア -->
-        <div class="formula-area" id="formulaArea">
-            <div class="formula-title">🧩 式を組み立てよう</div>
-            <div class="formula-slots" id="formulaSlots"></div>
-            <div class="block-palette">
-                <div class="block-section" id="numberBlocks"></div>
-                <div class="block-section" id="operatorBlocks"></div>
-            </div>
-            <div class="action-buttons">
-                <button class="btn btn-secondary" onclick="clearFormula()">クリア</button>
-                <button class="btn btn-primary" id="checkFormulaBtn" onclick="checkFormula()" disabled>この式で計算する</button>
-            </div>
-        </div>
-
-        <!-- 計算モード -->
-        <div class="calculation-area" id="calculationArea">
-            <div class="formula-title">🍴 実食タイム！</div>
-            <div class="formula-display" id="formulaDisplay"></div>
-            <div class="answer-input">
-                <input type="text" id="answerInput" readonly placeholder="答えを入力">
-            </div>
-            <div class="numpad">
-                <button onclick="inputNumber('1')">1</button>
-                <button onclick="inputNumber('2')">2</button>
-                <button onclick="inputNumber('3')">3</button>
-                <button onclick="inputNumber('4')">4</button>
-                <button onclick="inputNumber('5')">5</button>
-                <button onclick="inputNumber('6')">6</button>
-                <button onclick="inputNumber('7')">7</button>
-                <button onclick="inputNumber('8')">8</button>
-                <button onclick="inputNumber('9')">9</button>
-                <button class="zero" onclick="inputNumber('0')">0</button>
-                <button onclick="deleteNumber()">⌫</button>
-            </div>
-            <div class="action-buttons">
-                <button class="btn btn-secondary" onclick="backToFormula()">式に戻る</button>
-                <button class="btn btn-primary" onclick="checkAnswer()">答え合わせ</button>
-            </div>
-        </div>
-
-        <!-- 次の問題ボタン -->
-        <div class="action-buttons" id="nextProblemArea" style="display: none;">
-            <button class="btn btn-primary" onclick="nextProblem()">次のチョコレートへ ➜</button>
         </div>
     </div>
 
@@ -598,7 +824,7 @@
             comboCount: 0,
             multiplier: 1.0,
             formula: [],
-            mode: 'formula', // 'formula' or 'calculation'
+            mode: 'formula',
             availableBlocks: {}
         };
 
@@ -624,6 +850,38 @@
             }
         };
 
+        // タイトルに戻る
+        function resetToTitle() {
+            document.getElementById('title-screen').classList.remove('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+
+            // ゲーム状態をリセット
+            gameState = {
+                currentProblem: null,
+                totalScore: 0,
+                comboCount: 0,
+                multiplier: 1.0,
+                formula: [],
+                mode: 'formula',
+                availableBlocks: {}
+            };
+            updateScoreDisplay();
+        }
+
+        // ゲーム開始
+        function startGame() {
+            document.getElementById('title-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+
+            // 初期化
+            gameState.totalScore = 0;
+            gameState.comboCount = 0;
+            gameState.multiplier = 1.0;
+            updateScoreDisplay();
+
+            startProblem();
+        }
+
         // 新しい問題を生成
         function generateProblem() {
             const types = Object.keys(shapeTypes);
@@ -638,33 +896,32 @@
                 explanation: shapeInfo.explanation
             };
 
-            // 寸法を生成
             if (type === 'parallelogram') {
-                problem.base = Math.floor(Math.random() * 10 + 5); // 5-14
-                problem.height = Math.floor(Math.random() * 8 + 4); // 4-11
-                problem.side = Math.floor(Math.random() * 5 + problem.height + 2); // ダミーの辺
+                problem.base = Math.floor(Math.random() * 10 + 5);
+                problem.height = Math.floor(Math.random() * 8 + 4);
+                problem.side = Math.floor(Math.random() * 5 + problem.height + 2);
                 problem.answer = problem.base * problem.height;
                 problem.values = {
                     '底辺': problem.base,
                     '高さ': problem.height,
-                    '斜辺': problem.side // 引っかけ
+                    '斜辺': problem.side
                 };
             } else if (type === 'triangle') {
-                problem.base = Math.floor(Math.random() * 12 + 6); // 6-17
-                problem.height = Math.floor(Math.random() * 10 + 4); // 4-13
+                problem.base = Math.floor(Math.random() * 12 + 6);
+                problem.height = Math.floor(Math.random() * 10 + 4);
                 problem.side1 = Math.floor(Math.random() * 5 + problem.height + 1);
                 problem.side2 = Math.floor(Math.random() * 5 + problem.height + 1);
                 problem.answer = problem.base * problem.height / 2;
                 problem.values = {
                     '底辺': problem.base,
                     '高さ': problem.height,
-                    '辺1': problem.side1, // 引っかけ
-                    '辺2': problem.side2  // 引っかけ
+                    '辺1': problem.side1,
+                    '辺2': problem.side2
                 };
             } else if (type === 'trapezoid') {
-                problem.upperBase = Math.floor(Math.random() * 6 + 4); // 4-9
-                problem.lowerBase = problem.upperBase + Math.floor(Math.random() * 6 + 3); // 上底+3〜8
-                problem.height = Math.floor(Math.random() * 8 + 5); // 5-12
+                problem.upperBase = Math.floor(Math.random() * 6 + 4);
+                problem.lowerBase = problem.upperBase + Math.floor(Math.random() * 6 + 3);
+                problem.height = Math.floor(Math.random() * 8 + 5);
                 problem.side1 = Math.floor(Math.random() * 5 + problem.height + 1);
                 problem.side2 = Math.floor(Math.random() * 5 + problem.height + 1);
                 problem.answer = (problem.upperBase + problem.lowerBase) * problem.height / 2;
@@ -672,8 +929,8 @@
                     '上底': problem.upperBase,
                     '下底': problem.lowerBase,
                     '高さ': problem.height,
-                    '辺1': problem.side1, // 引っかけ
-                    '辺2': problem.side2  // 引っかけ
+                    '辺1': problem.side1,
+                    '辺2': problem.side2
                 };
             }
 
@@ -691,7 +948,6 @@
 
             ctx.save();
 
-            // チョコレート風のグラデーション
             const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
             gradient.addColorStop(0, problem.color);
             gradient.addColorStop(1, '#3e2723');
@@ -714,14 +970,12 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // 寸法線と数値
                 drawDimension(ctx, centerX - basePixels/2, centerY + heightPixels/2 + 20,
                              centerX + basePixels/2, centerY + heightPixels/2 + 20,
                              `底辺 ${problem.base}cm`);
                 drawDimension(ctx, centerX - basePixels/2 - 40, centerY + heightPixels/2,
                              centerX - basePixels/2 - 40, centerY - heightPixels/2,
                              `高さ ${problem.height}cm`, true);
-                // 引っかけの辺
                 drawDimension(ctx, centerX + basePixels/2, centerY + heightPixels/2,
                              centerX + basePixels/2 + slant, centerY - heightPixels/2,
                              `斜辺 ${problem.side}cm`, false, '#ff6b6b');
@@ -737,7 +991,6 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // 寸法線
                 drawDimension(ctx, centerX - basePixels/2, centerY + heightPixels/2 + 20,
                              centerX + basePixels/2, centerY + heightPixels/2 + 20,
                              `底辺 ${problem.base}cm`);
@@ -758,7 +1011,6 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // 寸法線
                 drawDimension(ctx, centerX - upperPixels/2, centerY - heightPixels/2 - 20,
                              centerX + upperPixels/2, centerY - heightPixels/2 - 20,
                              `上底 ${problem.upperBase}cm`);
@@ -780,18 +1032,15 @@
             ctx.fillStyle = color;
             ctx.lineWidth = 2;
 
-            // 線
             ctx.beginPath();
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
             ctx.stroke();
 
-            // 矢印
             const angle = Math.atan2(y2 - y1, x2 - x1);
             drawArrow(ctx, x1, y1, angle + Math.PI);
             drawArrow(ctx, x2, y2, angle);
 
-            // テキスト
             ctx.font = 'bold 14px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -811,7 +1060,6 @@
             ctx.restore();
         }
 
-        // 矢印を描画
         function drawArrow(ctx, x, y, angle) {
             const len = 8;
             ctx.beginPath();
@@ -830,10 +1078,8 @@
             numberBlocks.innerHTML = '';
             operatorBlocks.innerHTML = '';
 
-            // 利用可能なブロックを初期化
             gameState.availableBlocks = {};
 
-            // 数値ブロック
             const valueKeys = Object.keys(problem.values);
             valueKeys.forEach(key => {
                 const block = document.createElement('div');
@@ -846,7 +1092,6 @@
                 gameState.availableBlocks[key] = { used: false, element: block };
             });
 
-            // 演算子ブロック
             const operators = ['×', '÷', '+', '-', '(', ')'];
             operators.forEach(op => {
                 const block = document.createElement('div');
@@ -866,7 +1111,6 @@
             slotsContainer.innerHTML = '';
             gameState.formula = [];
 
-            // 最大15個のスロット
             for (let i = 0; i < 15; i++) {
                 const slot = document.createElement('div');
                 slot.className = 'slot';
@@ -879,7 +1123,6 @@
         function addToFormula(value, type) {
             if (gameState.formula.length >= 15) return;
 
-            // 数値ブロックは1回のみ使用可能（演算子は複数回OK）
             if (type === 'number' && gameState.availableBlocks[value].used) return;
 
             gameState.formula.push({ value, type });
@@ -908,7 +1151,6 @@
                 }
             });
 
-            // チェックボタンの有効/無効
             document.getElementById('checkFormulaBtn').disabled = gameState.formula.length === 0;
         }
 
@@ -916,7 +1158,6 @@
         function clearFormula() {
             gameState.formula = [];
 
-            // すべてのブロックを再利用可能に
             Object.keys(gameState.availableBlocks).forEach(key => {
                 gameState.availableBlocks[key].used = false;
                 gameState.availableBlocks[key].element.classList.remove('used');
@@ -930,7 +1171,6 @@
             const userFormula = gameState.formula.map(f => f.value);
             const correctFormula = gameState.currentProblem.correctFormula;
 
-            // 配列を比較
             const isCorrect = JSON.stringify(userFormula) === JSON.stringify(correctFormula);
 
             if (isCorrect) {
@@ -940,7 +1180,6 @@
                 }, 1500);
             } else {
                 showGarconMessage('その式では正しく計算できません。もう一度考えてみましょう。', 'error');
-                // コンボをリセット
                 resetCombo();
             }
         }
@@ -951,7 +1190,6 @@
             document.getElementById('formulaArea').style.display = 'none';
             document.getElementById('calculationArea').classList.add('active');
 
-            // 式を表示用に変換
             const displayFormula = gameState.formula.map(f => {
                 if (f.type === 'number') {
                     return gameState.currentProblem.values[f.value];
@@ -995,7 +1233,6 @@
             }
 
             if (Math.abs(userAnswer - correctAnswer) < 0.01) {
-                // 正解
                 gameState.comboCount++;
                 updateComboMultiplier();
 
@@ -1013,7 +1250,6 @@
                 }, 1000);
 
             } else {
-                // 不正解
                 showGarconMessage(`惜しい！正解は ${correctAnswer} ㎠でした。`, 'error');
                 resetCombo();
 
@@ -1051,7 +1287,6 @@
             document.getElementById('comboCount').textContent = gameState.comboCount;
             document.getElementById('multiplier').textContent = `×${gameState.multiplier.toFixed(1)}`;
 
-            // コンボ表示の色変更
             const comboElement = document.getElementById('comboCount');
             if (gameState.comboCount >= 3) {
                 comboElement.style.color = '#ff6b6b';
@@ -1067,7 +1302,6 @@
             const canvas = document.getElementById('shapeCanvas');
             canvas.classList.add('eating-animation');
 
-            // キラキラエフェクト
             for (let i = 0; i < 5; i++) {
                 setTimeout(() => {
                     createSparkle(canvas);
@@ -1123,7 +1357,6 @@
             title.textContent = gameState.currentProblem.name + 'の面積の求め方';
             text.textContent = gameState.currentProblem.explanation;
 
-            // 解説用の図形を描画
             drawExplanationShape();
 
             modal.classList.add('show');
@@ -1141,9 +1374,7 @@
             ctx.lineWidth = 2;
 
             if (problem.type === 'parallelogram') {
-                // 平行四辺形 → 長方形への変形を表示
                 ctx.globalAlpha = 0.7;
-                // 元の平行四辺形
                 ctx.beginPath();
                 ctx.moveTo(50, 150);
                 ctx.lineTo(150, 150);
@@ -1153,20 +1384,16 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // 矢印
                 ctx.fillStyle = '#2c1810';
                 ctx.font = 'bold 30px sans-serif';
                 ctx.fillText('→', 200, 130);
 
-                // 変形後の長方形
                 ctx.fillStyle = problem.color;
                 ctx.fillRect(250, 100, 100, 50);
                 ctx.strokeRect(250, 100, 100, 50);
 
             } else if (problem.type === 'triangle') {
-                // 三角形 → 平行四辺形の半分を表示
                 ctx.globalAlpha = 0.7;
-                // 三角形
                 ctx.beginPath();
                 ctx.moveTo(50, 150);
                 ctx.lineTo(150, 150);
@@ -1175,7 +1402,6 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // もう一つの三角形を点線で
                 ctx.setLineDash([5, 5]);
                 ctx.beginPath();
                 ctx.moveTo(150, 150);
@@ -1189,7 +1415,6 @@
                 ctx.font = 'bold 30px sans-serif';
                 ctx.fillText('=', 220, 130);
 
-                // 平行四辺形の半分
                 ctx.fillStyle = problem.color;
                 ctx.beginPath();
                 ctx.moveTo(270, 150);
@@ -1205,9 +1430,7 @@
                 ctx.fillText('÷ 2', 330, 180);
 
             } else if (problem.type === 'trapezoid') {
-                // 台形2つで平行四辺形
                 ctx.globalAlpha = 0.7;
-                // 台形1
                 ctx.beginPath();
                 ctx.moveTo(50, 150);
                 ctx.lineTo(130, 150);
@@ -1217,7 +1440,6 @@
                 ctx.fill();
                 ctx.stroke();
 
-                // 台形2（反転）
                 ctx.setLineDash([5, 5]);
                 ctx.beginPath();
                 ctx.moveTo(130, 150);
@@ -1232,7 +1454,6 @@
                 ctx.font = 'bold 30px sans-serif';
                 ctx.fillText('=', 170, 130);
 
-                // 平行四辺形
                 ctx.fillStyle = problem.color;
                 ctx.beginPath();
                 ctx.moveTo(220, 150);
@@ -1280,36 +1501,19 @@
 
         // 問題開始
         function startProblem() {
-            // 新しい問題を生成
             gameState.currentProblem = generateProblem();
             gameState.mode = 'formula';
 
-            // UI をリセット
             document.getElementById('formulaArea').style.display = 'block';
             document.getElementById('calculationArea').classList.remove('active');
             clearFormula();
 
-            // 図形を描画
             drawShape(gameState.currentProblem);
-
-            // ブロックパレットを作成
             createBlockPalette(gameState.currentProblem);
-
-            // スロットを作成
             createFormulaSlots();
 
-            // ギャルソンアニメーション
             animateGarcon();
         }
-
-        // ゲーム初期化
-        function initGame() {
-            updateScoreDisplay();
-            startProblem();
-        }
-
-        // ページ読み込み時に初期化
-        window.onload = initGame;
     </script>
 </body>
 </html>
