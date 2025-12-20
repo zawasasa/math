@@ -218,44 +218,44 @@
 
         .header {
             text-align: center;
-            padding: 8px 10px;
+            padding: 4px 8px;
             background: rgba(139, 69, 19, 0.1);
-            border-radius: 10px;
-            margin-bottom: 5px;
+            border-radius: 8px;
+            margin-bottom: 3px;
             border: 2px solid var(--gold);
             flex-shrink: 0;
         }
 
         .header h1 {
-            font-size: 1rem;
+            font-size: 0.9rem;
             color: var(--chocolate-dark);
             font-family: var(--font-title);
-            margin-bottom: 5px;
+            margin-bottom: 2px;
         }
 
         .score-board {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            gap: 8px;
+            gap: 4px;
             flex-wrap: wrap;
-            margin-top: 3px;
+            margin-top: 2px;
         }
 
         .score-item {
             background: rgba(255, 215, 0, 0.2);
-            padding: 4px 10px;
-            border-radius: 8px;
+            padding: 2px 8px;
+            border-radius: 6px;
             border: 2px solid var(--gold);
         }
 
         .score-item .label {
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: var(--chocolate-medium);
         }
 
         .score-item .value {
-            font-size: 1rem;
+            font-size: 0.9rem;
             font-weight: bold;
             color: var(--chocolate-dark);
         }
@@ -266,11 +266,37 @@
             font-weight: bold;
         }
 
+        /* ゲームコンテンツエリア（左右カラム） */
+        .game-content {
+            display: flex;
+            flex-direction: row;
+            gap: 5px;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        /* 左カラム（図形エリア） */
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        /* 右カラム（立式エリア） */
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
         /* ギャルソンエリア */
         .garcon-area {
             position: relative;
-            height: 60px;
-            margin: 3px 0;
+            height: 50px;
+            margin: 2px 0;
             perspective: 1000px;
             flex-shrink: 0;
         }
@@ -285,28 +311,30 @@
         }
 
         .garcon.serving {
-            left: 50%;
-            transform: translateX(-50%);
+            left: 20px;
+            transform: none;
         }
 
         .garcon-message {
             position: absolute;
             top: 5px;
-            left: 50%;
-            transform: translateX(-50%);
+            right: 20px;
+            left: auto;
+            transform: none;
             background: rgba(255, 255, 255, 0.95);
             color: var(--chocolate-dark);
-            padding: 6px 12px;
-            border-radius: 10px;
-            font-size: 0.75rem;
+            padding: 8px 14px;
+            border-radius: 12px;
+            font-size: 0.8rem;
             opacity: 0;
             transition: opacity 0.5s;
             border: 2px solid var(--gold);
             white-space: normal;
-            max-width: 85%;
-            text-align: center;
-            line-height: 1.3;
+            max-width: 60%;
+            text-align: left;
+            line-height: 1.4;
             z-index: 20;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
         }
 
         .garcon-message.show {
@@ -512,37 +540,41 @@
         .chocolate-area {
             background: rgba(139, 69, 19, 0.05);
             border-radius: 10px;
-            padding: 8px;
-            margin: 3px 0;
+            padding: 10px;
+            margin: 2px 0;
             min-height: 0;
-            height: 140px;
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
             border: 2px solid var(--gold);
             position: relative;
-            flex-shrink: 0;
         }
 
         .plate {
-            width: 180px;
-            height: 25px;
+            width: 220px;
+            height: 30px;
             background: linear-gradient(to bottom, #e8e8e8, #c0c0c0);
             border-radius: 50%;
             position: absolute;
-            bottom: 8px;
+            bottom: 10px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
         .shape-canvas {
             position: relative;
             z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         canvas {
             filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.2));
             max-width: 100%;
-            max-height: 120px;
+            max-height: 100%;
         }
 
         /* 立式エリア */
@@ -550,7 +582,7 @@
             background: rgba(139, 69, 19, 0.05);
             border-radius: 10px;
             padding: 8px;
-            margin: 3px 0;
+            margin: 2px 0;
             border: 2px solid var(--gold);
             flex: 1;
             display: flex;
@@ -1000,57 +1032,65 @@
                 <div class="garcon-message" id="garconMessage"></div>
             </div>
 
-            <!-- チョコレート表示エリア -->
-            <div class="chocolate-area">
-                <div class="plate"></div>
-                <div class="shape-canvas">
-                    <canvas id="shapeCanvas" width="240" height="120"></canvas>
-                </div>
-            </div>
-
-            <!-- 立式エリア -->
-            <div class="formula-area" id="formulaArea">
-                <div class="formula-title">🧩 式を組み立てよう</div>
-                <div class="formula-slots" id="formulaSlots"></div>
-                <div class="block-palette">
-                    <div class="block-section">
-                        <div class="palette-label">🔢 数字</div>
-                        <div class="palette-row" id="numberBlocks"></div>
-                    </div>
-                    <div class="block-section">
-                        <div class="palette-label">➗ 演算</div>
-                        <div class="palette-row" id="operatorBlocks"></div>
+            <!-- ゲームコンテンツ（左右カラム） -->
+            <div class="game-content">
+                <!-- 左カラム：図形エリア -->
+                <div class="left-column">
+                    <div class="chocolate-area">
+                        <div class="plate"></div>
+                        <div class="shape-canvas">
+                            <canvas id="shapeCanvas" width="400" height="300"></canvas>
+                        </div>
                     </div>
                 </div>
-                <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="clearFormula()">クリア</button>
-                    <button class="btn btn-primary" id="checkFormulaBtn" onclick="checkFormula()" disabled>この式で計算する</button>
-                </div>
-            </div>
 
-            <!-- 計算モード -->
-            <div class="calculation-area" id="calculationArea">
-                <div class="formula-title">🍴 実食タイム！</div>
-                <div class="formula-display" id="formulaDisplay"></div>
-                <div class="answer-input">
-                    <input type="text" id="answerInput" readonly placeholder="答えを入力">
+                <!-- 右カラム：立式エリア -->
+                <div class="right-column">
+                    <div class="formula-area" id="formulaArea">
+                        <div class="formula-title">🧩 式を組み立てよう</div>
+                        <div class="formula-slots" id="formulaSlots"></div>
+                        <div class="block-palette">
+                            <div class="block-section">
+                                <div class="palette-label">🔢 数字</div>
+                                <div class="palette-row" id="numberBlocks"></div>
+                            </div>
+                            <div class="block-section">
+                                <div class="palette-label">➗ 演算</div>
+                                <div class="palette-row" id="operatorBlocks"></div>
+                            </div>
+                        </div>
+                        <div class="action-buttons">
+                            <button class="btn btn-secondary" onclick="clearFormula()">クリア</button>
+                            <button class="btn btn-primary" id="checkFormulaBtn" onclick="checkFormula()" disabled>この式で計算する</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="numpad">
-                    <button onclick="inputNumber('1')">1</button>
-                    <button onclick="inputNumber('2')">2</button>
-                    <button onclick="inputNumber('3')">3</button>
-                    <button onclick="inputNumber('4')">4</button>
-                    <button onclick="inputNumber('5')">5</button>
-                    <button onclick="inputNumber('6')">6</button>
-                    <button onclick="inputNumber('7')">7</button>
-                    <button onclick="inputNumber('8')">8</button>
-                    <button onclick="inputNumber('9')">9</button>
-                    <button class="zero" onclick="inputNumber('0')">0</button>
-                    <button onclick="deleteNumber()">⌫</button>
                 </div>
-                <div class="action-buttons">
-                    <button class="btn btn-secondary" onclick="backToFormula()">式に戻る</button>
-                    <button class="btn btn-primary" onclick="checkAnswer()">答え合わせ</button>
+
+                <!-- 計算モード -->
+                <div class="calculation-area" id="calculationArea">
+                    <div class="formula-title">🍴 実食タイム！</div>
+                    <div class="formula-display" id="formulaDisplay"></div>
+                    <div class="answer-input">
+                        <input type="text" id="answerInput" readonly placeholder="答えを入力">
+                    </div>
+                    <div class="numpad">
+                        <button onclick="inputNumber('1')">1</button>
+                        <button onclick="inputNumber('2')">2</button>
+                        <button onclick="inputNumber('3')">3</button>
+                        <button onclick="inputNumber('4')">4</button>
+                        <button onclick="inputNumber('5')">5</button>
+                        <button onclick="inputNumber('6')">6</button>
+                        <button onclick="inputNumber('7')">7</button>
+                        <button onclick="inputNumber('8')">8</button>
+                        <button onclick="inputNumber('9')">9</button>
+                        <button class="zero" onclick="inputNumber('0')">0</button>
+                        <button onclick="deleteNumber()">⌫</button>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary" onclick="backToFormula()">式に戻る</button>
+                        <button class="btn btn-primary" onclick="checkAnswer()">答え合わせ</button>
+                    </div>
                 </div>
             </div>
 
@@ -1096,7 +1136,8 @@
             comboCount: 0,
             multiplier: 1.0,
             formula: [],
-            mode: 'formula'
+            mode: 'formula',
+            correctCount: 0  // 正解数をカウント（レベル計算用）
         };
 
         // 図形タイプの定義
@@ -1105,21 +1146,104 @@
                 name: '平行四辺形',
                 color: '#8b4513',
                 formula: ['底辺', '×', '高さ'],
-                explanation: '平行四辺形を切って移動させると、長方形になります。だから「底辺 × 高さ」で面積が求められます。'
+                explanation: '平行四辺形を切って移動させると、長方形になります。だから「底辺 × 高さ」で面積が求められます。',
+                difficulty: 1  // 基本問題
             },
             triangle: {
                 name: '三角形',
                 color: '#d2691e',
                 formula: ['底辺', '×', '高さ', '÷', '2'],
-                explanation: '三角形は平行四辺形のちょうど半分です。だから「底辺 × 高さ ÷ 2」で面積が求められます。'
+                explanation: '三角形は平行四辺形のちょうど半分です。だから「底辺 × 高さ ÷ 2」で面積が求められます。',
+                difficulty: 1  // 基本問題
             },
             trapezoid: {
                 name: '台形',
                 color: '#cd853f',
                 formula: ['(', '上底', '+', '下底', ')', '×', '高さ', '÷', '2'],
-                explanation: '台形を2つ合わせると平行四辺形になります。だから「(上底 + 下底) × 高さ ÷ 2」で面積が求められます。'
+                explanation: '台形を2つ合わせると平行四辺形になります。だから「(上底 + 下底) × 高さ ÷ 2」で面積が求められます。',
+                difficulty: 1  // 基本問題
+            },
+            triangleOuterHeight: {
+                name: '三角形（高さが外側）',
+                color: '#d2691e',
+                formula: ['底辺', '×', '高さ', '÷', '2'],
+                explanation: '三角形の高さが外側にあっても、公式は同じです。「底辺 × 高さ ÷ 2」で面積が求められます。',
+                difficulty: 2  // 中級問題
+            },
+            rhombus: {
+                name: 'ひし形',
+                color: '#a0522d',
+                formula: ['対角線', '×', '対角線', '÷', '2'],
+                explanation: 'ひし形は2つの対角線で4つの三角形に分けられます。だから「対角線 × 対角線 ÷ 2」で面積が求められます。',
+                difficulty: 2  // 中級問題
+            },
+            parallelogramVertical: {
+                name: '平行四辺形（縦配置）',
+                color: '#8b4513',
+                formula: ['底辺', '×', '高さ'],
+                explanation: '平行四辺形が縦に配置されていても、公式は同じです。「底辺 × 高さ」で面積が求められます。',
+                difficulty: 3  // 上級問題
+            },
+            trapezoidComplex: {
+                name: '台形（複合配置）',
+                color: '#cd853f',
+                formula: ['(', '上底', '+', '下底', ')', '×', '高さ', '÷', '2'],
+                explanation: '台形が斜めに配置されていても、公式は同じです。「(上底 + 下底) × 高さ ÷ 2」で面積が求められます。',
+                difficulty: 3  // 上級問題
             }
         };
+
+        // レベルを計算（正解数に基づく）
+        function calculateLevel() {
+            // 3問正解ごとにレベルが上がる
+            return Math.floor(gameState.correctCount / 3) + 1;
+        }
+
+        // レベルに応じた問題タイプを選択
+        function selectProblemTypeByLevel() {
+            const level = calculateLevel();
+            const availableTypes = [];
+
+            // レベル1-3: 基本問題のみ
+            if (level <= 3) {
+                availableTypes.push('parallelogram', 'triangle', 'trapezoid');
+            }
+            // レベル4-5: 中級問題が混ざり始める
+            else if (level <= 5) {
+                availableTypes.push('parallelogram', 'triangle', 'trapezoid');
+                if (Math.random() < 0.3) {
+                    availableTypes.push('triangleOuterHeight');
+                }
+            }
+            // レベル6-7: 中級問題の割合が増える
+            else if (level <= 7) {
+                availableTypes.push('parallelogram', 'triangle', 'trapezoid');
+                if (Math.random() < 0.5) {
+                    availableTypes.push('triangleOuterHeight', 'rhombus');
+                }
+            }
+            // レベル8-9: 上級問題が出現し始める
+            else if (level <= 9) {
+                availableTypes.push('parallelogram', 'triangle', 'trapezoid');
+                if (Math.random() < 0.6) {
+                    availableTypes.push('triangleOuterHeight', 'rhombus');
+                }
+                if (Math.random() < 0.3) {
+                    availableTypes.push('parallelogramVertical', 'trapezoidComplex');
+                }
+            }
+            // レベル10以上: 全種類がランダムに出現
+            else {
+                availableTypes.push(
+                    'parallelogram', 'triangle', 'trapezoid',
+                    'triangleOuterHeight', 'rhombus',
+                    'parallelogramVertical', 'trapezoidComplex'
+                );
+            }
+
+            // ランダムに1つ選択
+            return availableTypes[Math.floor(Math.random() * availableTypes.length)];
+        }
 
         // タイトルに戻る
         function resetToTitle() {
@@ -1133,7 +1257,8 @@
                 comboCount: 0,
                 multiplier: 1.0,
                 formula: [],
-                mode: 'formula'
+                mode: 'formula',
+                correctCount: 0
             };
             updateScoreDisplay();
         }
@@ -1147,6 +1272,7 @@
             gameState.totalScore = 0;
             gameState.comboCount = 0;
             gameState.multiplier = 1.0;
+            gameState.correctCount = 0;
             updateScoreDisplay();
 
             startProblem();
@@ -1154,8 +1280,8 @@
 
         // 新しい問題を生成
         function generateProblem() {
-            const types = Object.keys(shapeTypes);
-            const type = types[Math.floor(Math.random() * types.length)];
+            // レベルに応じた問題タイプを選択
+            const type = selectProblemTypeByLevel();
             const shapeInfo = shapeTypes[type];
 
             let problem = {
@@ -1202,6 +1328,61 @@
                     '辺1': problem.side1,
                     '辺2': problem.side2
                 };
+            } else if (type === 'triangleOuterHeight') {
+                // 高さが外側の三角形
+                problem.base = Math.floor(Math.random() * 8 + 12);
+                problem.height = Math.floor(Math.random() * 8 + 10);
+                problem.side1 = Math.floor(Math.random() * 5 + problem.height + 1);
+                problem.side2 = Math.floor(Math.random() * 5 + problem.height + 1);
+                problem.outerHeight = true;  // 高さが外側にあることを示すフラグ
+                problem.answer = problem.base * problem.height / 2;
+                problem.values = {
+                    '底辺': problem.base,
+                    '高さ': problem.height,
+                    '辺1': problem.side1,
+                    '辺2': problem.side2
+                };
+            } else if (type === 'rhombus') {
+                // ひし形
+                problem.diagonal1 = Math.floor(Math.random() * 15 + 10);
+                problem.diagonal2 = Math.floor(Math.random() * 12 + 8);
+                problem.answer = problem.diagonal1 * problem.diagonal2 / 2;
+                problem.values = {
+                    '対角線1': problem.diagonal1,
+                    '対角線2': problem.diagonal2
+                };
+            } else if (type === 'parallelogramVertical') {
+                // 縦配置の平行四辺形
+                problem.verticalSide = Math.floor(Math.random() * 15 + 15);
+                problem.horizontalHeight = Math.floor(Math.random() * 7 + 8);
+                problem.side = Math.floor(Math.random() * 5 + problem.horizontalHeight + 2);
+                problem.vertical = true;  // 縦配置であることを示すフラグ
+                problem.base = problem.verticalSide;  // 底辺として使用
+                problem.height = problem.horizontalHeight;  // 高さとして使用
+                problem.answer = problem.verticalSide * problem.horizontalHeight;
+                problem.values = {
+                    '底辺': problem.verticalSide,
+                    '高さ': problem.horizontalHeight,
+                    '斜辺': problem.side
+                };
+            } else if (type === 'trapezoidComplex') {
+                // 複合配置の台形
+                problem.parallelSide1 = Math.floor(Math.random() * 10 + 12);
+                problem.parallelSide2 = problem.parallelSide1 + Math.floor(Math.random() * 10 + 5);
+                problem.height = Math.floor(Math.random() * 8 + 10);
+                problem.side1 = Math.floor(Math.random() * 5 + problem.height + 1);
+                problem.side2 = Math.floor(Math.random() * 5 + problem.height + 1);
+                problem.complex = true;  // 複合配置であることを示すフラグ
+                problem.upperBase = problem.parallelSide1;  // 上底として使用
+                problem.lowerBase = problem.parallelSide2;  // 下底として使用
+                problem.answer = (problem.parallelSide1 + problem.parallelSide2) * problem.height / 2;
+                problem.values = {
+                    '上底': problem.parallelSide1,
+                    '下底': problem.parallelSide2,
+                    '高さ': problem.height,
+                    '辺1': problem.side1,
+                    '辺2': problem.side2
+                };
             }
 
             return problem;
@@ -1210,6 +1391,11 @@
         // 図形を描画
         function drawShape(problem) {
             const canvas = document.getElementById('shapeCanvas');
+            // Canvasサイズを動的に設定（コンテナに合わせる）
+            const container = canvas.parentElement;
+            const rect = container.getBoundingClientRect();
+            canvas.width = Math.min(400, rect.width - 20);
+            canvas.height = Math.min(300, rect.height - 20);
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -1303,6 +1489,152 @@
                              centerX - lowerPixels/2 - 40, centerY - heightPixels/2,
                              problem.height, true);
                 // 垂直マークを底辺と高さの交点に描画
+                drawPerpendicularMark(ctx, centerX - lowerPixels/2, centerY + heightPixels/2);
+            } else if (problem.type === 'triangleOuterHeight') {
+                // 高さが外側の三角形
+                const basePixels = problem.base * 10;
+                const heightPixels = problem.height * 10;
+
+                // 底辺を延長して表示
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = '#999';
+                ctx.beginPath();
+                ctx.moveTo(centerX - basePixels/2 - 20, centerY + heightPixels/2);
+                ctx.lineTo(centerX + basePixels/2 + 20, centerY + heightPixels/2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // 三角形本体
+                ctx.strokeStyle = '#d4a574';
+                ctx.beginPath();
+                ctx.moveTo(centerX - basePixels/2, centerY + heightPixels/2);
+                ctx.lineTo(centerX + basePixels/2, centerY + heightPixels/2);
+                ctx.lineTo(centerX, centerY - heightPixels/2);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // 底辺の寸法
+                drawDimension(ctx, centerX - basePixels/2, centerY + heightPixels/2 + 20,
+                             centerX + basePixels/2, centerY + heightPixels/2 + 20,
+                             problem.base, false);
+                // 高さの寸法（外側に表示）
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = '#ffd700';
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY + heightPixels/2);
+                ctx.lineTo(centerX, centerY - heightPixels/2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                drawDimension(ctx, centerX + 30, centerY + heightPixels/2,
+                             centerX + 30, centerY - heightPixels/2,
+                             problem.height, true);
+                // 垂直マーク
+                drawPerpendicularMark(ctx, centerX, centerY + heightPixels/2);
+
+            } else if (problem.type === 'rhombus') {
+                // ひし形
+                const diag1Pixels = problem.diagonal1 * 5;
+                const diag2Pixels = problem.diagonal2 * 5;
+
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY - diag2Pixels/2);
+                ctx.lineTo(centerX + diag1Pixels/2, centerY);
+                ctx.lineTo(centerX, centerY + diag2Pixels/2);
+                ctx.lineTo(centerX - diag1Pixels/2, centerY);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // 対角線を点線で表示
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = '#ffd700';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX - diag1Pixels/2, centerY);
+                ctx.lineTo(centerX + diag1Pixels/2, centerY);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY - diag2Pixels/2);
+                ctx.lineTo(centerX, centerY + diag2Pixels/2);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.strokeStyle = '#d4a574';
+                ctx.lineWidth = 3;
+
+                // 対角線の寸法
+                drawDimension(ctx, centerX - diag1Pixels/2, centerY + 30,
+                             centerX + diag1Pixels/2, centerY + 30,
+                             problem.diagonal1, false);
+                drawDimension(ctx, centerX + 30, centerY - diag2Pixels/2,
+                             centerX + 30, centerY + diag2Pixels/2,
+                             problem.diagonal2, true);
+
+            } else if (problem.type === 'parallelogramVertical') {
+                // 縦配置の平行四辺形
+                const verticalPixels = problem.verticalSide * 8;
+                const horizontalPixels = problem.horizontalHeight * 8;
+                const slant = 25;
+
+                ctx.beginPath();
+                ctx.moveTo(centerX - horizontalPixels/2, centerY - verticalPixels/2);
+                ctx.lineTo(centerX - horizontalPixels/2 + slant, centerY + verticalPixels/2);
+                ctx.lineTo(centerX + horizontalPixels/2 + slant, centerY + verticalPixels/2);
+                ctx.lineTo(centerX + horizontalPixels/2, centerY - verticalPixels/2);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // 底辺（縦方向）の寸法
+                drawDimension(ctx, centerX - horizontalPixels/2 - 40, centerY - verticalPixels/2,
+                             centerX - horizontalPixels/2 - 40, centerY + verticalPixels/2,
+                             problem.verticalSide, true);
+                // 高さ（水平方向）の寸法
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = '#ffd700';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(centerX - horizontalPixels/2, centerY - verticalPixels/2 - 20);
+                ctx.lineTo(centerX + horizontalPixels/2, centerY - verticalPixels/2 - 20);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                ctx.strokeStyle = '#d4a574';
+                ctx.lineWidth = 3;
+                drawDimension(ctx, centerX - horizontalPixels/2, centerY - verticalPixels/2 - 40,
+                             centerX + horizontalPixels/2, centerY - verticalPixels/2 - 40,
+                             problem.horizontalHeight, false);
+                // 垂直マーク
+                drawPerpendicularMark(ctx, centerX - horizontalPixels/2, centerY - verticalPixels/2);
+
+            } else if (problem.type === 'trapezoidComplex') {
+                // 複合配置の台形（右台形）
+                const upperPixels = problem.parallelSide1 * 8;
+                const lowerPixels = problem.parallelSide2 * 8;
+                const heightPixels = problem.height * 8;
+                const offset = (lowerPixels - upperPixels) / 2;
+
+                ctx.beginPath();
+                ctx.moveTo(centerX - lowerPixels/2, centerY + heightPixels/2);
+                ctx.lineTo(centerX + lowerPixels/2, centerY + heightPixels/2);
+                ctx.lineTo(centerX + lowerPixels/2 - offset, centerY - heightPixels/2);
+                ctx.lineTo(centerX - lowerPixels/2, centerY - heightPixels/2);
+                ctx.closePath();
+                ctx.fill();
+                ctx.stroke();
+
+                // 上底の寸法
+                drawDimension(ctx, centerX - lowerPixels/2, centerY - heightPixels/2 - 20,
+                             centerX + lowerPixels/2 - offset, centerY - heightPixels/2 - 20,
+                             problem.parallelSide1, false);
+                // 下底の寸法
+                drawDimension(ctx, centerX - lowerPixels/2, centerY + heightPixels/2 + 20,
+                             centerX + lowerPixels/2, centerY + heightPixels/2 + 20,
+                             problem.parallelSide2, false);
+                // 高さの寸法（垂直マーク付き）
+                drawDimension(ctx, centerX - lowerPixels/2 - 40, centerY + heightPixels/2,
+                             centerX - lowerPixels/2 - 40, centerY - heightPixels/2,
+                             problem.height, true);
+                // 垂直マーク
                 drawPerpendicularMark(ctx, centerX - lowerPixels/2, centerY + heightPixels/2);
             }
 
@@ -1523,6 +1855,7 @@
             } catch (e) {
                 showGarconMessage('式が正しくありません。もう一度確認してください。', 'error');
                 resetCombo();
+                updateBackgroundColor(0);
                 return;
             }
 
@@ -1540,6 +1873,7 @@
                 showBigFeedback('式NG', 'wrong');
                 showGarconMessage('その式では正しく計算できません。もう一度考えてみましょう。', 'error');
                 resetCombo();
+                updateBackgroundColor(0);
             }
         }
 
@@ -1547,6 +1881,7 @@
         function switchToCalculationMode() {
             gameState.mode = 'calculation';
             document.getElementById('formulaArea').style.display = 'none';
+            document.getElementById('calculationArea').style.display = 'flex';
             document.getElementById('calculationArea').classList.add('active');
 
             // 数値を連続して結合して表示
@@ -1586,7 +1921,8 @@
         function backToFormula() {
             gameState.mode = 'formula';
             document.getElementById('calculationArea').classList.remove('active');
-            document.getElementById('formulaArea').style.display = 'block';
+            document.getElementById('calculationArea').style.display = 'none';
+            document.getElementById('formulaArea').style.display = 'flex';
         }
 
         // テンキー入力
@@ -1615,6 +1951,7 @@
 
             if (Math.abs(userAnswer - correctAnswer) < 0.01) {
                 gameState.comboCount++;
+                gameState.correctCount++;  // 正解数をカウント
                 updateComboMultiplier();
 
                 const baseScore = correctAnswer;
@@ -1622,9 +1959,14 @@
                 gameState.totalScore += earnedScore;
 
                 updateScoreDisplay();
+                updateBackgroundColor(gameState.comboCount);
                 playEatingAnimation();
                 showBigFeedback('正解！', 'correct');
-                showGarconMessage(`正解です！${earnedScore}pt獲得！`, 'success');
+                
+                // 褒め言葉を表示（スコア表示の後に）
+                setTimeout(() => {
+                    showPraiseMessage(gameState.comboCount);
+                }, 500);
 
                 setTimeout(() => {
                     showExplanation();
@@ -1634,6 +1976,7 @@
                 showBigFeedback('不正解', 'wrong');
                 showGarconMessage(`惜しい！正解は ${correctAnswer} ㎠でした。`, 'error');
                 resetCombo();
+                updateBackgroundColor(0);
 
                 setTimeout(() => {
                     showExplanation();
@@ -1661,6 +2004,7 @@
             gameState.comboCount = 0;
             gameState.multiplier = 1.0;
             updateScoreDisplay();
+            updateBackgroundColor(0);
         }
 
         // スコア表示を更新
@@ -1735,6 +2079,70 @@
                     feedback.remove();
                 }, 300);
             }, 1000);
+        }
+
+        // 褒め言葉の配列（連続正解数に応じてグレードアップ）
+        const praiseMessages = {
+            1: [
+                'お客様、さすがですね！',
+                '素晴らしい計算力です！',
+                '完璧です！',
+                'よくできました！'
+            ],
+            2: [
+                '連続正解！素晴らしいです！',
+                'お見事です！',
+                '流石ですね！',
+                '完璧な計算です！'
+            ],
+            3: [
+                '3問連続！驚異的です！',
+                '素晴らしい集中力ですね！',
+                '完璧な理解力です！',
+                '天才的です！'
+            ],
+            4: [
+                '4問連続！圧巻です！',
+                '信じられないほど正確です！',
+                '完璧すぎます！',
+                'プロ級の計算力です！'
+            ],
+            5: [
+                '5問連続！伝説的です！',
+                '神がかり的な計算力です！',
+                '完璧すぎて言葉がありません！',
+                'マスター級の実力です！'
+            ]
+        };
+
+        // 背景色の変化（連続正解数に応じて）
+        const backgroundColors = {
+            0: '#f5e6d3',  // デフォルト（クリーム色）
+            1: '#e8d5c4',  // 1問連続
+            2: '#dbc4b5',  // 2問連続
+            3: '#ceb3a6',  // 3問連続
+            4: '#c1a297',  // 4問連続
+            5: '#b49188'   // 5問連続以上
+        };
+
+        // 背景色を更新
+        function updateBackgroundColor(comboCount) {
+            const level = Math.min(comboCount, 5);
+            const color = backgroundColors[level];
+            document.body.style.backgroundColor = color;
+            // ゲームコンテナの背景も調整
+            const gameWrapper = document.querySelector('.game-wrapper');
+            if (gameWrapper) {
+                gameWrapper.style.backgroundColor = color;
+            }
+        }
+
+        // 褒め言葉を表示
+        function showPraiseMessage(comboCount) {
+            const level = Math.min(comboCount, 5);
+            const messages = praiseMessages[level] || praiseMessages[5];
+            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+            showGarconMessage(randomMessage, 'success');
         }
 
         // ギャルソンのメッセージを表示
@@ -1895,13 +2303,21 @@
             startProblem();
         }
 
+        // 問題カウント（2問目以降の判定用）
+        let problemCount = 0;
+
         // ギャルソンのアニメーション
         function animateGarcon() {
+            problemCount++;
             const garcon = document.getElementById('garcon');
             garcon.classList.add('serving');
 
             setTimeout(() => {
-                showGarconMessage('本日のショコラでございます。どうぞお召し上がりください。', 'success');
+                if (problemCount === 1) {
+                    showGarconMessage('本日のショコラでございます。どうぞお召し上がりください。', 'success');
+                } else {
+                    showGarconMessage('次のチョコレートになります。お楽しみください。', 'success');
+                }
             }, 1000);
 
             setTimeout(() => {
@@ -1914,13 +2330,17 @@
             gameState.currentProblem = generateProblem();
             gameState.mode = 'formula';
 
-            document.getElementById('formulaArea').style.display = 'block';
+            document.getElementById('formulaArea').style.display = 'flex';
             document.getElementById('calculationArea').classList.remove('active');
+            document.getElementById('calculationArea').style.display = 'none';
             clearFormula();
 
             drawShape(gameState.currentProblem);
             createBlockPalette(); // 0-9と演算子は常に同じ
             createFormulaSlots();
+
+            // 背景色を現在のコンボ数に合わせて更新
+            updateBackgroundColor(gameState.comboCount);
 
             animateGarcon();
         }
