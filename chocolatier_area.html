@@ -287,13 +287,14 @@
             color: var(--chocolate-dark);
             padding: 12px 20px;
             border-radius: 15px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             opacity: 0;
             transition: opacity 0.5s;
             border: 2px solid var(--gold);
-            white-space: nowrap;
-            max-width: 90%;
+            white-space: normal;
+            max-width: 85%;
             text-align: center;
+            line-height: 1.4;
         }
 
         .garcon-message.show {
@@ -361,15 +362,15 @@
         }
 
         .slot {
-            width: 55px;
-            height: 55px;
+            width: 60px;
+            height: 60px;
             background: rgba(255, 255, 255, 0.5);
             border: 2px dashed var(--gold);
             border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.3rem;
+            font-size: 1.5rem;
             font-weight: bold;
             transition: all 0.3s;
         }
@@ -400,12 +401,13 @@
         }
 
         .block {
-            width: 55px;
-            height: 55px;
+            width: 65px;
+            height: 65px;
             background: linear-gradient(135deg, var(--chocolate-medium) 0%, var(--chocolate-dark) 100%);
             border: 2px solid var(--gold);
             border-radius: 8px;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             font-size: 1.1rem;
@@ -414,6 +416,19 @@
             cursor: pointer;
             transition: all 0.2s;
             user-select: none;
+            padding: 4px;
+        }
+
+        .block-number {
+            font-size: 1.4rem;
+            line-height: 1;
+        }
+
+        .block-label {
+            font-size: 0.65rem;
+            opacity: 0.85;
+            margin-top: 2px;
+            line-height: 1;
         }
 
         .block:hover {
@@ -678,9 +693,17 @@
             }
 
             .block {
-                width: 45px;
-                height: 45px;
+                width: 55px;
+                height: 55px;
                 font-size: 1rem;
+            }
+
+            .block-number {
+                font-size: 1.2rem;
+            }
+
+            .block-label {
+                font-size: 0.6rem;
             }
 
             .start-btn {
@@ -1080,14 +1103,28 @@
 
             gameState.availableBlocks = {};
 
+            // 数値ブロックを作成（実際の数値を表示）
             const valueKeys = Object.keys(problem.values);
             valueKeys.forEach(key => {
                 const block = document.createElement('div');
                 block.className = 'block';
-                block.textContent = key;
-                block.dataset.value = key;
+
+                // 数値とラベルを2段表示
+                const numberSpan = document.createElement('div');
+                numberSpan.className = 'block-number';
+                numberSpan.textContent = problem.values[key];
+
+                const labelSpan = document.createElement('div');
+                labelSpan.className = 'block-label';
+                labelSpan.textContent = key;
+
+                block.appendChild(numberSpan);
+                block.appendChild(labelSpan);
+
+                block.dataset.value = problem.values[key]; // 数値を保存
+                block.dataset.label = key; // ラベルも保存
                 block.dataset.type = 'number';
-                block.onclick = () => addToFormula(key, 'number');
+                block.onclick = () => addToFormula(problem.values[key], 'number', key);
                 numberBlocks.appendChild(block);
                 gameState.availableBlocks[key] = { used: false, element: block };
             });
@@ -1120,16 +1157,17 @@
         }
 
         // 式にブロックを追加
-        function addToFormula(value, type) {
+        function addToFormula(value, type, label) {
             if (gameState.formula.length >= 15) return;
 
-            if (type === 'number' && gameState.availableBlocks[value].used) return;
+            // 数値ブロックは1回のみ使用可能（labelで判定）
+            if (type === 'number' && label && gameState.availableBlocks[label].used) return;
 
-            gameState.formula.push({ value, type });
+            gameState.formula.push({ value, type, label });
 
-            if (type === 'number') {
-                gameState.availableBlocks[value].used = true;
-                gameState.availableBlocks[value].element.classList.add('used');
+            if (type === 'number' && label) {
+                gameState.availableBlocks[label].used = true;
+                gameState.availableBlocks[label].element.classList.add('used');
             }
 
             updateFormulaDisplay();
@@ -1168,10 +1206,24 @@
 
         // 式をチェック
         function checkFormula() {
-            const userFormula = gameState.formula.map(f => f.value);
-            const correctFormula = gameState.currentProblem.correctFormula;
+            // ユーザーが組み立てた式を文字列として取得
+            const userFormulaString = gameState.formula.map(f => f.value).join(' ');
 
-            const isCorrect = JSON.stringify(userFormula) === JSON.stringify(correctFormula);
+            // 式を評価して計算結果を取得
+            let calculatedValue;
+            try {
+                // × を * に、÷ を / に変換
+                const evalString = userFormulaString.replace(/×/g, '*').replace(/÷/g, '/');
+                calculatedValue = eval(evalString);
+            } catch (e) {
+                showGarconMessage('式が正しくありません。もう一度確認してください。', 'error');
+                resetCombo();
+                return;
+            }
+
+            // 正解の答えと比較（小数点以下の誤差を考慮）
+            const correctAnswer = gameState.currentProblem.answer;
+            const isCorrect = Math.abs(calculatedValue - correctAnswer) < 0.01;
 
             if (isCorrect) {
                 showGarconMessage('素晴らしい式です！では計算をお願いします。', 'success');
@@ -1190,12 +1242,8 @@
             document.getElementById('formulaArea').style.display = 'none';
             document.getElementById('calculationArea').classList.add('active');
 
-            const displayFormula = gameState.formula.map(f => {
-                if (f.type === 'number') {
-                    return gameState.currentProblem.values[f.value];
-                }
-                return f.value;
-            }).join(' ');
+            // 数値はそのまま表示（すでに数値が入っている）
+            const displayFormula = gameState.formula.map(f => f.value).join(' ');
 
             document.getElementById('formulaDisplay').textContent = displayFormula + ' = ?';
             document.getElementById('answerInput').value = '';
