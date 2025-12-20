@@ -75,6 +75,28 @@
         #time-display { color: #88B04B; min-width: 80px; }
 
         /* Control Buttons (Top Right) */
+        .index-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--btn-color);
+            border: 2px solid #fff;
+            border-radius: 15px;
+            padding: 5px 12px;
+            font-size: 0.9rem;
+            font-family: var(--font-main);
+            color: var(--text);
+            cursor: pointer;
+            box-shadow: 0 3px 0 #FFB7B2;
+            transition: transform 0.1s;
+            text-decoration: none;
+            z-index: 20;
+        }
+        .index-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 0 0 #FFB7B2;
+        }
+
         .ctrl-btn {
             background: var(--btn-color);
             border: 2px solid #fff;
@@ -271,6 +293,7 @@
 
     <!-- Game Container -->
     <div id="game-container">
+        <a href="index.html" class="index-btn" title="ホームに戻る">🏠 ホーム</a>
         
         <!-- Heads Up Display -->
         <div id="hud" class="hidden">

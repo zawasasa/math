@@ -63,6 +63,32 @@
             overflow: hidden;
         }
 
+        /* インデックスボタン（ホームに戻る） */
+        .index-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--secondary);
+            border: 2px solid var(--text);
+            color: var(--text);
+            border-radius: 12px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            font-family: var(--font-main);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+            z-index: 50;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .index-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
         /* リセットボタン（おうちボタン） */
         .home-btn {
             position: absolute;
@@ -319,6 +345,7 @@
     <div class="main-wrapper">
         <!-- メインゲームエリア -->
         <div class="game-container">
+            <a href="index.html" class="index-btn" title="ホームに戻る">🏠 ホーム</a>
             <!-- リセットボタン（右上に配置） -->
             <button class="home-btn" onclick="confirmReset()" title="タイトルに戻る">🏠</button>
 
