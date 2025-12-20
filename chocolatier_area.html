@@ -999,15 +999,20 @@
                 ctx.fill();
                 ctx.stroke();
 
+                // 底辺の寸法
                 drawDimension(ctx, centerX - basePixels/2, centerY + heightPixels/2 + 20,
                              centerX + basePixels/2, centerY + heightPixels/2 + 20,
-                             `底辺 ${problem.base}cm`);
+                             problem.base, false);
+                // 高さの寸法（垂直マーク付き）
                 drawDimension(ctx, centerX - basePixels/2 - 40, centerY + heightPixels/2,
                              centerX - basePixels/2 - 40, centerY - heightPixels/2,
-                             `高さ ${problem.height}cm`, true);
+                             problem.height, true);
+                // 垂直マークを底辺と高さの交点に描画
+                drawPerpendicularMark(ctx, centerX - basePixels/2, centerY + heightPixels/2);
+                // 斜辺（引っかけ）
                 drawDimension(ctx, centerX + basePixels/2, centerY + heightPixels/2,
                              centerX + basePixels/2 + slant, centerY - heightPixels/2,
-                             `斜辺 ${problem.side}cm`, false, '#ff6b6b');
+                             problem.side, false, '#ff6b6b');
 
             } else if (problem.type === 'triangle') {
                 const basePixels = problem.base * 10;
@@ -1020,12 +1025,16 @@
                 ctx.fill();
                 ctx.stroke();
 
+                // 底辺の寸法
                 drawDimension(ctx, centerX - basePixels/2, centerY + heightPixels/2 + 20,
                              centerX + basePixels/2, centerY + heightPixels/2 + 20,
-                             `底辺 ${problem.base}cm`);
+                             problem.base, false);
+                // 高さの寸法（垂直マーク付き）
                 drawDimension(ctx, centerX + 5, centerY + heightPixels/2,
                              centerX + 5, centerY - heightPixels/2,
-                             `高さ ${problem.height}cm`, true);
+                             problem.height, true);
+                // 垂直マークを底辺と高さの交点に描画
+                drawPerpendicularMark(ctx, centerX, centerY + heightPixels/2);
 
             } else if (problem.type === 'trapezoid') {
                 const upperPixels = problem.upperBase * 10;
@@ -1040,51 +1049,105 @@
                 ctx.fill();
                 ctx.stroke();
 
+                // 上底の寸法
                 drawDimension(ctx, centerX - upperPixels/2, centerY - heightPixels/2 - 20,
                              centerX + upperPixels/2, centerY - heightPixels/2 - 20,
-                             `上底 ${problem.upperBase}cm`);
+                             problem.upperBase, false);
+                // 下底の寸法
                 drawDimension(ctx, centerX - lowerPixels/2, centerY + heightPixels/2 + 20,
                              centerX + lowerPixels/2, centerY + heightPixels/2 + 20,
-                             `下底 ${problem.lowerBase}cm`);
+                             problem.lowerBase, false);
+                // 高さの寸法（垂直マーク付き）
                 drawDimension(ctx, centerX - lowerPixels/2 - 40, centerY + heightPixels/2,
                              centerX - lowerPixels/2 - 40, centerY - heightPixels/2,
-                             `高さ ${problem.height}cm`, true);
+                             problem.height, true);
+                // 垂直マークを底辺と高さの交点に描画
+                drawPerpendicularMark(ctx, centerX - lowerPixels/2, centerY + heightPixels/2);
             }
 
             ctx.restore();
         }
 
         // 寸法線を描画
-        function drawDimension(ctx, x1, y1, x2, y2, text, vertical = false, color = '#ffd700') {
+        function drawDimension(ctx, x1, y1, x2, y2, value, isHeight = false, color = '#ffd700') {
             ctx.save();
             ctx.strokeStyle = color;
             ctx.fillStyle = color;
-            ctx.lineWidth = 2;
+            ctx.lineWidth = 3;
 
+            // 寸法線
             ctx.beginPath();
             ctx.moveTo(x1, y1);
             ctx.lineTo(x2, y2);
             ctx.stroke();
 
+            // 矢印
             const angle = Math.atan2(y2 - y1, x2 - x1);
             drawArrow(ctx, x1, y1, angle + Math.PI);
             drawArrow(ctx, x2, y2, angle);
 
-            ctx.font = 'bold 14px sans-serif';
+            // 数値表示（大きく）
+            ctx.font = 'bold 18px sans-serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             const midX = (x1 + x2) / 2;
             const midY = (y1 + y2) / 2;
 
-            if (vertical) {
+            // 背景を追加して見やすく
+            const text = `${value}cm`;
+            const metrics = ctx.measureText(text);
+            const padding = 6;
+            const bgWidth = metrics.width + padding * 2;
+            const bgHeight = 24;
+
+            if (isHeight) {
+                // 垂直な寸法（高さ）
                 ctx.save();
-                ctx.translate(midX - 15, midY);
+                ctx.translate(midX - 25, midY);
                 ctx.rotate(-Math.PI / 2);
+
+                // 背景
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.fillRect(-bgWidth/2, -bgHeight/2, bgWidth, bgHeight);
+
+                // テキスト
+                ctx.fillStyle = color;
                 ctx.fillText(text, 0, 0);
                 ctx.restore();
             } else {
-                ctx.fillText(text, midX, midY - 10);
+                // 水平な寸法（底辺）
+                // 背景
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                ctx.fillRect(midX - bgWidth/2, midY - 15 - bgHeight/2, bgWidth, bgHeight);
+
+                // テキスト
+                ctx.fillStyle = color;
+                ctx.fillText(text, midX, midY - 15);
             }
+
+            ctx.restore();
+        }
+
+        // 垂直マークを描画（底辺と高さの交点に）
+        function drawPerpendicularMark(ctx, x, y) {
+            ctx.save();
+            const size = 15;
+
+            // 垂直マークの位置
+            ctx.translate(x, y);
+            ctx.strokeStyle = '#ffd700';
+            ctx.lineWidth = 3;
+
+            // 直角記号（小さな正方形）
+            ctx.beginPath();
+            ctx.moveTo(-size, 0);
+            ctx.lineTo(-size, -size);
+            ctx.lineTo(0, -size);
+            ctx.stroke();
+
+            // 四角を塗りつぶして強調
+            ctx.fillStyle = 'rgba(255, 215, 0, 0.5)';
+            ctx.fillRect(-size, -size, size, size);
 
             ctx.restore();
         }
