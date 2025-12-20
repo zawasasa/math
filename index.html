@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ささっと算数アプリ。学ぼう</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=M+PLUS+Rounded+1c:wght@800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #FF9AA2;
+            --yellow: #FFDAC1;
+            --light-green: #E2F0CB;
+            --light-blue: #B5EAD7;
+            --text: #6B5B95;
+            --white: #FFFFF0;
+            --font-main: 'M PLUS Rounded 1c', sans-serif;
+            --font-title: 'Kiwi Maru', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: linear-gradient(135deg, var(--light-green) 0%, var(--light-blue) 100%);
+            background-image: 
+                radial-gradient(rgba(255,255,255,0.3) 15%, transparent 16%),
+                radial-gradient(rgba(255,255,255,0.3) 15%, transparent 16%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* ヘッダー */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header-image {
+            width: 100%;
+            max-width: 800px;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+        }
+
+        .main-title {
+            font-family: var(--font-title);
+            font-size: 2.5rem;
+            color: var(--text);
+            text-shadow: 2px 2px 0 var(--white);
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--text);
+            opacity: 0.8;
+        }
+
+        /* ゲームカードグリッド */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .game-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, var(--orange), var(--yellow), var(--light-green), var(--light-blue));
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-color: var(--orange);
+        }
+
+        .game-icon {
+            font-size: 4rem;
+            text-align: center;
+            margin-bottom: 15px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .game-title {
+            font-family: var(--font-title);
+            font-size: 1.8rem;
+            color: var(--text);
+            text-align: center;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .game-description {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: var(--text);
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .game-features {
+            list-style: none;
+            margin-bottom: 25px;
+        }
+
+        .game-features li {
+            font-size: 0.9rem;
+            color: var(--text);
+            padding: 5px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .game-features li::before {
+            content: '✨';
+            position: absolute;
+            left: 0;
+        }
+
+        .play-button {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--orange) 0%, #FF8A95 100%);
+            color: white;
+            text-align: center;
+            padding: 15px 30px;
+            border-radius: 15px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 0 4px 0 #E07A86;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+        }
+
+        .play-button:hover {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #E07A86;
+        }
+
+        .play-button:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        /* フッター */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 20px;
+            color: var(--text);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .main-title {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .game-card {
+                padding: 20px;
+            }
+
+            .game-title {
+                font-size: 1.5rem;
+            }
+
+            .game-icon {
+                font-size: 3rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 1.5rem;
+            }
+
+            .game-card {
+                padding: 15px;
+            }
+
+            .game-title {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <img src="Gemini_Generated_Image_sehumwsehumwsehu.png" alt="楽しく学ぶ算数アプリ" class="header-image">
+            <h1 class="main-title">ささっと算数アプリ。学ぼう</h1>
+            <p class="subtitle">小学生の子どもたちが楽しく遊びながら算数を学べるアプリ集</p>
+        </header>
+
+        <div class="games-grid">
+            <!-- ゲーム1: パーセントマスター -->
+            <div class="game-card">
+                <div class="game-icon">🛍️</div>
+                <h2 class="game-title">パーセントマスター！<br>お買い物クエスト</h2>
+                <p class="game-description">
+                    お買い物をしながら、割合とパーセントをマスターしよう！レベルアップするとお店が変わって、どんどん難しくなっていくよ。
+                </p>
+                <ul class="game-features">
+                    <li>レベル1から10まで、段階的に学習</li>
+                    <li>視覚的なタイル図と数直線図で理解を深める</li>
+                    <li>間違えた時の詳しい解説でしっかり学べる</li>
+                    <li>バッジコレクションで達成感を味わえる</li>
+                    <li>連続正解でコンボボーナスがもらえる</li>
+                    <li>手書き筆算コーナーで計算の練習もできる</li>
+                </ul>
+                <a href="wariai_percent.html" class="play-button">🎮 あそぶ</a>
+            </div>
+
+            <!-- ゲーム2: 公倍数パニック -->
+            <div class="game-card">
+                <div class="game-icon">⭐</div>
+                <h2 class="game-title">公倍数パニック！<br>キラキラ星あつめ</h2>
+                <p class="game-description">
+                    流れてくる星をタッチして、2つの数の公倍数を見つけよう！スピード感あふれるゲームで、公倍数の計算が得意になるよ。
+                </p>
+                <ul class="game-features">
+                    <li>動きのある星をタッチして楽しく学習</li>
+                    <li>公倍数の概念を直感的に理解できる</li>
+                    <li>スコアを競ってモチベーションアップ</li>
+                    <li>時間制限で集中力も鍛えられる</li>
+                </ul>
+                <a href="koubaisuu_.html" class="play-button">🎮 あそぶ</a>
+            </div>
+
+            <!-- ゲーム3: もぐもぐ約分マスター -->
+            <div class="game-card">
+                <div class="game-icon">🐻</div>
+                <h2 class="game-title">もぐもぐ約分マスター</h2>
+                <p class="game-description">
+                    かわいいクマと一緒に、分数の約分をマスターしよう！レベルアップで音楽や背景が変わって、楽しく繰り返し学習できるよ。
+                </p>
+                <ul class="game-features">
+                    <li>レベル1から10まで、段階的に学習</li>
+                    <li>バッジコレクションで成長を実感</li>
+                    <li>タイムアタックモードでスピードも鍛えられる</li>
+                    <li>かわいいキャラクターと一緒に楽しく学習</li>
+                    <li>レベルアップで音楽や背景が変わる</li>
+                </ul>
+                <a href="mogmogu_yakubun_donut.html" class="play-button">🎮 あそぶ</a>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <p>🎓 楽しく学んで、算数が得意になろう！ 🎓</p>
+        </footer>
+    </div>
+</body>
+</html>
+
