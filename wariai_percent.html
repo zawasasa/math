@@ -1,0 +1,2322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>パーセントマスター！お買い物クエスト</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=M+PLUS+Rounded+1c:wght@800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF9AA2;
+            --secondary: #B5EAD7;
+            --accent: #FFDAC1;
+            --text: #6B5B95;
+            --white: #FFFFF0;
+            --badge-bg: rgba(255, 255, 255, 0.6);
+            --font-main: 'M PLUS Rounded 1c', sans-serif;
+        }
+
+        * { box-sizing: border-box; touch-action: manipulation; }
+
+        body {
+            font-family: var(--font-main);
+            background-color: #E2F0CB;
+            background-image: radial-gradient(rgba(255,255,255,0.4) 15%, transparent 16%),
+                              radial-gradient(rgba(255,255,255,0.4) 15%, transparent 16%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            height: 100dvh;
+            color: var(--text);
+            overflow: hidden;
+            font-size: 16px;
+            transition: background-color 1s ease;
+        }
+
+        .main-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: stretch;
+            gap: 10px;
+            width: 98%;
+            max-width: 600px;
+            height: 96vh; 
+            max-height: 700px;
+        }
+
+        /* 左側のバッジエリア */
+        .badge-sidebar {
+            width: 55px;
+            background: var(--badge-bg);
+            border: 4px solid var(--white);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 5px;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+        }
+
+        .badge-title {
+            writing-mode: vertical-rl;
+            font-family: 'Kiwi Maru', serif;
+            font-size: 0.75rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .badge-slot {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        @keyframes pop-in {
+            0% { transform: scale(0) rotate(-180deg); }
+            60% { transform: scale(1.4) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        .badge-new {
+            animation: pop-in 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: #FFF9C4;
+            border: 2px solid #FFD54F;
+        }
+
+        /* バッジ獲得リボン */
+        .badge-ribbon {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 1000;
+            background: linear-gradient(135deg, #FFD54F 0%, #FFC107 50%, #FFD54F 100%);
+            padding: 20px 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3), 0 0 0 4px rgba(255,255,255,0.5);
+            text-align: center;
+            font-family: 'Kiwi Maru', serif;
+            animation: ribbonShow 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .badge-ribbon::before,
+        .badge-ribbon::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+
+        .badge-ribbon::before {
+            top: -15px;
+            left: 20px;
+            border-width: 15px 20px 0 20px;
+            border-color: #FFC107 transparent transparent transparent;
+        }
+
+        .badge-ribbon::after {
+            top: -15px;
+            right: 20px;
+            border-width: 15px 20px 0 20px;
+            border-color: #FFC107 transparent transparent transparent;
+        }
+
+        .badge-ribbon-title {
+            font-size: 0.9rem;
+            color: #333;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .badge-ribbon-name {
+            font-size: 1.3rem;
+            color: #E65100;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255,255,255,0.5);
+            margin: 5px 0;
+        }
+
+        .badge-ribbon-icon {
+            font-size: 2rem;
+            margin: 5px 0;
+        }
+
+        @keyframes ribbonShow {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(-180deg);
+                opacity: 0;
+            }
+            60% {
+                transform: translate(-50%, -50%) scale(1.2) rotate(10deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes ribbonHide {
+            0% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(0.8) rotate(180deg);
+                opacity: 0;
+            }
+        }
+
+        .badge-ribbon.hiding {
+            animation: ribbonHide 0.4s ease-in forwards;
+        }
+
+        .game-container {
+            background: var(--white);
+            flex: 1;
+            border-radius: 20px;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+            padding: 5px 12px;
+            text-align: center;
+            position: relative;
+            border: 4px solid var(--white);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow: hidden;
+        }
+
+        .home-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #fff;
+            border: 2px solid var(--text);
+            color: var(--text);
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+            z-index: 50;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-bottom: 3px;
+        }
+        .home-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .calc-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: var(--secondary);
+            border: 2px solid var(--text);
+            color: var(--text);
+            border-radius: 12px;
+            padding: 6px 12px;
+            font-size: 0.85rem;
+            font-family: var(--font-main);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+            z-index: 50;
+            display: none;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+        .calc-btn.show {
+            display: flex;
+        }
+        .calc-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        /* 計算パネル */
+        .calc-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 340px;
+            height: 100vh;
+            background: var(--white);
+            border-left: 4px solid var(--primary);
+            box-shadow: -4px 0 10px rgba(0,0,0,0.2);
+            z-index: 200;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+        }
+
+        .calc-panel.closed {
+            right: -350px;
+        }
+
+        .calc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .calc-title {
+            font-family: 'Kiwi Maru', serif;
+            font-size: 1rem;
+            color: var(--primary);
+            font-weight: bold;
+            line-height: 1.3;
+        }
+
+        .calc-description {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 5px;
+            padding: 8px;
+            background: var(--accent);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .calc-close-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 2px 0 #E07A86;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .calc-close-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .calc-canvas-container {
+            flex: 1;
+            min-height: 400px;
+            background: #fff;
+            border: 3px solid var(--accent);
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #calc-canvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            cursor: crosshair;
+            background: #fafafa;
+            border-radius: 10px;
+        }
+
+        .calc-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .calc-control-btn {
+            flex: 1;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            box-shadow: 0 3px 0 #E07A86;
+        }
+        .calc-control-btn:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+        .calc-control-btn.clear {
+            background: #FF6B6B;
+            box-shadow: 0 3px 0 #E55555;
+        }
+
+        .badge-sidebar {
+            width: 55px;
+            background: var(--badge-bg);
+            border: 4px solid var(--white);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 5px;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.1);
+            overflow-y: auto;
+            backdrop-filter: blur(5px);
+        }
+
+        .badge-title {
+            writing-mode: vertical-rl;
+            font-family: 'Kiwi Maru', serif;
+            font-size: 0.75rem;
+            color: var(--primary);
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        .badge-slot {
+            width: 36px;
+            height: 36px;
+            background: rgba(255,255,255,0.8);
+            border-radius: 50%;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+
+        @keyframes pop-in {
+            0% { transform: scale(0) rotate(-180deg); }
+            60% { transform: scale(1.4) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+        .badge-new {
+            animation: pop-in 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: #FFF9C4;
+            border: 2px solid #FFD54F;
+        }
+
+        h1 {
+            font-family: 'Kiwi Maru', serif;
+            color: var(--primary);
+            margin: 0;
+            text-shadow: 2px 2px 0 #FFF;
+            font-size: 1rem;
+            flex-shrink: 0;
+            line-height: 1.2;
+            padding-right: 30px;
+            margin-bottom: 2px;
+        }
+
+        .screen {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            height: 100%;
+            width: 100%;
+            padding-top: 2px;
+            gap: 3px;
+        }
+        .hidden { display: none !important; }
+
+        .level-display {
+            background: var(--primary);
+            color: white;
+            padding: 1px 10px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-block;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.1);
+            margin: 2px 0;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            background: var(--accent);
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-weight: bold;
+            font-size: 0.75rem;
+            color: #555;
+            margin: 2px 0;
+            flex-shrink: 0;
+        }
+
+        /* 連続正解コンボ表示 */
+        .combo-display {
+            text-align: center;
+            margin: 2px 0;
+            min-height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .combo-text {
+            font-size: 0.75rem;
+            color: #888;
+            transition: all 0.3s;
+        }
+
+        .combo-text.active {
+            font-size: 1rem;
+            font-weight: bold;
+            color: #FF6B6B;
+            animation: comboPulse 0.5s ease;
+        }
+
+        .combo-count {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 2px 2px 0 #FF8C00;
+            margin: 0 3px;
+            display: inline-block;
+            transform: scale(0);
+            transition: transform 0.3s;
+        }
+
+        .combo-count.show {
+            transform: scale(1);
+            animation: comboBounce 0.5s ease;
+        }
+
+        .combo-bonus {
+            font-size: 0.75rem;
+            color: #4CAF50;
+            font-weight: bold;
+            margin-left: 3px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s;
+        }
+
+        .combo-bonus.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes comboPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        @keyframes comboBounce {
+            0% { transform: scale(0) rotate(-180deg); }
+            50% { transform: scale(1.3) rotate(10deg); }
+            100% { transform: scale(1) rotate(0deg); }
+        }
+
+        .mascot-area {
+            flex-grow: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2rem;
+            min-height: 30px;
+            max-height: 50px;
+            margin: 2px 0;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        .speech-bubble {
+            position: relative;
+            background: var(--secondary);
+            border-radius: 12px;
+            padding: 5px 8px;
+            margin-bottom: 3px;
+            font-size: 0.85rem;
+            color: #333;
+            flex-shrink: 0;
+        }
+        .speech-bubble::after {
+            content: '';
+            position: absolute;
+            top: -5px; left: 50%; transform: translateX(-50%);
+            border-width: 0 5px 5px; border-style: solid; border-color: transparent transparent var(--secondary);
+        }
+
+        .question-area {
+            background: #fff;
+            border-radius: 10px;
+            padding: 5px 8px;
+            margin: 2px 0;
+            border: 2px dashed var(--primary);
+            min-height: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-display {
+            font-size: 1.5rem;
+            margin-bottom: 2px;
+        }
+
+        .price-display {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text);
+            margin: 2px 0;
+        }
+
+        .discount-display {
+            font-size: 1rem;
+            color: #FF6B6B;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .visual-percent {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            margin: 4px 0;
+            padding: 5px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+
+        .percent-label {
+            font-size: 0.85rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .percent-grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 3px;
+            max-width: 220px;
+            padding: 5px;
+            background: #fff;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+        }
+
+        .percent-box {
+            aspect-ratio: 1;
+            background: #e0e0e0;
+            border-radius: 3px;
+            transition: background 0.3s;
+            border: 1px solid #ccc;
+        }
+
+        .percent-box.filled {
+            background: var(--primary);
+            border-color: #E07A86;
+            box-shadow: 0 2px 4px rgba(255, 154, 162, 0.3);
+        }
+
+        .percent-explanation {
+            font-size: 0.75rem;
+            color: #666;
+            text-align: center;
+            padding: 3px 8px;
+            background: var(--accent);
+            border-radius: 6px;
+        }
+
+        /* 数直線図 */
+        .number-line-container {
+            width: 100%;
+            max-width: 220px;
+            margin: 4px 0;
+            padding: 5px;
+            background: #fff;
+            border: 2px solid var(--accent);
+            border-radius: 8px;
+        }
+
+        .number-line {
+            position: relative;
+            width: 100%;
+            height: 40px;
+            margin: 8px 0;
+        }
+
+        .number-line-bar {
+            position: absolute;
+            top: 16px;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        .number-line-filled {
+            position: absolute;
+            top: 16px;
+            left: 0;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 5px 0 0 5px;
+            transition: width 0.5s ease;
+            box-shadow: 0 2px 4px rgba(255, 154, 162, 0.4);
+        }
+
+        .number-line-marker {
+            position: absolute;
+            top: 0;
+            width: 2px;
+            height: 24px;
+            background: #999;
+        }
+
+        .number-line-marker.major {
+            height: 32px;
+            background: #666;
+            font-weight: bold;
+        }
+
+        .number-line-label {
+            position: absolute;
+            top: -14px;
+            font-size: 0.65rem;
+            color: #666;
+            transform: translateX(-50%);
+            font-weight: bold;
+        }
+
+        .number-line-current {
+            position: absolute;
+            top: 28px;
+            transform: translateX(-50%);
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: var(--primary);
+            background: #fff;
+            padding: 1px 4px;
+            border-radius: 3px;
+            border: 2px solid var(--primary);
+            white-space: nowrap;
+        }
+
+        .number-line-arrow {
+            position: absolute;
+            top: 26px;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid var(--primary);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin-bottom: 0;
+            margin-top: 3px;
+            flex-shrink: 0;
+        }
+
+        .option-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0;
+            font-size: 1rem;
+            border-radius: 10px;
+            font-family: var(--font-main);
+            cursor: pointer;
+            box-shadow: 0 3px 0 #E07A86;
+            transition: transform 0.1s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 42px;
+        }
+        .option-btn:active { transform: translateY(3px); box-shadow: none; }
+        .option-btn.cant-do { background: #C7CEEA; box-shadow: 0 3px 0 #9AA3C6; font-size: 0.9rem; }
+
+        .feedback {
+            position: absolute;
+            top: 45%; left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 5rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 0 #FFF;
+            pointer-events: none;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 100;
+        }
+        .feedback.show { transform: translate(-50%, -50%) scale(1); }
+        .correct { color: #FF6B6B; }
+        .wrong { color: #6B5B95; font-size: 4rem; }
+
+        /* 間違い説明の表示 */
+        .mistake-explanation {
+            position: fixed;
+            top: 15%;
+            left: 50%;
+            transform: translate(-50%, 0) scale(0);
+            background: linear-gradient(135deg, #FFF9C4 0%, #FFE082 100%);
+            border: 3px solid #FFD54F;
+            border-radius: 20px;
+            padding: 20px 25px;
+            max-width: 85%;
+            max-width: min(85%, 400px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3), 0 0 0 4px rgba(255,255,255,0.5);
+            z-index: 200;
+            font-family: 'Kiwi Maru', serif;
+            text-align: center;
+            white-space: pre-line;
+            line-height: 1.6;
+            animation: explanationShow 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .mistake-explanation.show {
+            animation: explanationShow 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        .mistake-explanation.hiding {
+            animation: explanationHide 0.3s ease-in forwards;
+        }
+
+        .mistake-explanation-title {
+            font-size: 1.1rem;
+            color: #E65100;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .mistake-explanation-text {
+            font-size: 0.95rem;
+            color: #333;
+            margin: 0;
+        }
+
+        .mistake-explanation-text strong {
+            color: #E65100;
+            font-weight: bold;
+            font-size: 1.05rem;
+            display: block;
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 8px;
+            border-left: 3px solid #FFD54F;
+        }
+
+        .formula-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 8px;
+            padding: 12px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 8px;
+            border-left: 3px solid #FFD54F;
+        }
+
+        .formula-title {
+            color: #E65100;
+            font-weight: bold;
+            font-size: 1.05rem;
+            margin-bottom: 8px;
+        }
+
+        .formula-line {
+            display: flex;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+            font-size: 1rem;
+            color: #E65100;
+            line-height: 1.8;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .formula-left {
+            display: inline-block;
+        }
+
+        .formula-right {
+            display: inline-block;
+        }
+
+        .formula-line .equals {
+            margin: 0 8px;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .formula-line[data-formula-continuation] {
+            display: flex;
+            align-items: center;
+        }
+
+        .formula-line[data-formula-continuation] .equals {
+            margin-left: 0;
+            margin-right: 8px;
+        }
+
+        @keyframes explanationShow {
+            0% {
+                transform: translate(-50%, -20px) scale(0) rotate(-5deg);
+                opacity: 0;
+            }
+            60% {
+                transform: translate(-50%, 0) scale(1.05) rotate(2deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, 0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+        }
+
+        @keyframes explanationHide {
+            0% {
+                transform: translate(-50%, 0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -20px) scale(0.9) rotate(-5deg);
+                opacity: 0;
+            }
+        }
+
+        .explanation-next-btn {
+            margin-top: 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 10px 25px;
+            font-size: 1rem;
+            font-family: var(--font-main);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #E07A86;
+            transition: all 0.2s;
+        }
+
+        .explanation-next-btn:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
+        .explanation-next-btn:hover {
+            background: #FF8A95;
+        }
+
+        .start-btn, .retry-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 0;
+            font-size: 1.2rem;
+            border-radius: 25px;
+            font-family: var(--font-main);
+            font-weight: bold;
+            box-shadow: 0 4px 0 #E07A86;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 5px;
+        }
+        .start-btn:active, .retry-btn:active { transform: translateY(4px); box-shadow: none; }
+
+        .mode-select {
+            background: #f0f0f0;
+            padding: 8px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: var(--secondary); }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .clear-title {
+            font-size: 1.8rem;
+            color: #FFD700;
+            text-shadow: 2px 2px 0 #E65100;
+            font-family: 'Kiwi Maru';
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.1);} }
+
+        @media (max-height: 750px) {
+            .game-container { padding: 3px 8px; }
+            h1 { font-size: 0.9rem; margin-bottom: 1px; }
+            .mascot-area { font-size: 1.8rem; height: auto; min-height: 25px; max-height: 40px; margin: 1px 0; }
+            .speech-bubble { padding: 4px 6px; margin-bottom: 2px; font-size: 0.8rem; }
+            .question-area { min-height: 50px; padding: 4px 6px; margin: 1px 0; }
+            .product-display { font-size: 1.3rem; margin-bottom: 1px; }
+            .price-display { font-size: 1rem; margin: 1px 0; }
+            .option-btn { height: 38px; font-size: 0.95rem; }
+            .header-info { padding: 2px 6px; font-size: 0.7rem; margin: 1px 0;}
+            .level-display { font-size: 0.8rem; padding: 1px 8px; margin: 1px 0; }
+            .calc-canvas-container { min-height: 300px; }
+            .percent-grid { max-width: 180px; gap: 2px; }
+            .percent-label { font-size: 0.8rem; }
+            .percent-explanation { font-size: 0.7rem; padding: 2px 6px; }
+            .visual-percent { gap: 3px; margin: 3px 0; padding: 4px; }
+            .number-line-container { max-width: 200px; padding: 4px; margin: 3px 0; }
+            .number-line { height: 35px; margin: 6px 0; }
+            .number-line-label { font-size: 0.6rem; top: -12px; }
+            .number-line-current { font-size: 0.75rem; padding: 1px 3px; top: 24px; }
+            .number-line-arrow { top: 22px; border-left-width: 4px; border-right-width: 4px; border-top-width: 5px; }
+            .number-line-bar { top: 14px; height: 8px; }
+            .number-line-filled { top: 14px; height: 8px; }
+            .combo-text { font-size: 0.7rem; }
+            .combo-text.active { font-size: 0.9rem; }
+            .combo-count { font-size: 1.1rem; }
+            .combo-bonus { font-size: 0.7rem; }
+            .combo-display { margin: 1px 0; min-height: 18px; }
+            .badge-sidebar { width: 45px; padding: 8px 4px; }
+            .badge-title { font-size: 0.65rem; }
+            .badge-slot { width: 30px; height: 30px; font-size: 1rem; margin-bottom: 4px; }
+            .badge-ribbon { padding: 15px 30px; }
+            .badge-ribbon-title { font-size: 0.8rem; }
+            .badge-ribbon-name { font-size: 1.1rem; }
+            .badge-ribbon-icon { font-size: 1.6rem; }
+            .mistake-explanation { 
+                padding: 15px 20px; 
+                max-width: 90%; 
+                top: 12%;
+            }
+            .mistake-explanation-title { font-size: 1rem; margin-bottom: 8px; }
+            .mistake-explanation-text { font-size: 0.85rem; }
+            .formula-container { padding: 10px; }
+            .formula-title { font-size: 0.95rem; margin-bottom: 6px; }
+            .formula-line { font-size: 0.9rem; }
+            .explanation-next-btn { 
+                padding: 8px 20px; 
+                font-size: 0.9rem; 
+                margin-top: 12px; 
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calc-panel {
+                width: 90vw;
+            }
+            .calc-panel.closed {
+                right: -90vw;
+            }
+            .badge-sidebar {
+                width: 40px;
+                padding: 6px 3px;
+            }
+            .badge-title {
+                font-size: 0.6rem;
+            }
+            .badge-slot {
+                width: 28px;
+                height: 28px;
+                font-size: 0.9rem;
+                margin-bottom: 3px;
+            }
+            .badge-ribbon {
+                padding: 12px 25px;
+                max-width: 90vw;
+            }
+            .badge-ribbon-title {
+                font-size: 0.75rem;
+            }
+            .badge-ribbon-name {
+                font-size: 1rem;
+            }
+            .badge-ribbon-icon {
+                font-size: 1.4rem;
+            }
+            .mistake-explanation {
+                padding: 12px 18px;
+                max-width: 95%;
+                top: 10%;
+            }
+            .mistake-explanation-title {
+                font-size: 0.9rem;
+                margin-bottom: 6px;
+            }
+            .mistake-explanation-text {
+                font-size: 0.8rem;
+            }
+            .formula-container { padding: 8px; }
+            .formula-title { font-size: 0.9rem; margin-bottom: 5px; }
+            .formula-line { font-size: 0.85rem; }
+            .explanation-next-btn {
+                padding: 8px 18px;
+                font-size: 0.85rem;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-wrapper">
+        <!-- 左側のバッジエリア -->
+        <div class="badge-sidebar" id="badge-container">
+            <div class="badge-title">コレクション</div>
+        </div>
+        
+        <!-- メインゲームエリア -->
+        <div class="game-container">
+            <button class="home-btn" onclick="confirmReset()" title="タイトルに戻る">🏠</button>
+
+            <h1>🛍️ パーセントマスター！お買い物クエスト</h1>
+
+            <!-- タイトル画面 -->
+            <div id="title-screen" class="screen">
+                <div style="flex-grow:1; display:flex; flex-direction:column; justify-content:center;">
+                    <div style="font-size:3.5rem; margin-bottom:5px;">🐱</div>
+                    <div class="speech-bubble">
+                        お買い物しながら<br>
+                        割合とパーセントを<br>
+                        マスターしよう！<br>
+                        レベルアップで<br>
+                        お店がかわるよ✨
+                    </div>
+                    
+                    <div class="mode-select">
+                        <label style="display:flex; align-items:center; justify-content:space-between;">
+                            <span>⏱️ タイムアタック(60秒)</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="mode-toggle">
+                                <span class="slider"></span>
+                            </label>
+                        </label>
+                        <label style="display:flex; align-items:center; justify-content:space-between; margin-top:8px;">
+                            <span>💡 解説モード（間違いの説明を表示）</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="explanation-toggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </label>
+                    </div>
+                </div>
+                <button class="start-btn" onclick="startGame()">スタート！</button>
+            </div>
+
+            <!-- ゲームプレイ画面 -->
+            <div id="game-screen" class="screen hidden">
+                <button class="calc-btn" id="calc-open-btn" onclick="toggleCalcPanel()" title="筆算コーナーを開く">✏️ 筆算コーナー</button>
+                <div style="text-align:center;">
+                    <div class="level-display">Lv.<span id="level-num">1</span></div>
+                </div>
+                <div class="header-info">
+                    <span>スコア: <span id="score">0</span></span>
+                    <span id="timer-display" style="color:var(--primary);">--</span>
+                    <span>あと: <span id="to-next-level">5</span></span>
+                </div>
+
+                <div class="combo-display">
+                    <span class="combo-text" id="combo-text">連続正解: </span>
+                    <span class="combo-count" id="combo-count">0</span>
+                    <span class="combo-text">コンボ</span>
+                    <span class="combo-bonus" id="combo-bonus"></span>
+                </div>
+
+                <div class="mascot-area" id="mascot">🐱</div>
+
+                <div class="speech-bubble">
+                    <span id="hint-text">この商品、いくらになる？</span>
+                    <div class="question-area" id="question-area"></div>
+                </div>
+
+                <div class="options-grid" id="options"></div>
+            </div>
+
+            <!-- ゲームオーバー画面 -->
+            <div id="result-screen" class="screen hidden">
+                <div style="flex-grow:1; display:flex; flex-direction:column; justify-content:center;">
+                    <div class="mascot-area" id="result-mascot">😢</div>
+                    <div class="speech-bubble">
+                        <div style="font-size:1.1rem; margin-bottom:5px;">じかんぎれ！</div>
+                        スコア: <span style="font-size:1.5rem; color:#FF6B6B; font-weight:bold;" id="final-score">0</span><br>
+                        レベル: <span style="font-size:1.2rem; color:#6B5B95; font-weight:bold;" id="final-level">1</span>
+                    </div>
+                </div>
+                <button class="retry-btn" onclick="toTitle()">タイトルにもどる</button>
+            </div>
+
+            <!-- 全クリ画面（Level 10達成） -->
+            <div id="clear-screen" class="screen hidden">
+                <div style="flex-grow:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                    <div class="clear-title">ALL CLEAR!!</div>
+                    <div style="font-size:4rem; margin:5px 0;">👑</div>
+                    <div class="speech-bubble" style="background:#FFF9C4;">
+                        <div style="font-size:1rem; font-weight:bold; color:#E65100;">おめでとう！</div>
+                        あなたは<br>
+                        パーセントマスターです！<br>
+                        さいごのスコア: <span id="clear-score" style="font-size:1.4rem; color:#FF6B6B;"></span>
+                    </div>
+                </div>
+                <button class="retry-btn" onclick="toTitle()">さいしょからあそぶ</button>
+            </div>
+
+            <div id="feedback-msg" class="feedback">⭕️</div>
+        </div>
+
+        <!-- 右側のバッジエリア -->
+        <div class="badge-sidebar" id="badge-container">
+            <div class="badge-title">コレクション</div>
+        </div>
+    </div>
+
+    <!-- 計算パネル -->
+    <div id="calc-panel" class="calc-panel">
+        <div class="calc-header">
+            <div>
+                <div class="calc-title">✏️ 筆算コーナーはこちら</div>
+                <div class="calc-description">ここで計算してね！</div>
+            </div>
+            <button class="calc-close-btn" onclick="toggleCalcPanel()">×</button>
+        </div>
+        <div class="calc-canvas-container">
+            <canvas id="calc-canvas"></canvas>
+        </div>
+        <div class="calc-controls">
+            <button class="calc-control-btn clear" onclick="clearCanvas()">🗑️ 消す</button>
+            <button class="calc-control-btn" onclick="toggleCalcPanel()">閉じる</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 音声関連 ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx;
+        function initAudio() {
+            if (!audioCtx) audioCtx = new AudioContext();
+            else if (audioCtx.state === 'suspended') audioCtx.resume();
+        }
+        
+        function playSound(type) {
+            if (!audioCtx) return;
+            const now = audioCtx.currentTime;
+            const gainNode = audioCtx.createGain();
+            gainNode.connect(audioCtx.destination);
+
+            if (type === 'correct') {
+                const osc = audioCtx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(783.99, now + 0.1);
+                osc.connect(gainNode);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+                osc.start(); osc.stop(now + 0.3);
+
+            } else if (type === 'levelup') {
+                const freqs = [523.25, 659.25, 783.99, 1046.50, 1318.51, 1567.98, 2093.00];
+                freqs.forEach((f, i) => {
+                    const osc = audioCtx.createOscillator();
+                    osc.type = i % 2 === 0 ? 'sine' : 'triangle';
+                    osc.frequency.setValueAtTime(f, now + i * 0.08);
+                    osc.connect(gainNode);
+                    osc.start();
+                    osc.stop(now + i * 0.08 + 0.3);
+                });
+                gainNode.gain.setValueAtTime(0.05, now);
+                gainNode.gain.linearRampToValueAtTime(0, now + 1.0);
+
+            } else if (type === 'clear') {
+                const freqs = [523.25, 523.25, 523.25, 659.25, 783.99, 659.25, 783.99, 1046.50];
+                const times = [0, 0.2, 0.4, 0.6, 0.8, 1.2, 1.4, 1.6];
+                freqs.forEach((f, i) => {
+                    const osc = audioCtx.createOscillator();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(f, now + times[i]);
+                    osc.connect(gainNode);
+                    osc.start();
+                    osc.stop(now + times[i] + 0.2);
+                });
+                gainNode.gain.setValueAtTime(0.05, now);
+
+            } else {
+                const osc = audioCtx.createOscillator();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, now);
+                osc.connect(gainNode);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(); osc.stop(now + 0.2);
+            }
+        }
+
+        // --- ゲーム定数・変数 ---
+        const bgColors = [
+            "#E2F0CB", "#E2F0CB", 
+            "#FFDAC1", "#FFDAC1", 
+            "#C7CEEA", "#C7CEEA", 
+            "#2C3E50", "#2C3E50", 
+            "#FFF59D", "#FFF59D"
+        ];
+        const textColors = [
+            "#6B5B95", "#6B5B95", "#6B5B95", "#6B5B95", "#6B5B95", "#6B5B95", 
+            "#FFFFFF", "#FFFFFF", "#6B5B95", "#6B5B95"
+        ];
+        
+        const badges = ['🛍️', '💰', '🎯', '📊', '🏆', '⭐', '💎', '🌟', '👑', '🎊'];
+        const badgeNames = [
+            'ショッピングマスター',
+            'お金の達人',
+            '計算の名人',
+            'データ分析家',
+            'チャンピオン',
+            'スター獲得者',
+            'ダイヤモンド級',
+            'スーパースター',
+            'キング',
+            'パーフェクト'
+        ];
+        const products = ['🍎', '🍌', '🍇', '🍊', '🥕', '🥖', '🍰', '🍩', '🍪', '🍭'];
+        const mascots = ['🐱', '🐶', '🐰', '🐼', '🐻', '🦊'];
+
+        let currentScore = 0;
+        let currentLevel = 1;
+        let correctInLevel = 0;
+        const requiredForLevelUp = 5;
+        let currentQuestion = {};
+        let isTimeAttack = false;
+        let timeLeft = 60;
+        let timerInterval = null;
+        let comboCount = 0; // 連続正解数
+
+        // --- DOM要素 ---
+        const titleScreen = document.getElementById('title-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const clearScreen = document.getElementById('clear-screen');
+        const modeToggle = document.getElementById('mode-toggle');
+        const explanationToggle = document.getElementById('explanation-toggle');
+        
+        const scoreEl = document.getElementById('score');
+        const levelNumEl = document.getElementById('level-num');
+        const toNextLevelEl = document.getElementById('to-next-level');
+        const timerDisplay = document.getElementById('timer-display');
+        const questionArea = document.getElementById('question-area');
+        const optionsEl = document.getElementById('options');
+        const feedbackEl = document.getElementById('feedback-msg');
+        const mascotEl = document.getElementById('mascot');
+        const hintText = document.getElementById('hint-text');
+        const badgeContainer = document.getElementById('badge-container');
+        const calcPanel = document.getElementById('calc-panel');
+        const calcCanvas = document.getElementById('calc-canvas');
+        const calcOpenBtn = document.getElementById('calc-open-btn');
+        const comboCountEl = document.getElementById('combo-count');
+        const comboTextEl = document.getElementById('combo-text');
+        const comboBonusEl = document.getElementById('combo-bonus');
+
+        // --- ヘルパー関数 ---
+        function updateBackground(level) {
+            const idx = Math.min(level - 1, bgColors.length - 1);
+            document.body.style.backgroundColor = bgColors[idx];
+            document.body.style.color = textColors[idx];
+        }
+
+        function updateComboDisplay() {
+            if (comboCount > 0) {
+                comboCountEl.innerText = comboCount;
+                comboCountEl.classList.add('show');
+                comboTextEl.classList.add('active');
+            } else {
+                comboCountEl.classList.remove('show');
+                comboTextEl.classList.remove('active');
+                comboBonusEl.classList.remove('show');
+            }
+        }
+
+        function calculateComboBonus() {
+            // 連続正解数に応じたボーナススコアを計算
+            // 3問連続: +10点、5問連続: +30点、10問連続: +100点、20問連続: +300点
+            if (comboCount >= 20) {
+                return 300;
+            } else if (comboCount >= 10) {
+                return 100;
+            } else if (comboCount >= 5) {
+                return 30;
+            } else if (comboCount >= 3) {
+                return 10;
+            }
+            return 0;
+        }
+
+        function showComboBonus(bonus) {
+            if (bonus > 0) {
+                comboBonusEl.innerText = `+${bonus}点ボーナス！`;
+                comboBonusEl.classList.add('show');
+                setTimeout(() => {
+                    comboBonusEl.classList.remove('show');
+                }, 2000);
+            }
+        }
+
+        function getMistakeExplanation(selected, correctAnswer) {
+            const basePrice = currentQuestion.basePrice;
+            const discountPercent = currentQuestion.discountPercent;
+            const answerUnit = currentQuestion.answerUnit || '円';
+            
+            if (currentLevel <= 5) {
+                // 割引問題
+                const discountAmount = Math.floor(basePrice * discountPercent / 100);
+                const discountDecimal = discountPercent / 100;
+                const correctFormula = `${basePrice} × (1 - ${discountDecimal}) = ${basePrice} × ${(1 - discountDecimal).toFixed(2)} = ${correctAnswer}${answerUnit}`;
+                
+                // 1. 割引額だけを答えてしまった
+                if (selected === discountAmount) {
+                    return `割引額（${discountAmount}${answerUnit}）だけを答えてしまったね。\n支払う金額は「元の値段 - 割引額」で計算するよ！\n\n正しい式: ${correctFormula}`;
+                }
+                
+                // 2. パーセントを足してしまった
+                if (selected === basePrice + discountAmount) {
+                    return `パーセントを足してしまったね。\n割引は「引く」だから、元の値段から割引額を引くよ！\n\n正しい式: ${correctFormula}`;
+                }
+                
+                // 3. 元の値段を答えてしまった
+                if (selected === basePrice) {
+                    return `元の値段をそのまま答えてしまったね。\n${discountPercent}%引きだから、割引額を引く必要があるよ！\n\n正しい式: ${correctFormula}`;
+                }
+                
+                // 4. 似たパーセントと勘違い
+                const similarPercent = discountPercent === 10 ? 20 : discountPercent === 20 ? 10 : discountPercent - 10;
+                const similarAnswer = Math.floor(basePrice * (100 - similarPercent) / 100);
+                if (Math.abs(selected - similarAnswer) <= 5) {
+                    return `${similarPercent}%引きと勘違いしたかな？\n今回は${discountPercent}%引きだから、もう一度計算してみよう！\n\n正しい式: ${correctFormula}`;
+                }
+                
+            } else if (currentLevel <= 8) {
+                // 割合の問題
+                const remaining = basePrice - correctAnswer;
+                const percentDecimal = discountPercent / 100;
+                const correctFormula = `${basePrice} × ${percentDecimal} = ${basePrice} × ${discountPercent} ÷ 100 = ${correctAnswer}${answerUnit}`;
+                
+                // 1. 残りの%を答えてしまった
+                if (selected === remaining) {
+                    return `残りの${100 - discountPercent}%を答えてしまったね。\n聞かれているのは${discountPercent}%の方だよ！\n\n正しい式: ${correctFormula}`;
+                }
+                
+                // 2. 全体の人数を答えてしまった
+                if (selected === basePrice) {
+                    return `全体の人数をそのまま答えてしまったね。\n${discountPercent}%は「全体 × ${discountPercent} ÷ 100」で計算するよ！\n\n正しい式: ${correctFormula}`;
+                }
+                
+                // 3. パーセントとtotalを足してしまった
+                if (selected === basePrice + discountPercent) {
+                    return `パーセントと全体を足してしまったね。\n${discountPercent}%は「全体 × ${discountPercent} ÷ 100」で計算するよ！\n\n正しい式: ${correctFormula}`;
+                }
+                
+                // 4. 似たパーセントと勘違い
+                const similarPercent = discountPercent === 10 ? 20 : discountPercent === 20 ? 30 : discountPercent + 10;
+                const similarAnswer = Math.floor(basePrice * similarPercent / 100);
+                if (Math.abs(selected - similarAnswer) <= 5 && selected !== correctAnswer) {
+                    return `${similarPercent}%と勘違いしたかな？\n今回は${discountPercent}%だから、もう一度計算してみよう！\n\n正しい式: ${correctFormula}`;
+                }
+                
+            } else {
+                // レベル9-10: 複合問題
+                if (answerUnit === '%') {
+                    // 「○個のうち○個は何%？」の問題
+                    const remainingPercent = Math.round((basePrice - discountPercent) * 100 / basePrice);
+                    const correctFormula = `${discountPercent} ÷ ${basePrice} × 100 = ${correctAnswer}%`;
+                    
+                    // 1. 残りの%を答えてしまった
+                    if (selected === remainingPercent) {
+                        return `残りの${remainingPercent}%を答えてしまったね。\n聞かれているのは${discountPercent}個の方の%だよ！\n\n正しい式: ${correctFormula}`;
+                    }
+                    
+                    // 2. 10倍してしまった
+                    if (selected === Math.min(100, correctAnswer * 10)) {
+                        return `10倍してしまったね。\n${discountPercent}個 ÷ ${basePrice}個 × 100 で計算するよ！\n\n正しい式: ${correctFormula}`;
+                    }
+                    
+                    // 3. 個数をそのまま%と答えてしまった
+                    if (selected === discountPercent) {
+                        return `個数（${discountPercent}）をそのまま%と答えてしまったね。\n%は「個数 ÷ 全体 × 100」で計算するよ！\n\n正しい式: ${correctFormula}`;
+                    }
+                    
+                } else {
+                    // 「いくらになる？」の問題（二重割引など）
+                    const discount1 = currentQuestion.discount1 || discountPercent;
+                    const discount2 = currentQuestion.discount2 || 0;
+                    const firstDiscountOnly = Math.floor(basePrice * (100 - discount1) / 100);
+                    const discount1Decimal = discount1 / 100;
+                    const discount2Decimal = discount2 / 100;
+                    const afterFirstDiscount = basePrice * (1 - discount1Decimal);
+                    const correctFormula = `${basePrice} × (1 - ${discount1Decimal}) × (1 - ${discount2Decimal}) = ${basePrice} × ${(1 - discount1Decimal).toFixed(2)} × ${(1 - discount2Decimal).toFixed(2)} = ${correctAnswer}${answerUnit}`;
+                    
+                    // 1. 最初の割引だけを計算してしまった
+                    if (selected === firstDiscountOnly) {
+                        return `最初の${discount1}%引きだけを計算してしまったね。\n${discount2}%引きも続けて計算する必要があるよ！\n\n正しい式: ${correctFormula}`;
+                    }
+                    
+                    // 2. 割引率を足してしまった
+                    const addedDiscount = Math.floor(basePrice * (100 - discount1 - discount2) / 100);
+                    if (selected === addedDiscount) {
+                        return `割引率を足してしまったね。\n二重割引は「最初に${discount1}%引き、その値段からさらに${discount2}%引き」だよ！\n\n正しい式: ${correctFormula}`;
+                    }
+                }
+            }
+            
+            // デフォルトの説明（正しい式を追加）
+            let defaultFormula = '';
+            if (currentLevel <= 5) {
+                const discountDecimal = discountPercent / 100;
+                defaultFormula = `\n\n正しい式: ${basePrice} × (1 - ${discountDecimal}) = ${basePrice} × ${(1 - discountDecimal).toFixed(2)} = ${correctAnswer}${answerUnit}`;
+            } else if (currentLevel <= 8) {
+                const percentDecimal = discountPercent / 100;
+                defaultFormula = `\n\n正しい式: ${basePrice} × ${percentDecimal} = ${basePrice} × ${discountPercent} ÷ 100 = ${correctAnswer}${answerUnit}`;
+            } else {
+                if (answerUnit === '%') {
+                    defaultFormula = `\n\n正しい式: ${discountPercent} ÷ ${basePrice} × 100 = ${correctAnswer}%`;
+                } else {
+                    const discount1 = currentQuestion.discount1 || discountPercent;
+                    const discount2 = currentQuestion.discount2 || 0;
+                    const discount1Decimal = discount1 / 100;
+                    const discount2Decimal = discount2 / 100;
+                    defaultFormula = `\n\n正しい式: ${basePrice} × (1 - ${discount1Decimal}) × (1 - ${discount2Decimal}) = ${correctAnswer}${answerUnit}`;
+                }
+            }
+            return `正解は${correctAnswer}${answerUnit}だよ。\nもう一度考えてみよう！${defaultFormula}`;
+        }
+
+        function createPercentVisual(percent) {
+            const container = document.createElement('div');
+            container.className = 'visual-percent';
+            
+            // パーセンテージラベル
+            const label = document.createElement('div');
+            label.className = 'percent-label';
+            label.innerText = `${percent}%引き`;
+            container.appendChild(label);
+            
+            // 数直線図
+            const numberLineContainer = document.createElement('div');
+            numberLineContainer.className = 'number-line-container';
+            
+            const numberLine = document.createElement('div');
+            numberLine.className = 'number-line';
+            
+            // 背景バー
+            const bar = document.createElement('div');
+            bar.className = 'number-line-bar';
+            numberLine.appendChild(bar);
+            
+            // 塗りつぶし部分（割引部分）
+            const filled = document.createElement('div');
+            filled.className = 'number-line-filled';
+            filled.style.width = `${percent}%`;
+            numberLine.appendChild(filled);
+            
+            // 目盛りとラベル（0, 25, 50, 75, 100）
+            const marks = [0, 25, 50, 75, 100];
+            marks.forEach(value => {
+                const marker = document.createElement('div');
+                marker.className = 'number-line-marker major';
+                marker.style.left = `${value}%`;
+                
+                const labelEl = document.createElement('div');
+                labelEl.className = 'number-line-label';
+                labelEl.innerText = value;
+                if (value === 0) {
+                    labelEl.style.left = '0%';
+                    labelEl.style.transform = 'translateX(0)';
+                } else if (value === 100) {
+                    labelEl.style.left = '100%';
+                    labelEl.style.transform = 'translateX(-100%)';
+                } else {
+                    labelEl.style.left = `${value}%`;
+                    labelEl.style.transform = 'translateX(-50%)';
+                }
+                numberLine.appendChild(labelEl);
+                numberLine.appendChild(marker);
+            });
+            
+            // 現在の値のマーカー
+            const currentMarker = document.createElement('div');
+            currentMarker.className = 'number-line-current';
+            currentMarker.innerText = `${percent}%`;
+            currentMarker.style.left = `${percent}%`;
+            numberLine.appendChild(currentMarker);
+            
+            const arrow = document.createElement('div');
+            arrow.className = 'number-line-arrow';
+            arrow.style.left = `${percent}%`;
+            numberLine.appendChild(arrow);
+            
+            numberLineContainer.appendChild(numberLine);
+            container.appendChild(numberLineContainer);
+            
+            // 説明文
+            const explanation = document.createElement('div');
+            explanation.className = 'percent-explanation';
+            const remaining = 100 - percent;
+            explanation.innerText = `100%のうち${percent}%が割引、残り${remaining}%が支払い`;
+            container.appendChild(explanation);
+            
+            return container;
+        }
+
+        // --- リセット機能 ---
+        function confirmReset() {
+            if (!titleScreen.classList.contains('hidden')) return;
+
+            if (confirm("タイトルにもどる？\n（今のスコアはきえちゃうよ）")) {
+                if (timerInterval) clearInterval(timerInterval);
+                toTitle();
+            }
+        }
+
+        // --- ゲーム進行 ---
+        function startGame() {
+            initAudio();
+            isTimeAttack = modeToggle.checked;
+            
+            titleScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            clearScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+
+            currentScore = 0;
+            currentLevel = 1;
+            correctInLevel = 0;
+            comboCount = 0;
+            
+            scoreEl.innerText = 0;
+            levelNumEl.innerText = 1;
+            toNextLevelEl.innerText = requiredForLevelUp;
+            updateComboDisplay();
+            
+            updateBackground(1);
+            
+            badgeContainer.innerHTML = '<div class="badge-title">コレクション</div>';
+
+            // 計算パネルを開く
+            openCalcPanel();
+
+            if (isTimeAttack) {
+                timeLeft = 60;
+                timerDisplay.innerText = "60秒";
+                startTimer();
+            } else {
+                timerDisplay.innerText = "なし";
+            }
+            
+            generateProblem();
+        }
+
+        function startTimer() {
+            if (timerInterval) clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                timerDisplay.innerText = timeLeft + "秒";
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function generateProblem() {
+            mascotEl.innerText = mascots[Math.floor(Math.random() * mascots.length)];
+
+            let problemType;
+            let basePrice, discountPercent, answer;
+            let questionText = "";
+            let discount1 = null;
+            let discount2 = null;
+
+            if (currentLevel <= 2) {
+                // レベル1-2: 基本的な割合（25%, 50%, 75%など）
+                const easyPercents = [10, 20, 25, 30, 50, 75, 80, 90];
+                discountPercent = easyPercents[Math.floor(Math.random() * easyPercents.length)];
+                basePrice = Math.floor(Math.random() * 9 + 1) * 100; // 100-900円
+                answer = Math.floor(basePrice * (100 - discountPercent) / 100);
+                questionText = `${basePrice}円の商品が${discountPercent}%引き！いくらになる？`;
+                hintText.innerText = "かんたん！";
+
+            } else if (currentLevel <= 5) {
+                // レベル3-5: 割引計算（少し複雑）
+                discountPercent = Math.floor(Math.random() * 40 + 10); // 10-50%
+                basePrice = Math.floor(Math.random() * 19 + 1) * 100; // 100-1900円
+                answer = Math.floor(basePrice * (100 - discountPercent) / 100);
+                questionText = `${basePrice}円の商品が${discountPercent}%引き！いくらになる？`;
+                hintText.innerText = "ちょっとむずかしい";
+
+            } else if (currentLevel <= 8) {
+                // レベル6-8: 割合から実際の数を求める
+                const total = Math.floor(Math.random() * 9 + 2) * 10; // 20-100
+                const percent = Math.floor(Math.random() * 8 + 1) * 10; // 10-80%
+                answer = Math.floor(total * percent / 100);
+                questionText = `${total}人の${percent}%は何人？`;
+                hintText.innerText = "できるかな？";
+                basePrice = total;
+                discountPercent = percent;
+
+            } else {
+                // レベル9-10: 複合問題
+                if (Math.random() < 0.5) {
+                    // 二重割引
+                    basePrice = Math.floor(Math.random() * 19 + 1) * 100;
+                    discount1 = Math.floor(Math.random() * 30 + 10);
+                    discount2 = Math.floor(Math.random() * 20 + 10);
+                    answer = Math.floor(basePrice * (100 - discount1) / 100 * (100 - discount2) / 100);
+                    questionText = `${basePrice}円の商品が${discount1}%引き、さらに${discount2}%引き！いくらになる？`;
+                    discountPercent = discount1; // 最初の割引率を保存
+                } else {
+                    // 割合の計算
+                    const total = Math.floor(Math.random() * 9 + 2) * 10;
+                    const part = Math.floor(Math.random() * (total - 1) + 1);
+                    answer = Math.round(part * 100 / total);
+                    questionText = `${total}個のうち${part}個は何%？`;
+                    basePrice = total;
+                    discountPercent = part;
+                }
+                hintText.innerText = "ラストスパート！";
+            }
+
+            // 問題タイプを判定
+            let answerUnit = '円'; // デフォルトは円
+            if (questionText.includes('何%') || questionText.includes('%は')) {
+                answerUnit = '%';
+            } else if (questionText.includes('何人')) {
+                answerUnit = '人';
+            } else if (questionText.includes('いくらになる')) {
+                answerUnit = '円';
+            }
+
+            currentQuestion = {
+                type: currentLevel <= 5 ? 'discount' : currentLevel <= 8 ? 'percent' : 'complex',
+                answer: answer,
+                basePrice: basePrice,
+                discountPercent: discountPercent,
+                questionText: questionText,
+                answerUnit: answerUnit,
+                discount1: discount1,
+                discount2: discount2
+            };
+
+            // 問題表示
+            questionArea.innerHTML = `
+                <div class="product-display">${products[Math.floor(Math.random() * products.length)]}</div>
+                <div class="price-display">${questionText}</div>
+                ${currentLevel <= 5 ? createPercentVisual(discountPercent).outerHTML : ''}
+            `;
+
+            generateOptions(answer);
+        }
+
+        function generateOptions(correctAnswer) {
+            optionsEl.innerHTML = '';
+            const basePrice = currentQuestion.basePrice;
+            const discountPercent = currentQuestion.discountPercent;
+            let wrongOptions = [];
+
+            if (currentLevel <= 5) {
+                // 割引問題：子供が間違えそうな選択肢
+                // 1. 割引額だけを答えてしまう（例：100円10%引き → 10円と答える）
+                const discountAmount = Math.floor(basePrice * discountPercent / 100);
+                wrongOptions.push(discountAmount);
+                
+                // 2. パーセントを足してしまう（例：100円10%引き → 110円と答える）
+                const addedPrice = basePrice + discountAmount;
+                wrongOptions.push(addedPrice);
+                
+                // 3. パーセントをそのまま引いてしまう（例：100円10%引き → 90円ではなく90%と勘違いして100-10=90、でもこれは偶然正解になることもあるので、別のパターン）
+                // 代わりに、似たパーセントと勘違い（例：20%引きと勘違い）
+                const similarPercent = discountPercent === 10 ? 20 : discountPercent === 20 ? 10 : discountPercent - 10;
+                const similarAnswer = Math.floor(basePrice * (100 - similarPercent) / 100);
+                wrongOptions.push(similarAnswer);
+                
+                // 4. 割引額を引くのを忘れて、元の値段を答える
+                wrongOptions.push(basePrice);
+
+            } else if (currentLevel <= 8) {
+                // 割合の問題：「○人の○%は何人？」
+                // 1. 残りの%を答えてしまう（例：100人の30% → 70人と答える）
+                const remaining = basePrice - correctAnswer;
+                wrongOptions.push(remaining);
+                
+                // 2. パーセントをそのまま答えてしまう（例：100人の30% → 30と答える、でもこれは正解の場合もあるので、別のパターン）
+                // 代わりに、パーセントをそのまま人数として答える（例：30% → 30人、でもこれは正解の場合もある）
+                // より確実に間違えるパターン：totalをそのまま答える
+                wrongOptions.push(basePrice);
+                
+                // 3. パーセントとtotalを足してしまう
+                const added = basePrice + discountPercent;
+                wrongOptions.push(added);
+                
+                // 4. 似たパーセントと勘違い（例：30%と40%を間違える）
+                const similarPercent = discountPercent === 10 ? 20 : discountPercent === 20 ? 30 : discountPercent + 10;
+                const similarAnswer = Math.floor(basePrice * similarPercent / 100);
+                if (similarAnswer !== correctAnswer && similarAnswer <= basePrice) {
+                    wrongOptions.push(similarAnswer);
+                } else {
+                    // 代わりに、パーセントをそのまま引いた値
+                    wrongOptions.push(Math.max(1, basePrice - discountPercent));
+                }
+
+            } else {
+                // レベル9-10: 複合問題
+                if (currentQuestion.answerUnit === '%') {
+                    // 「○個のうち○個は何%？」の問題
+                    // 1. 逆にしてしまう（例：100個のうち30個 → 30%ではなく、100/30*100のような計算）
+                    const reversed = Math.round(basePrice * 100 / discountPercent);
+                    if (reversed !== correctAnswer && reversed <= 100) {
+                        wrongOptions.push(reversed);
+                    } else {
+                        wrongOptions.push(Math.min(100, Math.round(discountPercent * 10)));
+                    }
+                    
+                    // 2. 個数をそのまま答えてしまう（例：30個 → 30%と答える、でもこれは正解の場合もある）
+                    // 代わりに、残りの%を答える
+                    const remainingPercent = Math.round((basePrice - discountPercent) * 100 / basePrice);
+                    wrongOptions.push(remainingPercent);
+                    
+                    // 3. 10倍してしまう（例：3%を30%と答える）
+                    const multiplied = Math.min(100, correctAnswer * 10);
+                    if (multiplied !== correctAnswer) {
+                        wrongOptions.push(multiplied);
+                    } else {
+                        wrongOptions.push(Math.max(1, Math.floor(correctAnswer / 10)));
+                    }
+                    
+                    // 4. 似た個数と勘違い
+                    const similarPart = discountPercent === 1 ? 2 : discountPercent - 1;
+                    const similarPercent = Math.round(similarPart * 100 / basePrice);
+                    if (similarPercent !== correctAnswer && similarPercent <= 100) {
+                        wrongOptions.push(similarPercent);
+                    } else {
+                        wrongOptions.push(Math.min(100, correctAnswer + 5));
+                    }
+                } else {
+                    // 「いくらになる？」の問題（二重割引など）
+                    const discount1 = currentQuestion.discount1 || discountPercent; // 最初の割引率
+                    const discount2 = currentQuestion.discount2 || Math.floor(Math.random() * 20 + 10); // 2つ目の割引率
+                    
+                    // 1. 最初の割引だけを計算してしまう
+                    const firstDiscountOnly = Math.floor(basePrice * (100 - discount1) / 100);
+                    wrongOptions.push(firstDiscountOnly);
+                    
+                    // 2. 割引率を足してしまう（例：10%+20%=30%引きと勘違い）
+                    const addedDiscount = Math.floor(basePrice * (100 - discount1 - discount2) / 100);
+                    wrongOptions.push(addedDiscount);
+                    
+                    // 3. 割引額を足してしまう（例：10%引きの額と20%引きの額を両方引く）
+                    const discountAmount1 = Math.floor(basePrice * discount1 / 100);
+                    const discountAmount2 = Math.floor(basePrice * discount2 / 100);
+                    const addedAmount = basePrice - discountAmount1 - discountAmount2;
+                    wrongOptions.push(addedAmount);
+                    
+                    // 4. 元の値段をそのまま答える（割引を忘れる）
+                    wrongOptions.push(basePrice);
+                }
+            }
+
+            // 正解と間違いの選択肢を合わせて、重複を除く
+            let options = new Set([correctAnswer]);
+            wrongOptions.forEach(opt => {
+                if (opt !== correctAnswer && opt > 0) {
+                    // 単位に応じて範囲チェック
+                    if (currentQuestion.answerUnit === '%' && opt <= 100) {
+                        options.add(opt);
+                    } else if (currentQuestion.answerUnit === '人' && opt <= basePrice) {
+                        options.add(opt);
+                    } else if (currentQuestion.answerUnit === '円') {
+                        options.add(opt);
+                    }
+                }
+            });
+
+            // 4択になるまで、ランダムな選択肢を追加（万が一不足した場合）
+            while (options.size < 4) {
+                let randomOption;
+                if (currentQuestion.answerUnit === '%') {
+                    randomOption = Math.floor(Math.random() * 100) + 1;
+                } else if (currentQuestion.answerUnit === '人') {
+                    randomOption = Math.floor(Math.random() * basePrice) + 1;
+                } else {
+                    randomOption = Math.floor(Math.random() * basePrice * 2) + Math.floor(basePrice * 0.5);
+                }
+                if (randomOption !== correctAnswer && randomOption > 0) {
+                    options.add(randomOption);
+                }
+            }
+
+            // 4択に絞る（正解を含めて必ず4つ）
+            const optionsArray = Array.from(options);
+            
+            // 正解を確実に含める
+            const selectedOptions = [correctAnswer];
+            
+            // 正解以外から3つ選ぶ
+            const wrongOptionsArray = optionsArray.filter(opt => opt !== correctAnswer);
+            while (selectedOptions.length < 4 && wrongOptionsArray.length > 0) {
+                const randomIndex = Math.floor(Math.random() * wrongOptionsArray.length);
+                const selected = wrongOptionsArray.splice(randomIndex, 1)[0];
+                selectedOptions.push(selected);
+            }
+            
+            // まだ4つに満たない場合は、ランダムに追加
+            while (selectedOptions.length < 4) {
+                let randomOption;
+                if (currentQuestion.answerUnit === '%') {
+                    randomOption = Math.floor(Math.random() * 100) + 1;
+                } else if (currentQuestion.answerUnit === '人') {
+                    randomOption = Math.floor(Math.random() * basePrice) + 1;
+                } else {
+                    randomOption = Math.floor(Math.random() * basePrice * 2) + Math.floor(basePrice * 0.5);
+                }
+                if (!selectedOptions.includes(randomOption) && randomOption > 0) {
+                    selectedOptions.push(randomOption);
+                }
+            }
+
+            // ランダムに並び替えて表示
+            selectedOptions.sort(() => Math.random() - 0.5).forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                // 問題文に応じて単位を表示
+                if (currentQuestion.answerUnit === '%') {
+                    btn.innerText = opt + "%";
+                } else if (currentQuestion.answerUnit === '人') {
+                    btn.innerText = opt + "人";
+                } else {
+                    // デフォルトは円
+                    btn.innerText = opt + "円";
+                }
+                
+                btn.onclick = () => checkAnswer(opt);
+                optionsEl.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected) {
+            if (selected === currentQuestion.answer) {
+                // 連続正解数を増やす
+                comboCount++;
+                updateComboDisplay();
+                
+                // 基本スコア
+                let baseScore = 10 * currentLevel;
+                currentScore += baseScore;
+                
+                // コンボボーナスを計算
+                const comboBonus = calculateComboBonus();
+                if (comboBonus > 0) {
+                    currentScore += comboBonus;
+                    showComboBonus(comboBonus);
+                }
+                
+                scoreEl.innerText = currentScore;
+                correctInLevel++;
+                
+                if (correctInLevel >= requiredForLevelUp) {
+                    levelUp();
+                } else {
+                    playSound('correct');
+                    showFeedback(true);
+                    toNextLevelEl.innerText = requiredForLevelUp - correctInLevel;
+                    setTimeout(nextTurn, 800);
+                }
+            } else {
+                // 間違えたら連続正解数をリセット
+                comboCount = 0;
+                updateComboDisplay();
+                
+                playSound('wrong');
+                showFeedback(false);
+                
+                // 解説モードがONの時だけ説明を表示（ボタンで次へ進む）
+                if (explanationToggle.checked) {
+                    const explanation = getMistakeExplanation(selected, currentQuestion.answer);
+                    showMistakeExplanation(explanation);
+                    // ボタンを押すまで待つ（自動で進まない）
+                } else {
+                    setTimeout(nextTurn, 800); // 解説モードOFFの時は通常の時間
+                }
+            }
+        }
+
+        function showBadgeRibbon(badgeIcon, badgeName) {
+            // 既存のリボンを削除
+            const existingRibbon = document.querySelector('.badge-ribbon');
+            if (existingRibbon) {
+                existingRibbon.remove();
+            }
+
+            // リボンを作成
+            const ribbon = document.createElement('div');
+            ribbon.className = 'badge-ribbon';
+            ribbon.innerHTML = `
+                <div class="badge-ribbon-title">バッジを獲得！</div>
+                <div class="badge-ribbon-icon">${badgeIcon}</div>
+                <div class="badge-ribbon-name">${badgeName}</div>
+            `;
+            document.body.appendChild(ribbon);
+
+            // 2秒後にリボンを非表示
+            setTimeout(() => {
+                ribbon.classList.add('hiding');
+                setTimeout(() => {
+                    ribbon.remove();
+                }, 400);
+            }, 2000);
+        }
+
+        function levelUp() {
+            const badgeIndex = Math.min(currentLevel - 1, badges.length - 1);
+            const badgeIcon = badges[badgeIndex];
+            const badgeName = badgeNames[badgeIndex];
+            
+            // バッジを追加
+            const badgeEl = document.createElement('div');
+            badgeEl.className = 'badge-slot badge-new';
+            badgeEl.innerText = badgeIcon;
+            badgeContainer.appendChild(badgeEl);
+            badgeEl.scrollIntoView({ behavior: 'smooth' });
+
+            // リボンを表示
+            showBadgeRibbon(badgeIcon, badgeName);
+
+            currentLevel++;
+            correctInLevel = 0;
+
+            if (currentLevel > 10) {
+                playSound('levelup');
+                showFeedback(true, "Clear!");
+                setTimeout(() => {
+                    gameClear();
+                }, 1500);
+                return;
+            }
+
+            playSound('levelup');
+            showFeedback(true, "Level Up!");
+            updateBackground(currentLevel);
+
+            setTimeout(() => {
+                levelNumEl.innerText = currentLevel;
+                toNextLevelEl.innerText = requiredForLevelUp;
+                nextTurn();
+            }, 1500);
+        }
+
+        function nextTurn() {
+            if (isTimeAttack && timeLeft <= 0) return;
+            generateProblem();
+        }
+
+        function showFeedback(isCorrect, text = null) {
+            feedbackEl.innerText = text ? text : (isCorrect ? '⭕️' : '❌');
+            feedbackEl.className = `feedback show ${isCorrect ? 'correct' : 'wrong'}`;
+            if (text) feedbackEl.style.fontSize = "3.5rem";
+            else feedbackEl.style.fontSize = "";
+
+            mascotEl.innerText = isCorrect ? '😆' : '🥺';
+            setTimeout(() => feedbackEl.classList.remove('show'), 700);
+        }
+
+        function formatFormula(formulaString) {
+            // 「正しい式: 」を削除して式だけを取得
+            const formulaMatch = formulaString.match(/正しい式: (.+)/);
+            if (!formulaMatch) return formulaString;
+
+            const formula = formulaMatch[1];
+            // 「=」で分割（ただし、イコールも含める）
+            const parts = formula.split(' = ');
+            
+            if (parts.length < 2) {
+                // イコールがない場合はそのまま返す
+                return `<div class="formula-container"><div class="formula-title">正しい式:</div><div class="formula-line">${formula}</div></div>`;
+            }
+
+            // 最初の部分（左側）
+            const firstPart = parts[0];
+            // 残りの部分（右側、複数のイコールがある場合）
+            const remainingParts = parts.slice(1);
+
+            let formulaHTML = '<div class="formula-container" data-formula-container>';
+            formulaHTML += '<div class="formula-title">正しい式:</div>';
+            
+            // 最初の行（左側の式）
+            formulaHTML += `<div class="formula-line" data-formula-first><span class="formula-left">${firstPart}</span><span class="equals">=</span><span class="formula-right">${remainingParts[0]}</span></div>`;
+            
+            // 残りの行（イコールから始まる）
+            for (let i = 1; i < remainingParts.length; i++) {
+                formulaHTML += `<div class="formula-line" data-formula-continuation><span class="equals">=</span><span class="formula-right">${remainingParts[i]}</span></div>`;
+            }
+            
+            formulaHTML += '</div>';
+            return formulaHTML;
+        }
+
+        function showMistakeExplanation(explanation) {
+            // 既存の説明を削除
+            const existingExplanation = document.querySelector('.mistake-explanation');
+            if (existingExplanation) {
+                existingExplanation.remove();
+            }
+
+            // 説明文を処理
+            let formattedExplanation = explanation;
+            
+            // 「正しい式:」で始まる行を抽出して、計算式として処理
+            const formulaRegex = /正しい式: (.+)/g;
+            let match;
+            while ((match = formulaRegex.exec(explanation)) !== null) {
+                const formulaHTML = formatFormula(match[0]);
+                formattedExplanation = formattedExplanation.replace(match[0], formulaHTML);
+            }
+
+            // 残りの改行を<br>に変換
+            formattedExplanation = formattedExplanation.replace(/\n/g, '<br>');
+
+            // 説明を表示
+            const explanationEl = document.createElement('div');
+            explanationEl.className = 'mistake-explanation show';
+            explanationEl.innerHTML = `
+                <div class="mistake-explanation-title">
+                    💡 ヒント
+                </div>
+                <div class="mistake-explanation-text">${formattedExplanation}</div>
+                <button class="explanation-next-btn" onclick="closeExplanationAndNext()">次へ進む</button>
+            `;
+            document.body.appendChild(explanationEl);
+
+            // 計算式のイコール位置を揃える
+            setTimeout(() => {
+                const formulaContainer = explanationEl.querySelector('[data-formula-container]');
+                if (formulaContainer) {
+                    const firstLine = formulaContainer.querySelector('[data-formula-first]');
+                    const continuationLines = formulaContainer.querySelectorAll('[data-formula-continuation]');
+                    
+                    if (firstLine && continuationLines.length > 0) {
+                        const leftPart = firstLine.querySelector('.formula-left');
+                        const equalsPart = firstLine.querySelector('.equals');
+                        
+                        if (leftPart && equalsPart) {
+                            // 左側部分とイコールの幅を計算
+                            const leftWidth = leftPart.offsetWidth;
+                            const equalsWidth = equalsPart.offsetWidth;
+                            const totalLeftWidth = leftWidth + equalsWidth + 16; // 16pxはマージン
+                            
+                            // 2行目以降のイコールを同じ位置に配置
+                            continuationLines.forEach(line => {
+                                const equals = line.querySelector('.equals');
+                                if (equals) {
+                                    equals.style.marginLeft = `${leftWidth}px`;
+                                }
+                            });
+                        }
+                    }
+                }
+            }, 50);
+        }
+
+        function closeExplanationAndNext() {
+            const explanationEl = document.querySelector('.mistake-explanation');
+            if (explanationEl) {
+                explanationEl.classList.add('hiding');
+                setTimeout(() => {
+                    explanationEl.remove();
+                    nextTurn();
+                }, 300);
+            } else {
+                nextTurn();
+            }
+        }
+
+        function endGame() {
+            if (timerInterval) clearInterval(timerInterval);
+            document.getElementById('final-score').innerText = currentScore;
+            document.getElementById('final-level').innerText = currentLevel;
+            gameScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+        }
+
+        function gameClear() {
+            if (timerInterval) clearInterval(timerInterval);
+            playSound('clear');
+            document.getElementById('clear-score').innerText = currentScore;
+            gameScreen.classList.add('hidden');
+            clearScreen.classList.remove('hidden');
+        }
+
+        function toTitle() {
+            updateBackground(1);
+            gameScreen.classList.add('hidden');
+            resultScreen.classList.add('hidden');
+            clearScreen.classList.add('hidden');
+            titleScreen.classList.remove('hidden');
+            closeCalcPanel();
+        }
+
+        // --- 計算パネル機能 ---
+        function openCalcPanel() {
+            calcPanel.classList.remove('closed');
+            calcOpenBtn.classList.remove('show');
+            initCanvas();
+        }
+
+        function closeCalcPanel() {
+            calcPanel.classList.add('closed');
+            calcOpenBtn.classList.add('show');
+        }
+
+        function toggleCalcPanel() {
+            if (calcPanel.classList.contains('closed')) {
+                openCalcPanel();
+            } else {
+                closeCalcPanel();
+            }
+        }
+
+        function initCanvas() {
+            const container = calcCanvas.parentElement;
+            const rect = container.getBoundingClientRect();
+            calcCanvas.width = rect.width - 20;
+            calcCanvas.height = rect.height - 20;
+            
+            const ctx = calcCanvas.getContext('2d');
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
+
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+
+        function getCanvasCoordinates(e) {
+            const rect = calcCanvas.getBoundingClientRect();
+            const scaleX = calcCanvas.width / rect.width;
+            const scaleY = calcCanvas.height / rect.height;
+            
+            if (e.touches) {
+                return {
+                    x: (e.touches[0].clientX - rect.left) * scaleX,
+                    y: (e.touches[0].clientY - rect.top) * scaleY
+                };
+            } else {
+                return {
+                    x: (e.clientX - rect.left) * scaleX,
+                    y: (e.clientY - rect.top) * scaleY
+                };
+            }
+        }
+
+        function startDrawing(e) {
+            e.preventDefault();
+            isDrawing = true;
+            const coords = getCanvasCoordinates(e);
+            lastX = coords.x;
+            lastY = coords.y;
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            e.preventDefault();
+            
+            const ctx = calcCanvas.getContext('2d');
+            const coords = getCanvasCoordinates(e);
+            
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(coords.x, coords.y);
+            ctx.stroke();
+            
+            lastX = coords.x;
+            lastY = coords.y;
+        }
+
+        function stopDrawing(e) {
+            e.preventDefault();
+            isDrawing = false;
+        }
+
+        function clearCanvas() {
+            const ctx = calcCanvas.getContext('2d');
+            ctx.clearRect(0, 0, calcCanvas.width, calcCanvas.height);
+        }
+
+        // Canvasイベントリスナー
+        calcCanvas.addEventListener('mousedown', startDrawing);
+        calcCanvas.addEventListener('mousemove', draw);
+        calcCanvas.addEventListener('mouseup', stopDrawing);
+        calcCanvas.addEventListener('mouseleave', stopDrawing);
+
+        calcCanvas.addEventListener('touchstart', startDrawing);
+        calcCanvas.addEventListener('touchmove', draw);
+        calcCanvas.addEventListener('touchend', stopDrawing);
+        calcCanvas.addEventListener('touchcancel', stopDrawing);
+
+        // ウィンドウリサイズ時にCanvasを再初期化
+        window.addEventListener('resize', () => {
+            if (!calcPanel.classList.contains('closed')) {
+                setTimeout(initCanvas, 100);
+            }
+        });
+    </script>
+</body>
+</html>
