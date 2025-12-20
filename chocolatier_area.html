@@ -36,20 +36,24 @@
             color: var(--text);
             overflow-x: hidden;
             min-height: 100vh;
+            max-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 10px;
+            overflow: hidden;
         }
 
         .game-wrapper {
             width: 100%;
             max-width: 900px;
+            max-height: 100vh;
             background: var(--white);
             border-radius: 20px;
             box-shadow: 0 8px 0 rgba(0,0,0,0.2);
-            padding: 20px;
+            padding: 10px;
             position: relative;
+            overflow: hidden;
             border: 4px solid var(--cream);
         }
 
@@ -204,54 +208,60 @@
 
         /* ゲーム画面 */
         #game-screen {
-            padding: 10px;
+            padding: 5px;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 60px);
+            max-height: 800px;
+            overflow: hidden;
         }
 
         .header {
             text-align: center;
-            padding: 15px;
+            padding: 8px 10px;
             background: rgba(139, 69, 19, 0.1);
-            border-radius: 15px;
-            margin-bottom: 20px;
+            border-radius: 10px;
+            margin-bottom: 5px;
             border: 2px solid var(--gold);
+            flex-shrink: 0;
         }
 
         .header h1 {
-            font-size: 1.5rem;
+            font-size: 1rem;
             color: var(--chocolate-dark);
             font-family: var(--font-title);
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .score-board {
             display: flex;
             justify-content: space-around;
             align-items: center;
-            gap: 15px;
+            gap: 8px;
             flex-wrap: wrap;
-            margin-top: 10px;
+            margin-top: 3px;
         }
 
         .score-item {
             background: rgba(255, 215, 0, 0.2);
-            padding: 8px 15px;
-            border-radius: 10px;
+            padding: 4px 10px;
+            border-radius: 8px;
             border: 2px solid var(--gold);
         }
 
         .score-item .label {
-            font-size: 0.8rem;
+            font-size: 0.65rem;
             color: var(--chocolate-medium);
         }
 
         .score-item .value {
-            font-size: 1.3rem;
+            font-size: 1rem;
             font-weight: bold;
             color: var(--chocolate-dark);
         }
 
         .combo-indicator {
-            font-size: 1.1rem;
+            font-size: 0.9rem;
             color: #ff6b6b;
             font-weight: bold;
         }
@@ -259,16 +269,17 @@
         /* ギャルソンエリア */
         .garcon-area {
             position: relative;
-            height: 120px;
-            margin: 15px 0;
+            height: 60px;
+            margin: 3px 0;
             perspective: 1000px;
+            flex-shrink: 0;
         }
 
         .garcon {
             position: absolute;
             left: -200px;
             bottom: 0;
-            font-size: 4em;
+            font-size: 2em;
             transition: left 1.5s ease-in-out;
             filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.3));
         }
@@ -280,49 +291,247 @@
 
         .garcon-message {
             position: absolute;
-            top: 10px;
+            top: 5px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(255, 255, 255, 0.95);
             color: var(--chocolate-dark);
-            padding: 12px 20px;
-            border-radius: 15px;
-            font-size: 0.95rem;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
             opacity: 0;
             transition: opacity 0.5s;
             border: 2px solid var(--gold);
             white-space: normal;
             max-width: 85%;
             text-align: center;
-            line-height: 1.4;
+            line-height: 1.3;
+            z-index: 20;
         }
 
         .garcon-message.show {
             opacity: 1;
         }
 
-        /* チョコレート表示エリア */
-        .chocolate-area {
-            background: rgba(139, 69, 19, 0.05);
-            border-radius: 15px;
-            padding: 25px;
-            margin: 15px 0;
-            min-height: 300px;
+        /* 大きなフィードバック表示 */
+        .big-feedback {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            z-index: 2000;
+            font-size: 3rem;
+            font-weight: bold;
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+            pointer-events: none;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @media (max-height: 700px) {
+            .big-feedback {
+                font-size: 2.5rem;
+            }
+        }
+
+        .big-feedback.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .big-feedback.correct {
+            color: #4CAF50;
+            animation: correctPulse 0.6s ease-out;
+        }
+
+        .big-feedback.wrong {
+            color: #f44336;
+            animation: wrongShake 0.6s ease-out;
+        }
+
+        @keyframes correctPulse {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-180deg); }
+            50% { transform: translate(-50%, -50%) scale(1.3) rotate(10deg); }
+            100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+            25% { transform: translate(-50%, -50%) scale(1) rotate(-5deg); }
+            75% { transform: translate(-50%, -50%) scale(1) rotate(5deg); }
+        }
+
+        /* メモ機能 */
+        .memo-btn {
+            position: fixed;
+            top: 15px;
+            right: 15px;
+            background: var(--chocolate-dark);
+            color: #fff;
+            border: 2px solid var(--gold);
+            border-radius: 12px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-family: var(--font-main);
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+
+        .memo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 0 rgba(0,0,0,0.2);
+        }
+
+        .memo-btn:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        .memo-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            background: var(--white);
+            border-left: 4px solid var(--gold);
+            box-shadow: -4px 0 15px rgba(0,0,0,0.3);
+            z-index: 1000;
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            padding: 15px;
+        }
+
+        .memo-panel.closed {
+            right: -100%;
+        }
+
+        .memo-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--gold);
+        }
+
+        .memo-title {
+            font-family: var(--font-title);
+            font-size: 1.2rem;
+            color: var(--chocolate-dark);
+            font-weight: bold;
+        }
+
+        .memo-close-btn {
+            background: var(--chocolate-dark);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 2px 0 rgba(0,0,0,0.2);
             display: flex;
             justify-content: center;
             align-items: center;
+            transition: all 0.2s;
+        }
+
+        .memo-close-btn:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        .memo-canvas-container {
+            flex: 1;
+            min-height: 0;
+            background: #fafafa;
             border: 3px solid var(--gold);
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 15px;
             position: relative;
+            overflow: hidden;
+        }
+
+        #memo-canvas {
+            width: 100%;
+            height: 100%;
+            touch-action: none;
+            cursor: crosshair;
+            background: #fff;
+            border-radius: 10px;
+            display: block;
+        }
+
+        .memo-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .memo-control-btn {
+            flex: 1;
+            background: var(--chocolate-dark);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 12px;
+            font-family: var(--font-main);
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 3px 0 rgba(0,0,0,0.2);
+            transition: all 0.2s;
+        }
+
+        .memo-control-btn:hover {
+            background: var(--chocolate-medium);
+        }
+
+        .memo-control-btn:active {
+            transform: translateY(3px);
+            box-shadow: none;
+        }
+
+        .memo-control-btn.clear {
+            background: #ff6b6b;
+        }
+
+        .memo-control-btn.clear:hover {
+            background: #ff5252;
+        }
+
+        /* チョコレート表示エリア */
+        .chocolate-area {
+            background: rgba(139, 69, 19, 0.05);
+            border-radius: 10px;
+            padding: 8px;
+            margin: 3px 0;
+            min-height: 0;
+            height: 140px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid var(--gold);
+            position: relative;
+            flex-shrink: 0;
         }
 
         .plate {
-            width: 250px;
-            height: 40px;
+            width: 180px;
+            height: 25px;
             background: linear-gradient(to bottom, #e8e8e8, #c0c0c0);
             border-radius: 50%;
             position: absolute;
-            bottom: 25px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            bottom: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
         .shape-canvas {
@@ -331,46 +540,55 @@
         }
 
         canvas {
-            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.2));
+            filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.2));
+            max-width: 100%;
+            max-height: 120px;
         }
 
         /* 立式エリア */
         .formula-area {
             background: rgba(139, 69, 19, 0.05);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 15px 0;
+            border-radius: 10px;
+            padding: 8px;
+            margin: 3px 0;
             border: 2px solid var(--gold);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 0;
+            overflow-y: auto;
         }
 
         .formula-title {
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 0.85rem;
             color: var(--chocolate-dark);
-            margin-bottom: 15px;
+            margin-bottom: 5px;
             font-weight: bold;
+            flex-shrink: 0;
         }
 
         .formula-slots {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
-            min-height: 70px;
+            gap: 4px;
+            min-height: 40px;
             flex-wrap: wrap;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
         }
 
         .slot {
-            width: 60px;
-            height: 60px;
+            width: 35px;
+            height: 35px;
             background: rgba(255, 255, 255, 0.5);
             border: 2px dashed var(--gold);
-            border-radius: 10px;
+            border-radius: 6px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
+            font-size: 0.9rem;
             font-weight: bold;
             transition: all 0.3s;
         }
@@ -381,55 +599,56 @@
         }
 
         .slot.operator {
-            width: 45px;
+            width: 28px;
             color: var(--chocolate-dark);
         }
 
         .block-palette {
             display: flex;
             flex-direction: column;
-            gap: 15px;
-            margin-bottom: 15px;
+            gap: 6px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
         }
 
         .palette-row {
             display: flex;
             justify-content: center;
-            gap: 8px;
+            gap: 4px;
             flex-wrap: wrap;
         }
 
         .palette-label {
-            font-size: 0.9rem;
+            font-size: 0.7rem;
             color: var(--chocolate-dark);
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 3px;
             text-align: center;
         }
 
         .block-section {
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 4px;
         }
 
         .block {
-            min-width: 55px;
-            height: 55px;
+            min-width: 32px;
+            height: 32px;
             background: linear-gradient(135deg, var(--chocolate-medium) 0%, var(--chocolate-dark) 100%);
-            border: 3px solid var(--gold);
-            border-radius: 10px;
+            border: 2px solid var(--gold);
+            border-radius: 6px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
+            font-size: 0.9rem;
             font-weight: bold;
             color: #fff;
             cursor: pointer;
             transition: all 0.2s;
             user-select: none;
-            padding: 8px 12px;
-            box-shadow: 0 3px 0 rgba(139, 69, 19, 0.4);
+            padding: 4px 6px;
+            box-shadow: 0 2px 0 rgba(139, 69, 19, 0.4);
         }
 
         .block:active {
@@ -452,40 +671,45 @@
         /* 計算モード */
         .calculation-area {
             background: rgba(139, 69, 19, 0.05);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 15px 0;
+            border-radius: 10px;
+            padding: 8px;
+            margin: 3px 0;
             border: 2px solid var(--gold);
             display: none;
+            flex: 1;
+            flex-direction: column;
+            min-height: 0;
         }
 
         .calculation-area.active {
-            display: block;
+            display: flex;
         }
 
         .formula-display {
             text-align: center;
-            font-size: 1.8rem;
+            font-size: 1.1rem;
             color: var(--chocolate-dark);
-            margin-bottom: 20px;
-            padding: 15px;
+            margin-bottom: 8px;
+            padding: 8px;
             background: rgba(255, 215, 0, 0.2);
-            border-radius: 10px;
+            border-radius: 8px;
             font-weight: bold;
+            flex-shrink: 0;
         }
 
         .answer-input {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 8px;
+            flex-shrink: 0;
         }
 
         .answer-input input {
-            width: 200px;
-            padding: 12px;
-            font-size: 1.8rem;
+            width: 150px;
+            padding: 8px;
+            font-size: 1.2rem;
             text-align: center;
-            border: 3px solid var(--gold);
-            border-radius: 10px;
+            border: 2px solid var(--gold);
+            border-radius: 8px;
             background: rgba(255, 255, 255, 0.9);
             color: var(--chocolate-dark);
             font-family: var(--font-main);
@@ -494,16 +718,17 @@
         .numpad {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            max-width: 280px;
-            margin: 0 auto;
+            gap: 6px;
+            max-width: 200px;
+            margin: 0 auto 8px;
+            flex-shrink: 0;
         }
 
         .numpad button {
-            padding: 18px;
-            font-size: 1.4rem;
+            padding: 10px;
+            font-size: 1rem;
             border: 2px solid var(--gold);
-            border-radius: 10px;
+            border-radius: 8px;
             background: linear-gradient(135deg, var(--chocolate-medium) 0%, var(--chocolate-dark) 100%);
             color: #fff;
             cursor: pointer;
@@ -528,22 +753,23 @@
         .action-buttons {
             display: flex;
             justify-content: center;
-            gap: 12px;
-            margin-top: 15px;
+            gap: 6px;
+            margin-top: 5px;
             flex-wrap: wrap;
+            flex-shrink: 0;
         }
 
         .btn {
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            border: 3px solid;
-            border-radius: 12px;
+            padding: 8px 16px;
+            font-size: 0.85rem;
+            border: 2px solid;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
             font-weight: bold;
-            box-shadow: 0 5px 0 rgba(0, 0, 0, 0.25);
+            box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25);
             font-family: var(--font-main);
-            min-width: 150px;
+            min-width: 100px;
         }
 
         .btn-primary {
@@ -778,7 +1004,7 @@
             <div class="chocolate-area">
                 <div class="plate"></div>
                 <div class="shape-canvas">
-                    <canvas id="shapeCanvas" width="300" height="250"></canvas>
+                    <canvas id="shapeCanvas" width="240" height="120"></canvas>
                 </div>
             </div>
 
@@ -832,6 +1058,21 @@
             <div class="action-buttons" id="nextProblemArea" style="display: none;">
                 <button class="btn btn-primary" onclick="nextProblem()">次のチョコレートへ ➜</button>
             </div>
+        </div>
+    </div>
+
+    <!-- メモパネル -->
+    <div id="memo-panel" class="memo-panel closed">
+        <div class="memo-header">
+            <div class="memo-title">✏️ メモコーナー</div>
+            <button class="memo-close-btn" onclick="toggleMemoPanel()" title="閉じる">×</button>
+        </div>
+        <div class="memo-canvas-container">
+            <canvas id="memo-canvas"></canvas>
+        </div>
+        <div class="memo-controls">
+            <button class="memo-control-btn clear" onclick="clearMemoCanvas()">消去</button>
+            <button class="memo-control-btn" onclick="toggleMemoPanel()">閉じる</button>
         </div>
     </div>
 
@@ -1290,11 +1531,13 @@
             const isCorrect = Math.abs(calculatedValue - correctAnswer) < 0.01;
 
             if (isCorrect) {
+                showBigFeedback('式OK！', 'correct');
                 showGarconMessage('素晴らしい式です！では計算をお願いします。', 'success');
                 setTimeout(() => {
                     switchToCalculationMode();
                 }, 1500);
             } else {
+                showBigFeedback('式NG', 'wrong');
                 showGarconMessage('その式では正しく計算できません。もう一度考えてみましょう。', 'error');
                 resetCombo();
             }
@@ -1380,20 +1623,21 @@
 
                 updateScoreDisplay();
                 playEatingAnimation();
-
+                showBigFeedback('正解！', 'correct');
                 showGarconMessage(`正解です！${earnedScore}pt獲得！`, 'success');
 
                 setTimeout(() => {
                     showExplanation();
-                }, 1000);
+                }, 1500);
 
             } else {
+                showBigFeedback('不正解', 'wrong');
                 showGarconMessage(`惜しい！正解は ${correctAnswer} ㎠でした。`, 'error');
                 resetCombo();
 
                 setTimeout(() => {
                     showExplanation();
-                }, 1500);
+                }, 2000);
             }
         }
 
@@ -1462,6 +1706,34 @@
 
             setTimeout(() => {
                 sparkle.remove();
+            }, 1000);
+        }
+
+        // 大きなフィードバック表示
+        function showBigFeedback(text, type) {
+            // 既存のフィードバックを削除
+            const existing = document.querySelector('.big-feedback');
+            if (existing) {
+                existing.remove();
+            }
+
+            // 新しいフィードバックを作成
+            const feedback = document.createElement('div');
+            feedback.className = `big-feedback ${type}`;
+            feedback.textContent = text;
+            document.body.appendChild(feedback);
+
+            // 表示アニメーション
+            setTimeout(() => {
+                feedback.classList.add('show');
+            }, 10);
+
+            // 自動で削除
+            setTimeout(() => {
+                feedback.classList.remove('show');
+                setTimeout(() => {
+                    feedback.remove();
+                }, 300);
             }, 1000);
         }
 
@@ -1652,6 +1924,103 @@
 
             animateGarcon();
         }
+
+        // メモパネルの制御
+        const memoPanel = document.getElementById('memo-panel');
+        const memoCanvas = document.getElementById('memo-canvas');
+        let memoIsDrawing = false;
+        let memoLastX = 0;
+        let memoLastY = 0;
+
+        function toggleMemoPanel() {
+            memoPanel.classList.toggle('closed');
+            if (!memoPanel.classList.contains('closed')) {
+                initMemoCanvas();
+            }
+        }
+
+        function initMemoCanvas() {
+            const container = memoCanvas.parentElement;
+            const rect = container.getBoundingClientRect();
+            memoCanvas.width = rect.width - 20;
+            memoCanvas.height = rect.height - 20;
+            
+            const ctx = memoCanvas.getContext('2d');
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+        }
+
+        function getMemoCanvasCoordinates(e) {
+            const rect = memoCanvas.getBoundingClientRect();
+            const scaleX = memoCanvas.width / rect.width;
+            const scaleY = memoCanvas.height / rect.height;
+            
+            if (e.touches) {
+                return {
+                    x: (e.touches[0].clientX - rect.left) * scaleX,
+                    y: (e.touches[0].clientY - rect.top) * scaleY
+                };
+            } else {
+                return {
+                    x: (e.clientX - rect.left) * scaleX,
+                    y: (e.clientY - rect.top) * scaleY
+                };
+            }
+        }
+
+        function startMemoDrawing(e) {
+            e.preventDefault();
+            memoIsDrawing = true;
+            const coords = getMemoCanvasCoordinates(e);
+            memoLastX = coords.x;
+            memoLastY = coords.y;
+        }
+
+        function drawMemo(e) {
+            if (!memoIsDrawing) return;
+            e.preventDefault();
+            
+            const ctx = memoCanvas.getContext('2d');
+            const coords = getMemoCanvasCoordinates(e);
+            
+            ctx.beginPath();
+            ctx.moveTo(memoLastX, memoLastY);
+            ctx.lineTo(coords.x, coords.y);
+            ctx.stroke();
+            
+            memoLastX = coords.x;
+            memoLastY = coords.y;
+        }
+
+        function stopMemoDrawing(e) {
+            e.preventDefault();
+            memoIsDrawing = false;
+        }
+
+        function clearMemoCanvas() {
+            const ctx = memoCanvas.getContext('2d');
+            ctx.clearRect(0, 0, memoCanvas.width, memoCanvas.height);
+        }
+
+        // Canvasイベントリスナー
+        memoCanvas.addEventListener('mousedown', startMemoDrawing);
+        memoCanvas.addEventListener('mousemove', drawMemo);
+        memoCanvas.addEventListener('mouseup', stopMemoDrawing);
+        memoCanvas.addEventListener('mouseleave', stopMemoDrawing);
+
+        memoCanvas.addEventListener('touchstart', startMemoDrawing);
+        memoCanvas.addEventListener('touchmove', drawMemo);
+        memoCanvas.addEventListener('touchend', stopMemoDrawing);
+        memoCanvas.addEventListener('touchcancel', stopMemoDrawing);
+
+        // ウィンドウリサイズ時にCanvasを再初期化
+        window.addEventListener('resize', () => {
+            if (!memoPanel.classList.contains('closed')) {
+                setTimeout(initMemoCanvas, 100);
+            }
+        });
     </script>
 </body>
 </html>
