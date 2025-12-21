@@ -880,6 +880,73 @@
             transform: translateY(0);
         }
 
+        /* 筆算プロセス表示 */
+        .digit-process {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 15px 0;
+            border: 2px solid var(--light-green);
+        }
+
+        .process-feedback {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .process-feedback.correct {
+            color: #4CAF50;
+        }
+
+        .process-feedback.incorrect {
+            color: #FF6B6B;
+        }
+
+        .process-calculation {
+            font-size: 1rem;
+            color: var(--text);
+            margin-bottom: 8px;
+            text-align: center;
+            line-height: 1.6;
+        }
+
+        .process-remaining {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--orange);
+            text-align: center;
+            padding: 10px;
+            background: var(--light-green);
+            border-radius: 8px;
+        }
+
+        .next-digit-button {
+            background: linear-gradient(135deg, var(--light-blue) 0%, #A0D9C4 100%);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #8AC4AF;
+            transition: all 0.2s;
+            display: block;
+            margin: 15px auto 0;
+        }
+
+        .next-digit-button:hover {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0 #8AC4AF;
+        }
+
+        .next-digit-button:active {
+            transform: translateY(4px);
+            box-shadow: none;
+        }
+
         .submit-button {
             background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
             color: white;
@@ -1247,9 +1314,20 @@
                             <span class="digit-box" id="digit1">_</span>
                             <span class="times-label">回</span>
                         </div>
+
+                        <!-- 筆算プロセス表示 -->
+                        <div id="digitProcess" class="digit-process hidden">
+                            <div class="process-feedback" id="processFeedback"></div>
+                            <div class="process-calculation" id="processCalculation"></div>
+                            <div class="process-remaining" id="processRemaining"></div>
+                        </div>
+
                         <div class="digit-buttons" id="digitButtons">
                             <!-- 動的生成 -->
                         </div>
+
+                        <!-- 次の桁へボタン -->
+                        <button class="next-digit-button hidden" id="nextDigitButton" onclick="nextDigitStep()">次の桁へ ▶</button>
                     </div>
                 </div>
 
@@ -1304,6 +1382,8 @@
             digitStep: 0,      // 現在のステップ (0=百の位, 1=十の位, 2=一の位)
             digitInputs: [],   // 各桁の入力値
             quotientDigits: [], // 商の各桁（正解）
+            currentRemainder: 0, // 筆算での現在の残り
+            digitCorrect: [],  // 各桁が正解かどうか
             badges: {
                 perfect10: false,
                 perfect30: false,
@@ -1524,6 +1604,8 @@
             // 位ごと入力モードの状態をリセット
             gameState.digitStep = 0;
             gameState.digitInputs = [];
+            gameState.currentRemainder = gameState.dividend;
+            gameState.digitCorrect = [];
 
             // UI更新
             document.getElementById('hpValue').textContent = gameState.dividend;
@@ -1708,7 +1790,76 @@
         // 桁選択
         function selectDigit(digit) {
             gameState.digitInputs[gameState.digitStep] = digit;
-            playSound('good');
+
+            // 商の桁数と開始位置を判定
+            const quotient = gameState.correctAnswer;
+            let startDigit = 2; // 0=百の位, 1=十の位, 2=一の位
+            if (quotient >= 100) {
+                startDigit = 0;
+            } else if (quotient >= 10) {
+                startDigit = 1;
+            }
+
+            // 現在の位置
+            const currentDigitPlace = startDigit + gameState.digitStep;
+            const correctDigit = gameState.quotientDigits[currentDigitPlace];
+
+            // 正誤判定
+            const isCorrect = (digit === correctDigit);
+            gameState.digitCorrect[gameState.digitStep] = isCorrect;
+
+            // 音を鳴らす
+            playSound(isCorrect ? 'perfect' : 'ok');
+
+            // ボタンを非表示
+            document.getElementById('digitButtons').style.display = 'none';
+
+            // 筆算プロセスを表示
+            showDigitProcess(digit, correctDigit, isCorrect, currentDigitPlace);
+        }
+
+        // 筆算プロセス表示
+        function showDigitProcess(userDigit, correctDigit, isCorrect, digitPlace) {
+            const processDiv = document.getElementById('digitProcess');
+            const feedbackDiv = document.getElementById('processFeedback');
+            const calculationDiv = document.getElementById('processCalculation');
+            const remainingDiv = document.getElementById('processRemaining');
+
+            // フィードバック
+            if (isCorrect) {
+                feedbackDiv.className = 'process-feedback correct';
+                feedbackDiv.textContent = `✓ 正解！ ${correctDigit}`;
+            } else {
+                feedbackDiv.className = 'process-feedback incorrect';
+                feedbackDiv.textContent = `✗ 不正解。正しくは ${correctDigit}`;
+            }
+
+            // 計算過程を表示（正解の桁で計算）
+            const placeValue = digitPlace === 0 ? 100 : (digitPlace === 1 ? 10 : 1);
+            const subtractValue = correctDigit * gameState.divisor * placeValue;
+
+            calculationDiv.innerHTML = `
+                ${gameState.divisor} × ${correctDigit} × ${placeValue} = ${subtractValue}<br>
+                ${gameState.currentRemainder} − ${subtractValue} = ${gameState.currentRemainder - subtractValue}
+            `;
+
+            // 残りを計算
+            gameState.currentRemainder -= subtractValue;
+            remainingDiv.textContent = `残り：${gameState.currentRemainder}`;
+
+            // プロセス表示
+            processDiv.classList.remove('hidden');
+
+            // 「次の桁へ」ボタンを表示
+            document.getElementById('nextDigitButton').classList.remove('hidden');
+        }
+
+        // 次の桁へ進む
+        function nextDigitStep() {
+            // ボタンとプロセスを非表示
+            document.getElementById('nextDigitButton').classList.add('hidden');
+            document.getElementById('digitProcess').classList.add('hidden');
+            document.getElementById('digitButtons').style.display = 'flex';
 
             // 次のステップへ
             gameState.digitStep++;
@@ -1723,14 +1874,10 @@
             }
 
             if (gameState.digitStep >= numDigits) {
-                // 全桁入力完了
-                updateDigitDisplay();
-                // 少し待ってから判定
-                setTimeout(() => {
-                    checkDigitAnswer();
-                }, 500);
+                // 全桁入力完了 → 最終判定
+                checkDigitAnswer();
             } else {
-                // 次の桁へ
+                // 次の桁の入力へ
                 updateDigitDisplay();
                 generateDigitButtons();
             }
@@ -1738,33 +1885,103 @@
 
         // 位ごと入力の判定
         function checkDigitAnswer() {
-            // 商の桁数を判定
-            const quotient = gameState.correctAnswer;
-            let startDigit = 2; // 0=百の位, 1=十の位, 2=一の位
+            // 各桁の正誤に基づいて総合判定
+            const correctCount = gameState.digitCorrect.filter(c => c).length;
+            const totalDigits = gameState.digitCorrect.length;
 
-            if (quotient >= 100) {
-                startDigit = 0;
-            } else if (quotient >= 10) {
-                startDigit = 1;
-            }
+            let rank = '';
+            let icon = '';
+            let title = '';
+            let message = '';
+            let color = '';
 
-            // 入力から商を計算
-            let answer = 0;
-            for (let i = 0; i < gameState.digitInputs.length; i++) {
-                const digitPlace = startDigit + i;
-                if (digitPlace === 0) {
-                    answer += gameState.digitInputs[i] * 100;
-                } else if (digitPlace === 1) {
-                    answer += gameState.digitInputs[i] * 10;
-                } else {
-                    answer += gameState.digitInputs[i];
+            if (correctCount === totalDigits) {
+                // 全桁正解
+                rank = 'perfect';
+                icon = '🎉';
+                title = '◎ 完璧な見立て！';
+                message = 'すべての桁を正しく見立てられました！';
+                color = 'feedback-perfect';
+                gameState.perfectCount++;
+                gameState.combo++;
+                playSound('perfect');
+
+                // エフェクト発動
+                shakeScreen();
+                flashBackground('gold');
+                createConfetti();
+                monsterDamage();
+                showDamageNumber(gameState.divisor);
+                const monster = document.getElementById('monsterElement');
+                const rect = monster.getBoundingClientRect();
+                const battleArea = document.getElementById('battleArea');
+                const battleRect = battleArea.getBoundingClientRect();
+                createParticles(rect.left - battleRect.left + rect.width / 2, rect.top - battleRect.top + rect.height / 2, 12, '⭐');
+                damageHP(40);
+            } else if (correctCount >= totalDigits / 2) {
+                // 半分以上正解
+                rank = 'good';
+                icon = '👍';
+                title = '○ いい見立て！';
+                message = `${correctCount}/${totalDigits}桁正解！もう少しで完璧だよ！`;
+                color = 'feedback-good';
+                gameState.goodCount++;
+                gameState.combo++;
+                playSound('good');
+
+                // エフェクト発動
+                flashBackground('silver');
+                monsterDamage();
+                showDamageNumber(Math.floor(gameState.divisor * 0.7));
+                const monster = document.getElementById('monsterElement');
+                const rect = monster.getBoundingClientRect();
+                const battleArea = document.getElementById('battleArea');
+                const battleRect = battleArea.getBoundingClientRect();
+                createParticles(rect.left - battleRect.left + rect.width / 2, rect.top - battleRect.top + rect.height / 2, 8, '✨');
+                damageHP(25);
+            } else {
+                // 半分未満
+                rank = 'ok';
+                icon = '💡';
+                title = '△ もう一息！';
+                message = `${correctCount}/${totalDigits}桁正解。一桁ずつ丁寧に見立てよう！`;
+                color = 'feedback-ok';
+                gameState.combo = 0;
+                playSound('ok');
+
+                // 軽いエフェクトのみ
+                showDamageNumber(Math.floor(gameState.divisor * 0.3));
+                damageHP(10);
+
+                // サバイバルモードでライフ減少
+                if (gameSettings.gameMode === 'survival') {
+                    loseLife();
                 }
             }
 
-            gameState.userAnswer = answer;
+            gameState.totalCount++;
 
-            // 通常の判定処理へ
-            checkAnswer();
+            // フィードバック表示
+            document.getElementById('feedbackIcon').textContent = icon;
+            document.getElementById('feedbackTitle').textContent = title;
+            document.getElementById('feedbackTitle').className = `feedback-title ${color}`;
+            document.getElementById('feedbackMessage').textContent = message;
+
+            const explanation = `
+                <strong>正しい商：${gameState.correctAnswer}</strong><br>
+                ${gameState.dividend} ÷ ${gameState.divisor} = ${gameState.correctAnswer} 余り ${gameState.currentRemainder}<br>
+                <br>
+                各桁の結果：<br>
+                ${gameState.digitCorrect.map((correct, i) =>
+                    `${i + 1}桁目: ${correct ? '✓ 正解' : '✗ 不正解'}`
+                ).join('<br>')}
+            `;
+            document.getElementById('feedbackExplanation').innerHTML = explanation;
+            document.getElementById('feedback').classList.add('show');
+
+            updateScore();
+            checkBadges();
+            saveProgress();
         }
 
         // 指定桁数のランダムな数を生成
