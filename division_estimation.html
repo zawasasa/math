@@ -69,6 +69,95 @@
             line-height: 1.8;
         }
 
+        /* 設定パネル */
+        .settings-panel {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 600px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+        }
+
+        .setting-group {
+            margin-bottom: 25px;
+        }
+
+        .setting-label {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text);
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .option-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .option-btn {
+            background: white;
+            border: 3px solid var(--text);
+            color: var(--text);
+            font-size: 1.1rem;
+            font-weight: bold;
+            padding: 12px 24px;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        .option-btn.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: white;
+        }
+
+        .toggle-switch {
+            display: inline-flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.1rem;
+        }
+
+        .switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #CCC;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .switch.active {
+            background: var(--light-blue);
+        }
+
+        .switch-knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .switch.active .switch-knob {
+            transform: translateX(30px);
+        }
+
         .start-button, .next-button, .back-button {
             background: linear-gradient(135deg, var(--orange) 0%, #FF8A95 100%);
             color: white;
@@ -136,6 +225,63 @@
             font-size: 1.8rem;
             font-weight: bold;
             color: var(--text);
+        }
+
+        /* バッジエリア */
+        .badges-area {
+            background: var(--yellow);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .badges-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--text);
+        }
+
+        .badges-list {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .badge {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            min-width: 100px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            opacity: 0.3;
+            transition: all 0.3s;
+        }
+
+        .badge.unlocked {
+            opacity: 1;
+            transform: scale(1.05);
+            animation: badgeUnlock 0.5s ease-out;
+        }
+
+        @keyframes badgeUnlock {
+            0% { transform: scale(0.5) rotate(-10deg); opacity: 0; }
+            50% { transform: scale(1.2) rotate(10deg); }
+            100% { transform: scale(1.05) rotate(0deg); opacity: 1; }
+        }
+
+        .badge-icon {
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+
+        .badge-name {
+            font-size: 0.8rem;
+            color: var(--text);
+            font-weight: bold;
         }
 
         /* バトル画面 */
@@ -242,6 +388,91 @@
             outline: none;
             border-color: var(--orange);
             box-shadow: 0 0 0 4px rgba(255, 154, 162, 0.3);
+        }
+
+        /* 3択モード */
+        .choice-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .choice-btn {
+            background: white;
+            border: 4px solid var(--text);
+            color: var(--text);
+            font-size: 2.5rem;
+            font-weight: bold;
+            padding: 20px 40px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 120px;
+        }
+
+        .choice-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .choice-btn.selected {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: white;
+        }
+
+        /* スライダーモード */
+        .slider-container {
+            margin-bottom: 30px;
+        }
+
+        .slider-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--text);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .slider {
+            width: 100%;
+            height: 15px;
+            border-radius: 10px;
+            background: #DDD;
+            outline: none;
+            -webkit-appearance: none;
+            margin-bottom: 10px;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--orange);
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .slider::-moz-range-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--orange);
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            border: none;
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text);
+            opacity: 0.7;
         }
 
         .times-label {
@@ -369,6 +600,12 @@
                 width: 150px;
             }
 
+            .choice-btn {
+                font-size: 2rem;
+                padding: 15px 30px;
+                min-width: 100px;
+            }
+
             .submit-button {
                 font-size: 1.5rem;
                 padding: 15px 40px;
@@ -385,8 +622,21 @@
                 width: 120px;
             }
 
+            .choice-btn {
+                font-size: 1.8rem;
+                padding: 12px 25px;
+            }
+
             .score-board {
                 flex-direction: column;
+            }
+
+            .option-buttons {
+                flex-direction: column;
+            }
+
+            .option-btn {
+                width: 100%;
             }
         }
 
@@ -405,6 +655,51 @@
                 何回攻撃すれば倒せるか見立てよう！<br>
                 <strong>「だいたい何倍か」</strong>を感覚で掴む練習だよ🎯
             </p>
+
+            <!-- 設定パネル -->
+            <div class="settings-panel">
+                <div class="setting-group">
+                    <label class="setting-label">難易度</label>
+                    <div class="option-buttons">
+                        <button class="option-btn active" data-difficulty="easy" onclick="setDifficulty('easy')">
+                            😊 簡単<br><small>(2桁÷2桁)</small>
+                        </button>
+                        <button class="option-btn" data-difficulty="normal" onclick="setDifficulty('normal')">
+                            😎 普通<br><small>(3桁÷2桁)</small>
+                        </button>
+                        <button class="option-btn" data-difficulty="hard" onclick="setDifficulty('hard')">
+                            😤 難しい<br><small>(4桁÷3桁)</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">入力モード</label>
+                    <div class="option-buttons">
+                        <button class="option-btn active" data-mode="number" onclick="setInputMode('number')">
+                            🔢 数字入力
+                        </button>
+                        <button class="option-btn" data-mode="choice" onclick="setInputMode('choice')">
+                            ✋ 3択
+                        </button>
+                        <button class="option-btn" data-mode="slider" onclick="setInputMode('slider')">
+                            🎚️ スライダー
+                        </button>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label class="setting-label">サウンド</label>
+                    <div class="toggle-switch">
+                        <span>🔇 OFF</span>
+                        <div class="switch active" onclick="toggleSound()">
+                            <div class="switch-knob"></div>
+                        </div>
+                        <span>🔊 ON</span>
+                    </div>
+                </div>
+            </div>
+
             <button class="start-button" onclick="startGame()">⚔️ バトル開始！</button>
             <br>
             <button class="back-button" onclick="location.href='index.html'">🏠 トップに戻る</button>
@@ -432,6 +727,33 @@
                 </div>
             </div>
 
+            <!-- バッジエリア -->
+            <div class="badges-area">
+                <div class="badges-title">🏆 獲得バッジ</div>
+                <div class="badges-list" id="badgesList">
+                    <div class="badge" data-badge="perfect10">
+                        <div class="badge-icon">🥉</div>
+                        <div class="badge-name">◎10回</div>
+                    </div>
+                    <div class="badge" data-badge="perfect30">
+                        <div class="badge-icon">🥈</div>
+                        <div class="badge-name">◎30回</div>
+                    </div>
+                    <div class="badge" data-badge="perfect50">
+                        <div class="badge-icon">🥇</div>
+                        <div class="badge-name">◎50回</div>
+                    </div>
+                    <div class="badge" data-badge="combo5">
+                        <div class="badge-icon">🔥</div>
+                        <div class="badge-name">連続5回</div>
+                    </div>
+                    <div class="badge" data-badge="total100">
+                        <div class="badge-icon">📚</div>
+                        <div class="badge-name">100問達成</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- バトルエリア -->
             <div class="battle-area">
                 <div class="monster">
@@ -451,10 +773,34 @@
             <!-- 入力エリア -->
             <div class="input-area">
                 <div class="input-label">何回攻撃すれば倒せる？</div>
-                <div class="input-group">
-                    <input type="number" class="answer-input" id="answerInput" placeholder="?" min="1" max="9999">
-                    <span class="times-label">回</span>
+
+                <!-- 数字入力モード -->
+                <div id="numberInputMode" class="input-mode">
+                    <div class="input-group">
+                        <input type="number" class="answer-input" id="answerInput" placeholder="?" min="1" max="999">
+                        <span class="times-label">回</span>
+                    </div>
                 </div>
+
+                <!-- 3択モード -->
+                <div id="choiceInputMode" class="input-mode hidden">
+                    <div class="choice-buttons" id="choiceButtons">
+                        <!-- 動的生成 -->
+                    </div>
+                </div>
+
+                <!-- スライダーモード -->
+                <div id="sliderInputMode" class="input-mode hidden">
+                    <div class="slider-container">
+                        <div class="slider-value"><span id="sliderValue">50</span> 回</div>
+                        <input type="range" class="slider" id="answerSlider" min="1" max="100" value="50">
+                        <div class="slider-labels">
+                            <span id="sliderMin">1</span>
+                            <span id="sliderMax">100</span>
+                        </div>
+                    </div>
+                </div>
+
                 <button class="submit-button" id="submitButton" onclick="checkAnswer()">⚔️ 攻撃する！</button>
             </div>
 
@@ -470,50 +816,131 @@
     </div>
 
     <script>
+        // ゲーム設定
+        let gameSettings = {
+            difficulty: 'easy',    // easy, normal, hard
+            inputMode: 'number',   // number, choice, slider
+            soundEnabled: true,
+        };
+
         // ゲーム状態
         let gameState = {
-            dividend: 0,      // 割られる数
-            divisor: 0,       // 割る数
-            correctAnswer: 0, // 正しい商
-            userAnswer: 0,    // ユーザーの回答
-            combo: 0,         // 連続正解
-            perfectCount: 0,  // ◎の数
-            goodCount: 0,     // ○の数
-            totalCount: 0,    // 総問題数
+            dividend: 0,
+            divisor: 0,
+            correctAnswer: 0,
+            userAnswer: 0,
+            combo: 0,
+            perfectCount: 0,
+            goodCount: 0,
+            totalCount: 0,
+            badges: {
+                perfect10: false,
+                perfect30: false,
+                perfect50: false,
+                combo5: false,
+                total100: false,
+            }
         };
 
         // モンスターの絵文字リスト
         const monsters = ['👾', '👹', '👺', '🐉', '🦖', '🦕', '🐲', '🧟', '🧛'];
+
+        // AudioContext for sound
+        let audioContext;
+
+        // 難易度設定
+        function setDifficulty(level) {
+            gameSettings.difficulty = level;
+            document.querySelectorAll('[data-difficulty]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.difficulty === level);
+            });
+        }
+
+        // 入力モード設定
+        function setInputMode(mode) {
+            gameSettings.inputMode = mode;
+            document.querySelectorAll('[data-mode]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+        }
+
+        // サウンド切替
+        function toggleSound() {
+            gameSettings.soundEnabled = !gameSettings.soundEnabled;
+            const switchEl = document.querySelector('.switch');
+            switchEl.classList.toggle('active', gameSettings.soundEnabled);
+        }
+
+        // サウンド再生
+        function playSound(type) {
+            if (!gameSettings.soundEnabled) return;
+
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            if (type === 'perfect') {
+                // 完璧な見立て: 高い音
+                oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(1200, audioContext.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.3);
+            } else if (type === 'good') {
+                // いい見立て: 中音
+                oscillator.frequency.setValueAtTime(600, audioContext.currentTime);
+                oscillator.frequency.exponentialRampToValueAtTime(800, audioContext.currentTime + 0.1);
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.2);
+            } else if (type === 'ok') {
+                // もう一息: 低い音
+                oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+                gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.15);
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.15);
+            }
+        }
 
         // ゲーム開始
         function startGame() {
             document.getElementById('titleScreen').classList.add('hidden');
             document.getElementById('gameScreen').style.display = 'block';
             loadProgress();
+            updateBadges();
             generateProblem();
         }
 
         // 問題生成
         function generateProblem() {
-            // ランダムで桁数を選択
-            const types = [
-                { dividendDigits: 2, divisorDigits: 2 }, // 2桁÷2桁
-                { dividendDigits: 3, divisorDigits: 2 }, // 3桁÷2桁
-                { dividendDigits: 4, divisorDigits: 3 }, // 4桁÷3桁
-            ];
+            const types = {
+                easy: [{ dividendDigits: 2, divisorDigits: 2 }],
+                normal: [
+                    { dividendDigits: 2, divisorDigits: 2 },
+                    { dividendDigits: 3, divisorDigits: 2 }
+                ],
+                hard: [
+                    { dividendDigits: 2, divisorDigits: 2 },
+                    { dividendDigits: 3, divisorDigits: 2 },
+                    { dividendDigits: 4, divisorDigits: 3 }
+                ]
+            };
 
-            const type = types[Math.floor(Math.random() * types.length)];
+            const availableTypes = types[gameSettings.difficulty];
+            const type = availableTypes[Math.floor(Math.random() * availableTypes.length)];
 
-            // 割る数を生成
             gameState.divisor = randomNumber(type.divisorDigits);
-
-            // 商を決める（2〜99の範囲）
             const quotient = Math.floor(Math.random() * 98) + 2;
-
-            // 余りを決める（0〜divisor-1の範囲）
             const remainder = Math.floor(Math.random() * gameState.divisor);
-
-            // 割られる数 = 商 × 割る数 + 余り
             gameState.dividend = quotient * gameState.divisor + remainder;
             gameState.correctAnswer = quotient;
 
@@ -521,9 +948,87 @@
             document.getElementById('hpValue').textContent = gameState.dividend;
             document.getElementById('attackValue').textContent = gameState.divisor;
             document.getElementById('monsterIcon').textContent = monsters[Math.floor(Math.random() * monsters.length)];
-            document.getElementById('answerInput').value = '';
-            document.getElementById('answerInput').focus();
             document.getElementById('feedback').classList.remove('show');
+
+            // 入力モード切替
+            switchInputMode();
+        }
+
+        // 入力モード切替
+        function switchInputMode() {
+            const modes = ['numberInputMode', 'choiceInputMode', 'sliderInputMode'];
+            modes.forEach(mode => {
+                document.getElementById(mode).classList.add('hidden');
+            });
+
+            if (gameSettings.inputMode === 'number') {
+                document.getElementById('numberInputMode').classList.remove('hidden');
+                document.getElementById('answerInput').value = '';
+                document.getElementById('answerInput').focus();
+            } else if (gameSettings.inputMode === 'choice') {
+                document.getElementById('choiceInputMode').classList.remove('hidden');
+                generateChoices();
+            } else if (gameSettings.inputMode === 'slider') {
+                document.getElementById('sliderInputMode').classList.remove('hidden');
+                setupSlider();
+            }
+        }
+
+        // 3択生成
+        function generateChoices() {
+            const correct = gameState.correctAnswer;
+            const choices = [correct];
+
+            // 2つの不正解を生成
+            while (choices.length < 3) {
+                const offset = Math.floor(Math.random() * 10) - 5; // -5〜+5
+                const choice = correct + offset;
+                if (choice > 0 && !choices.includes(choice)) {
+                    choices.push(choice);
+                }
+            }
+
+            // シャッフル
+            choices.sort(() => Math.random() - 0.5);
+
+            // ボタン生成
+            const container = document.getElementById('choiceButtons');
+            container.innerHTML = '';
+            choices.forEach(choice => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.textContent = choice;
+                btn.onclick = () => selectChoice(btn, choice);
+                container.appendChild(btn);
+            });
+        }
+
+        // 選択肢選択
+        function selectChoice(btn, value) {
+            document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            gameState.userAnswer = value;
+        }
+
+        // スライダー設定
+        function setupSlider() {
+            const slider = document.getElementById('answerSlider');
+            const min = Math.max(1, gameState.correctAnswer - 20);
+            const max = gameState.correctAnswer + 20;
+            const mid = Math.floor((min + max) / 2);
+
+            slider.min = min;
+            slider.max = max;
+            slider.value = mid;
+
+            document.getElementById('sliderMin').textContent = min;
+            document.getElementById('sliderMax').textContent = max;
+            document.getElementById('sliderValue').textContent = mid;
+
+            slider.oninput = function() {
+                document.getElementById('sliderValue').textContent = this.value;
+                gameState.userAnswer = parseInt(this.value);
+            };
         }
 
         // 指定桁数のランダムな数を生成
@@ -535,18 +1040,26 @@
 
         // 回答チェック
         function checkAnswer() {
-            const input = document.getElementById('answerInput');
-            gameState.userAnswer = parseInt(input.value);
+            // 入力値取得
+            if (gameSettings.inputMode === 'number') {
+                const input = document.getElementById('answerInput');
+                gameState.userAnswer = parseInt(input.value);
+            } else if (gameSettings.inputMode === 'choice') {
+                if (!gameState.userAnswer) {
+                    alert('選択肢を選んでね！');
+                    return;
+                }
+            } else if (gameSettings.inputMode === 'slider') {
+                // sliderは常にuserAnswerに値が入っている
+            }
 
             if (isNaN(gameState.userAnswer) || gameState.userAnswer < 1) {
                 alert('数字を入力してね！');
                 return;
             }
 
-            // 差を計算
             const diff = Math.abs(gameState.userAnswer - gameState.correctAnswer);
 
-            // 判定
             let rank = '';
             let icon = '';
             let title = '';
@@ -561,6 +1074,7 @@
                 color = 'feedback-perfect';
                 gameState.perfectCount++;
                 gameState.combo++;
+                playSound('perfect');
             } else if (diff <= 2) {
                 rank = 'good';
                 icon = '👍';
@@ -569,6 +1083,7 @@
                 color = 'feedback-good';
                 gameState.goodCount++;
                 gameState.combo++;
+                playSound('good');
             } else {
                 rank = 'ok';
                 icon = '💡';
@@ -576,6 +1091,7 @@
                 message = diff > 10 ? '大きく外れちゃったね。丸めて考えてみよう！' : 'もう少し正確に見立ててみよう！';
                 color = 'feedback-ok';
                 gameState.combo = 0;
+                playSound('ok');
             }
 
             gameState.totalCount++;
@@ -586,7 +1102,6 @@
             document.getElementById('feedbackTitle').className = `feedback-title ${color}`;
             document.getElementById('feedbackMessage').textContent = message;
 
-            // 解説
             const explanation = `
                 <strong>正しい商：${gameState.correctAnswer}回</strong><br>
                 あなたの見立て：${gameState.userAnswer}回<br>
@@ -598,8 +1113,8 @@
             document.getElementById('feedbackExplanation').innerHTML = explanation;
             document.getElementById('feedback').classList.add('show');
 
-            // スコア更新
             updateScore();
+            checkBadges();
             saveProgress();
         }
 
@@ -628,6 +1143,55 @@
             document.getElementById('totalCount').textContent = gameState.totalCount;
         }
 
+        // バッジチェック
+        function checkBadges() {
+            const newBadges = [];
+
+            if (!gameState.badges.perfect10 && gameState.perfectCount >= 10) {
+                gameState.badges.perfect10 = true;
+                newBadges.push('perfect10');
+            }
+            if (!gameState.badges.perfect30 && gameState.perfectCount >= 30) {
+                gameState.badges.perfect30 = true;
+                newBadges.push('perfect30');
+            }
+            if (!gameState.badges.perfect50 && gameState.perfectCount >= 50) {
+                gameState.badges.perfect50 = true;
+                newBadges.push('perfect50');
+            }
+            if (!gameState.badges.combo5 && gameState.combo >= 5) {
+                gameState.badges.combo5 = true;
+                newBadges.push('combo5');
+            }
+            if (!gameState.badges.total100 && gameState.totalCount >= 100) {
+                gameState.badges.total100 = true;
+                newBadges.push('total100');
+            }
+
+            if (newBadges.length > 0) {
+                updateBadges();
+                // バッジ獲得アニメーション
+                setTimeout(() => {
+                    newBadges.forEach(badge => {
+                        const el = document.querySelector(`[data-badge="${badge}"]`);
+                        if (el) {
+                            el.classList.add('unlocked');
+                        }
+                    });
+                }, 500);
+            }
+        }
+
+        // バッジ表示更新
+        function updateBadges() {
+            Object.keys(gameState.badges).forEach(badge => {
+                const el = document.querySelector(`[data-badge="${badge}"]`);
+                if (el && gameState.badges[badge]) {
+                    el.classList.add('unlocked');
+                }
+            });
+        }
+
         // 次の問題
         function nextProblem() {
             generateProblem();
@@ -639,6 +1203,7 @@
                 perfectCount: gameState.perfectCount,
                 goodCount: gameState.goodCount,
                 totalCount: gameState.totalCount,
+                badges: gameState.badges,
             }));
         }
 
@@ -650,6 +1215,7 @@
                 gameState.perfectCount = data.perfectCount || 0;
                 gameState.goodCount = data.goodCount || 0;
                 gameState.totalCount = data.totalCount || 0;
+                gameState.badges = data.badges || gameState.badges;
                 updateScore();
             }
         }
