@@ -930,6 +930,21 @@
             <!-- 設定パネル -->
             <div class="settings-panel">
                 <div class="setting-group">
+                    <label class="setting-label">ゲームモード</label>
+                    <div class="option-buttons">
+                        <button class="option-btn active" data-gamemode="endless" onclick="setGameMode('endless')">
+                            ♾️ エンドレス<br><small>(自由練習)</small>
+                        </button>
+                        <button class="option-btn" data-gamemode="timeattack" onclick="setGameMode('timeattack')">
+                            ⏱️ タイムアタック<br><small>(60秒)</small>
+                        </button>
+                        <button class="option-btn" data-gamemode="survival" onclick="setGameMode('survival')">
+                            ❤️ サバイバル<br><small>(ミス3回)</small>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="setting-group">
                     <label class="setting-label">難易度</label>
                     <div class="option-buttons">
                         <button class="option-btn active" data-difficulty="easy" onclick="setDifficulty('easy')">
@@ -980,6 +995,16 @@
         <div class="game-screen" id="gameScreen">
             <!-- スコアボード -->
             <div class="score-board">
+                <!-- タイムアタックモード用タイマー -->
+                <div class="score-item" id="timerDisplay" style="display: none;">
+                    <div class="score-label">⏱️ 残り時間</div>
+                    <div class="score-value" id="timerValue">60</div>
+                </div>
+                <!-- サバイバルモード用ライフ -->
+                <div class="score-item" id="livesDisplay" style="display: none;">
+                    <div class="score-label">❤️ 残りライフ</div>
+                    <div class="score-value" id="livesValue">❤️❤️❤️</div>
+                </div>
                 <div class="score-item">
                     <div class="score-label">連続正解</div>
                     <div class="score-value" id="comboCount">0</div>
@@ -1092,6 +1117,16 @@
                 <div class="feedback-explanation" id="feedbackExplanation"></div>
                 <button class="next-button" onclick="nextProblem()">次の問題へ ▶</button>
             </div>
+
+            <!-- ゲームオーバー画面 -->
+            <div class="feedback" id="gameOverScreen" style="display: none;">
+                <div class="feedback-icon" id="gameOverIcon">🏁</div>
+                <div class="feedback-title" id="gameOverTitle">ゲーム終了！</div>
+                <div class="feedback-message" id="gameOverMessage">お疲れ様でした！</div>
+                <div class="feedback-explanation" id="gameOverStats"></div>
+                <button class="next-button" onclick="restartGame()">もう一度挑戦 🔄</button>
+                <button class="back-button" onclick="backToTitle()">タイトルに戻る 🏠</button>
+            </div>
         </div>
     </div>
 
@@ -1101,6 +1136,7 @@
             difficulty: 'easy',    // easy, normal, hard
             inputMode: 'number',   // number, choice, slider
             soundEnabled: true,
+            gameMode: 'endless',   // endless, timeattack, survival
         };
 
         // ゲーム状態
@@ -1115,6 +1151,8 @@
             totalCount: 0,
             defeatCount: 0,  // 撃破数
             currentHP: 100,  // 現在のHP（仮想）
+            timeRemaining: 60,  // タイムアタックモード用（秒）
+            livesRemaining: 3,  // サバイバルモード用
             badges: {
                 perfect10: false,
                 perfect30: false,
@@ -1124,11 +1162,22 @@
             }
         };
 
+        // タイマー用
+        let timerInterval = null;
+
         // モンスターの絵文字リスト
         const monsters = ['👾', '👹', '👺', '🐉', '🦖', '🦕', '🐲', '🧟', '🧛'];
 
         // AudioContext for sound
         let audioContext;
+
+        // ゲームモード設定
+        function setGameMode(mode) {
+            gameSettings.gameMode = mode;
+            document.querySelectorAll('[data-gamemode]').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.gamemode === mode);
+            });
+        }
 
         // 難易度設定
         function setDifficulty(level) {
@@ -1197,9 +1246,76 @@
         function startGame() {
             document.getElementById('titleScreen').classList.add('hidden');
             document.getElementById('gameScreen').style.display = 'block';
+            document.getElementById('gameOverScreen').style.display = 'none';
+
+            // モードに応じて初期化
+            if (gameSettings.gameMode === 'timeattack') {
+                gameState.timeRemaining = 60;
+                document.getElementById('timerDisplay').style.display = 'block';
+                document.getElementById('livesDisplay').style.display = 'none';
+                startTimer();
+            } else if (gameSettings.gameMode === 'survival') {
+                gameState.livesRemaining = 3;
+                document.getElementById('livesDisplay').style.display = 'block';
+                document.getElementById('timerDisplay').style.display = 'none';
+                updateLivesDisplay();
+            } else {
+                // エンドレスモード
+                document.getElementById('timerDisplay').style.display = 'none';
+                document.getElementById('livesDisplay').style.display = 'none';
+            }
+
             loadProgress();
             updateBadges();
             generateProblem();
+        }
+
+        // タイマー開始
+        function startTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+            }
+
+            timerInterval = setInterval(() => {
+                gameState.timeRemaining--;
+                document.getElementById('timerValue').textContent = gameState.timeRemaining;
+
+                // 10秒以下で警告色
+                if (gameState.timeRemaining <= 10) {
+                    document.getElementById('timerValue').style.color = '#FF6B6B';
+                }
+
+                // 時間切れ
+                if (gameState.timeRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    gameOver('timeup');
+                }
+            }, 1000);
+        }
+
+        // タイマー停止
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        // ライフ表示更新
+        function updateLivesDisplay() {
+            const hearts = '❤️'.repeat(gameState.livesRemaining);
+            const brokenHearts = '🖤'.repeat(3 - gameState.livesRemaining);
+            document.getElementById('livesValue').textContent = hearts + brokenHearts;
+        }
+
+        // ライフ減少
+        function loseLife() {
+            gameState.livesRemaining--;
+            updateLivesDisplay();
+
+            if (gameState.livesRemaining <= 0) {
+                gameOver('nolives');
+            }
         }
 
         // 問題生成
@@ -1509,6 +1625,91 @@
             }
         }
 
+        // ゲームオーバー処理
+        function gameOver(reason) {
+            // タイマー停止
+            stopTimer();
+
+            // 入力を無効化
+            document.getElementById('submitButton').disabled = true;
+
+            // ゲームオーバー画面を表示
+            let icon = '🏁';
+            let title = 'ゲーム終了！';
+            let message = '';
+
+            if (reason === 'timeup') {
+                icon = '⏰';
+                title = 'タイムアップ！';
+                message = '60秒間お疲れ様でした！';
+            } else if (reason === 'nolives') {
+                icon = '💔';
+                title = 'ゲームオーバー！';
+                message = 'ライフがなくなってしまいました...';
+            }
+
+            document.getElementById('gameOverIcon').textContent = icon;
+            document.getElementById('gameOverTitle').textContent = title;
+            document.getElementById('gameOverMessage').textContent = message;
+
+            const stats = `
+                <strong>📊 あなたの成績</strong><br><br>
+                撃破数：${gameState.defeatCount} 体<br>
+                ◎判定：${gameState.perfectCount} 回<br>
+                ○判定：${gameState.goodCount} 回<br>
+                問題数：${gameState.totalCount} 問<br>
+                最高連続正解：${gameState.combo} 回<br>
+            `;
+            document.getElementById('gameOverStats').innerHTML = stats;
+
+            // フィードバックを非表示
+            document.getElementById('feedback').classList.remove('show');
+
+            // ゲームオーバー画面を表示
+            setTimeout(() => {
+                document.getElementById('gameOverScreen').style.display = 'block';
+            }, 500);
+        }
+
+        // ゲーム再開
+        function restartGame() {
+            // スコアリセット（バッジと累計は保持）
+            const savedPerfectCount = gameState.perfectCount;
+            const savedGoodCount = gameState.goodCount;
+            const savedTotalCount = gameState.totalCount;
+            const savedBadges = gameState.badges;
+
+            gameState.combo = 0;
+            gameState.defeatCount = 0;
+            gameState.currentHP = 100;
+            gameState.timeRemaining = 60;
+            gameState.livesRemaining = 3;
+
+            // バッジと累計は復元
+            gameState.perfectCount = savedPerfectCount;
+            gameState.goodCount = savedGoodCount;
+            gameState.totalCount = savedTotalCount;
+            gameState.badges = savedBadges;
+
+            // 入力を有効化
+            document.getElementById('submitButton').disabled = false;
+
+            // 画面リセット
+            document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('timerValue').style.color = '';
+
+            startGame();
+        }
+
+        // タイトルに戻る
+        function backToTitle() {
+            stopTimer();
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('titleScreen').classList.remove('hidden');
+            document.getElementById('gameOverScreen').style.display = 'none';
+            document.getElementById('submitButton').disabled = false;
+        }
+
         // 回答チェック
         function checkAnswer() {
             // 入力値取得
@@ -1591,6 +1792,11 @@
                 // 軽いエフェクトのみ
                 showDamageNumber(Math.floor(gameState.divisor * 0.3));
                 damageHP(10);  // HPを10%減少
+
+                // サバイバルモードでライフ減少
+                if (gameSettings.gameMode === 'survival') {
+                    loseLife();
+                }
             }
 
             gameState.totalCount++;
