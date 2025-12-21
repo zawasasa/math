@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>商の見立てバトル - ささっと算数</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=M+PLUS+Rounded+1c:wght@800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --orange: #FF9AA2;
+            --yellow: #FFDAC1;
+            --light-green: #E2F0CB;
+            --light-blue: #B5EAD7;
+            --text: #6B5B95;
+            --white: #FFFFF0;
+            --font-main: 'M PLUS Rounded 1c', sans-serif;
+            --font-title: 'Kiwi Maru', serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background: linear-gradient(135deg, var(--light-green) 0%, var(--light-blue) 100%);
+            background-image:
+                radial-gradient(rgba(255,255,255,0.3) 15%, transparent 16%),
+                radial-gradient(rgba(255,255,255,0.3) 15%, transparent 16%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        /* タイトル画面 */
+        .title-screen {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .game-title {
+            font-family: var(--font-title);
+            font-size: 3rem;
+            color: var(--text);
+            text-shadow: 3px 3px 0 var(--white);
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .game-subtitle {
+            font-size: 1.3rem;
+            color: var(--text);
+            margin-bottom: 40px;
+            line-height: 1.8;
+        }
+
+        .start-button, .next-button, .back-button {
+            background: linear-gradient(135deg, var(--orange) 0%, #FF8A95 100%);
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            padding: 20px 60px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #E07A86;
+            transition: all 0.2s;
+            margin: 10px;
+        }
+
+        .start-button:hover, .next-button:hover, .back-button:hover {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #E07A86;
+        }
+
+        .start-button:active, .next-button:active, .back-button:active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, var(--light-blue) 0%, #A0D9C4 100%);
+            box-shadow: 0 6px 0 #8AC4AF;
+            font-size: 1.2rem;
+            padding: 15px 40px;
+        }
+
+        .back-button:hover {
+            box-shadow: 0 3px 0 #8AC4AF;
+        }
+
+        /* ゲーム画面 */
+        .game-screen {
+            display: none;
+        }
+
+        .score-board {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--text);
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        /* バトル画面 */
+        .battle-area {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 40px 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .monster {
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+        }
+
+        .monster-icon {
+            font-size: 6rem;
+            margin-bottom: 15px;
+        }
+
+        .hp-label {
+            font-size: 1.2rem;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .hp-value {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--orange);
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+        }
+
+        .vs-divider {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text);
+            margin: 30px 0;
+        }
+
+        .attack-section {
+            margin-bottom: 30px;
+        }
+
+        .attack-label {
+            font-size: 1.2rem;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .attack-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--light-blue);
+            text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+        }
+
+        /* 入力エリア */
+        .input-area {
+            background: var(--yellow);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .input-label {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .answer-input {
+            font-family: var(--font-main);
+            font-size: 3rem;
+            font-weight: bold;
+            text-align: center;
+            width: 200px;
+            padding: 15px;
+            border: 4px solid var(--text);
+            border-radius: 15px;
+            background: white;
+            color: var(--text);
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--orange);
+            box-shadow: 0 0 0 4px rgba(255, 154, 162, 0.3);
+        }
+
+        .times-label {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--text);
+        }
+
+        .submit-button {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+            padding: 20px 50px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #D84343;
+            transition: all 0.2s;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .submit-button:hover {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #D84343;
+        }
+
+        .submit-button:active {
+            transform: translateY(6px);
+            box-shadow: none;
+        }
+
+        .submit-button:disabled {
+            background: #CCC;
+            box-shadow: 0 6px 0 #AAA;
+            cursor: not-allowed;
+        }
+
+        /* フィードバック */
+        .feedback {
+            display: none;
+            background: var(--white);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            text-align: center;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .feedback-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .feedback-message {
+            font-size: 1.3rem;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .feedback-explanation {
+            background: var(--light-green);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+
+        .feedback-perfect {
+            color: #FF6B6B;
+        }
+
+        .feedback-good {
+            color: #FFA500;
+        }
+
+        .feedback-ok {
+            color: #4CAF50;
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 768px) {
+            .game-title {
+                font-size: 2rem;
+            }
+
+            .monster-icon {
+                font-size: 4rem;
+            }
+
+            .hp-value {
+                font-size: 3rem;
+            }
+
+            .attack-value {
+                font-size: 2rem;
+            }
+
+            .answer-input {
+                font-size: 2rem;
+                width: 150px;
+            }
+
+            .submit-button {
+                font-size: 1.5rem;
+                padding: 15px 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-title {
+                font-size: 1.5rem;
+            }
+
+            .answer-input {
+                font-size: 1.8rem;
+                width: 120px;
+            }
+
+            .score-board {
+                flex-direction: column;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- タイトル画面 -->
+        <div class="title-screen" id="titleScreen">
+            <h1 class="game-title">⚔️ 商の見立てバトル ⚔️</h1>
+            <p class="game-subtitle">
+                モンスターのHPを見て、<br>
+                何回攻撃すれば倒せるか見立てよう！<br>
+                <strong>「だいたい何倍か」</strong>を感覚で掴む練習だよ🎯
+            </p>
+            <button class="start-button" onclick="startGame()">⚔️ バトル開始！</button>
+            <br>
+            <button class="back-button" onclick="location.href='index.html'">🏠 トップに戻る</button>
+        </div>
+
+        <!-- ゲーム画面 -->
+        <div class="game-screen" id="gameScreen">
+            <!-- スコアボード -->
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="score-label">連続正解</div>
+                    <div class="score-value" id="comboCount">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">◎判定</div>
+                    <div class="score-value" id="perfectCount">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">○判定</div>
+                    <div class="score-value" id="goodCount">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">問題数</div>
+                    <div class="score-value" id="totalCount">0</div>
+                </div>
+            </div>
+
+            <!-- バトルエリア -->
+            <div class="battle-area">
+                <div class="monster">
+                    <div class="monster-icon" id="monsterIcon">👾</div>
+                    <div class="hp-label">モンスターHP</div>
+                    <div class="hp-value" id="hpValue">1234</div>
+                </div>
+
+                <div class="vs-divider">÷</div>
+
+                <div class="attack-section">
+                    <div class="attack-label">あなたの攻撃力</div>
+                    <div class="attack-value" id="attackValue">56</div>
+                </div>
+            </div>
+
+            <!-- 入力エリア -->
+            <div class="input-area">
+                <div class="input-label">何回攻撃すれば倒せる？</div>
+                <div class="input-group">
+                    <input type="number" class="answer-input" id="answerInput" placeholder="?" min="1" max="9999">
+                    <span class="times-label">回</span>
+                </div>
+                <button class="submit-button" id="submitButton" onclick="checkAnswer()">⚔️ 攻撃する！</button>
+            </div>
+
+            <!-- フィードバック -->
+            <div class="feedback" id="feedback">
+                <div class="feedback-icon" id="feedbackIcon">🎉</div>
+                <div class="feedback-title" id="feedbackTitle">完璧な見立て！</div>
+                <div class="feedback-message" id="feedbackMessage">素晴らしい！</div>
+                <div class="feedback-explanation" id="feedbackExplanation"></div>
+                <button class="next-button" onclick="nextProblem()">次の問題へ ▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ゲーム状態
+        let gameState = {
+            dividend: 0,      // 割られる数
+            divisor: 0,       // 割る数
+            correctAnswer: 0, // 正しい商
+            userAnswer: 0,    // ユーザーの回答
+            combo: 0,         // 連続正解
+            perfectCount: 0,  // ◎の数
+            goodCount: 0,     // ○の数
+            totalCount: 0,    // 総問題数
+        };
+
+        // モンスターの絵文字リスト
+        const monsters = ['👾', '👹', '👺', '🐉', '🦖', '🦕', '🐲', '🧟', '🧛'];
+
+        // ゲーム開始
+        function startGame() {
+            document.getElementById('titleScreen').classList.add('hidden');
+            document.getElementById('gameScreen').style.display = 'block';
+            loadProgress();
+            generateProblem();
+        }
+
+        // 問題生成
+        function generateProblem() {
+            // ランダムで桁数を選択
+            const types = [
+                { dividendDigits: 2, divisorDigits: 2 }, // 2桁÷2桁
+                { dividendDigits: 3, divisorDigits: 2 }, // 3桁÷2桁
+                { dividendDigits: 4, divisorDigits: 3 }, // 4桁÷3桁
+            ];
+
+            const type = types[Math.floor(Math.random() * types.length)];
+
+            // 割る数を生成
+            gameState.divisor = randomNumber(type.divisorDigits);
+
+            // 商を決める（2〜99の範囲）
+            const quotient = Math.floor(Math.random() * 98) + 2;
+
+            // 余りを決める（0〜divisor-1の範囲）
+            const remainder = Math.floor(Math.random() * gameState.divisor);
+
+            // 割られる数 = 商 × 割る数 + 余り
+            gameState.dividend = quotient * gameState.divisor + remainder;
+            gameState.correctAnswer = quotient;
+
+            // UI更新
+            document.getElementById('hpValue').textContent = gameState.dividend;
+            document.getElementById('attackValue').textContent = gameState.divisor;
+            document.getElementById('monsterIcon').textContent = monsters[Math.floor(Math.random() * monsters.length)];
+            document.getElementById('answerInput').value = '';
+            document.getElementById('answerInput').focus();
+            document.getElementById('feedback').classList.remove('show');
+        }
+
+        // 指定桁数のランダムな数を生成
+        function randomNumber(digits) {
+            const min = Math.pow(10, digits - 1);
+            const max = Math.pow(10, digits) - 1;
+            return Math.floor(Math.random() * (max - min + 1)) + min;
+        }
+
+        // 回答チェック
+        function checkAnswer() {
+            const input = document.getElementById('answerInput');
+            gameState.userAnswer = parseInt(input.value);
+
+            if (isNaN(gameState.userAnswer) || gameState.userAnswer < 1) {
+                alert('数字を入力してね！');
+                return;
+            }
+
+            // 差を計算
+            const diff = Math.abs(gameState.userAnswer - gameState.correctAnswer);
+
+            // 判定
+            let rank = '';
+            let icon = '';
+            let title = '';
+            let message = '';
+            let color = '';
+
+            if (diff <= 1) {
+                rank = 'perfect';
+                icon = '🎉';
+                title = '◎ 完璧な見立て！';
+                message = 'すごい！ほぼ正確に見立てられたね！';
+                color = 'feedback-perfect';
+                gameState.perfectCount++;
+                gameState.combo++;
+            } else if (diff <= 2) {
+                rank = 'good';
+                icon = '👍';
+                title = '○ いい見立て！';
+                message = 'いい感じ！もう少しで完璧だよ！';
+                color = 'feedback-good';
+                gameState.goodCount++;
+                gameState.combo++;
+            } else {
+                rank = 'ok';
+                icon = '💡';
+                title = '△ もう一息！';
+                message = diff > 10 ? '大きく外れちゃったね。丸めて考えてみよう！' : 'もう少し正確に見立ててみよう！';
+                color = 'feedback-ok';
+                gameState.combo = 0;
+            }
+
+            gameState.totalCount++;
+
+            // フィードバック表示
+            document.getElementById('feedbackIcon').textContent = icon;
+            document.getElementById('feedbackTitle').textContent = title;
+            document.getElementById('feedbackTitle').className = `feedback-title ${color}`;
+            document.getElementById('feedbackMessage').textContent = message;
+
+            // 解説
+            const explanation = `
+                <strong>正しい商：${gameState.correctAnswer}回</strong><br>
+                あなたの見立て：${gameState.userAnswer}回<br>
+                ${gameState.dividend} ÷ ${gameState.divisor} = ${gameState.correctAnswer}あまり${gameState.dividend % gameState.divisor}<br>
+                <br>
+                💡 考え方のヒント：<br>
+                ${getRoundingHint()}
+            `;
+            document.getElementById('feedbackExplanation').innerHTML = explanation;
+            document.getElementById('feedback').classList.add('show');
+
+            // スコア更新
+            updateScore();
+            saveProgress();
+        }
+
+        // 丸め方のヒント生成
+        function getRoundingHint() {
+            const dividendRounded = roundToFirstDigit(gameState.dividend);
+            const divisorRounded = roundToFirstDigit(gameState.divisor);
+            const roughAnswer = Math.floor(dividendRounded / divisorRounded);
+
+            return `「${gameState.dividend}」を「${dividendRounded}」、「${gameState.divisor}」を「${divisorRounded}」と考えると<br>
+                    ${dividendRounded} ÷ ${divisorRounded} ≒ ${roughAnswer}回 くらいと見立てられるよ！`;
+        }
+
+        // 最上位桁に丸める
+        function roundToFirstDigit(num) {
+            const digits = num.toString().length;
+            const divisor = Math.pow(10, digits - 1);
+            return Math.round(num / divisor) * divisor;
+        }
+
+        // スコア更新
+        function updateScore() {
+            document.getElementById('comboCount').textContent = gameState.combo;
+            document.getElementById('perfectCount').textContent = gameState.perfectCount;
+            document.getElementById('goodCount').textContent = gameState.goodCount;
+            document.getElementById('totalCount').textContent = gameState.totalCount;
+        }
+
+        // 次の問題
+        function nextProblem() {
+            generateProblem();
+        }
+
+        // 進捗保存
+        function saveProgress() {
+            localStorage.setItem('divisionEstimation', JSON.stringify({
+                perfectCount: gameState.perfectCount,
+                goodCount: gameState.goodCount,
+                totalCount: gameState.totalCount,
+            }));
+        }
+
+        // 進捗読み込み
+        function loadProgress() {
+            const saved = localStorage.getItem('divisionEstimation');
+            if (saved) {
+                const data = JSON.parse(saved);
+                gameState.perfectCount = data.perfectCount || 0;
+                gameState.goodCount = data.goodCount || 0;
+                gameState.totalCount = data.totalCount || 0;
+                updateScore();
+            }
+        }
+
+        // Enterキーで送信
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('answerInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    checkAnswer();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
