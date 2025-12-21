@@ -467,6 +467,132 @@
             }
         }
 
+        /* モンスター撃破演出 */
+        .monster.defeated {
+            animation: monsterDefeat 1s forwards;
+        }
+
+        @keyframes monsterDefeat {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* 爆発エフェクト */
+        .explosion {
+            position: absolute;
+            font-size: 5rem;
+            pointer-events: none;
+            animation: explode 1s ease-out forwards;
+            z-index: 1002;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(3);
+                opacity: 0;
+            }
+        }
+
+        /* 背景フラッシュ */
+        .flash-gold {
+            animation: flashGold 0.5s;
+        }
+
+        @keyframes flashGold {
+            0%, 100% { background: var(--white); }
+            50% { background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%); }
+        }
+
+        .flash-silver {
+            animation: flashSilver 0.5s;
+        }
+
+        @keyframes flashSilver {
+            0%, 100% { background: var(--white); }
+            50% { background: linear-gradient(135deg, #C0C0C0 0%, #E8E8E8 100%); }
+        }
+
+        /* 超コンボエフェクト */
+        .super-combo {
+            position: relative;
+        }
+
+        .super-combo::after {
+            content: '⚡';
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            animation: lightning 0.2s infinite;
+        }
+
+        @keyframes lightning {
+            0%, 100% { opacity: 1; transform: translateX(-50%) scale(1); }
+            50% { opacity: 0.5; transform: translateX(-50%) scale(1.3); }
+        }
+
+        .mega-combo {
+            position: relative;
+        }
+
+        .mega-combo::after {
+            content: '🌈';
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            animation: rainbow 1s infinite;
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        /* ボタンエフェクト強化 */
+        .submit-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .submit-button:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
         .vs-divider {
             font-size: 2rem;
             font-weight: bold;
@@ -859,6 +985,10 @@
                     <div class="score-value" id="comboCount">0</div>
                 </div>
                 <div class="score-item">
+                    <div class="score-label">撃破数</div>
+                    <div class="score-value" id="defeatCount">0</div>
+                </div>
+                <div class="score-item">
                     <div class="score-label">◎判定</div>
                     <div class="score-value" id="perfectCount">0</div>
                 </div>
@@ -983,6 +1113,8 @@
             perfectCount: 0,
             goodCount: 0,
             totalCount: 0,
+            defeatCount: 0,  // 撃破数
+            currentHP: 100,  // 現在のHP（仮想）
             badges: {
                 perfect10: false,
                 perfect30: false,
@@ -1099,6 +1231,9 @@
             document.getElementById('attackValue').textContent = gameState.divisor;
             document.getElementById('monsterIcon').textContent = monsters[Math.floor(Math.random() * monsters.length)];
             document.getElementById('feedback').classList.remove('show');
+
+            // HP をリセット
+            gameState.currentHP = 100;
 
             // HPバー更新
             updateHPBar();
@@ -1301,10 +1436,76 @@
         // コンボ炎エフェクト追加
         function addComboFire() {
             const comboElement = document.getElementById('comboCount');
-            if (gameState.combo >= 3) {
-                comboElement.parentElement.classList.add('combo-fire');
-            } else {
-                comboElement.parentElement.classList.remove('combo-fire');
+            const parent = comboElement.parentElement;
+
+            // 既存のクラスを全削除
+            parent.classList.remove('combo-fire', 'super-combo', 'mega-combo');
+
+            // コンボ数に応じてエフェクトを追加
+            if (gameState.combo >= 10) {
+                parent.classList.add('mega-combo');  // 10コンボ以上：虹
+            } else if (gameState.combo >= 5) {
+                parent.classList.add('super-combo');  // 5コンボ以上：稲妻
+            } else if (gameState.combo >= 3) {
+                parent.classList.add('combo-fire');   // 3コンボ以上：炎
+            }
+        }
+
+        // モンスター撃破演出
+        function defeatMonster() {
+            const monster = document.getElementById('monsterElement');
+            const battleArea = document.getElementById('battleArea');
+            const rect = monster.getBoundingClientRect();
+            const battleRect = battleArea.getBoundingClientRect();
+
+            // 爆発エフェクト
+            const explosion = document.createElement('div');
+            explosion.className = 'explosion';
+            explosion.textContent = '💥';
+            explosion.style.left = (rect.left - battleRect.left + rect.width / 2) + 'px';
+            explosion.style.top = (rect.top - battleRect.top + rect.height / 2) + 'px';
+            battleArea.appendChild(explosion);
+
+            setTimeout(() => {
+                explosion.remove();
+            }, 1000);
+
+            // モンスター消滅アニメーション
+            monster.classList.add('defeated');
+            setTimeout(() => {
+                monster.classList.remove('defeated');
+                gameState.defeatCount++;
+                updateScore();
+                // 新しいモンスター出現（次の問題生成）
+                nextProblem();
+            }, 1000);
+        }
+
+        // 背景フラッシュ
+        function flashBackground(type) {
+            const battleArea = document.getElementById('battleArea');
+            if (type === 'gold') {
+                battleArea.classList.add('flash-gold');
+                setTimeout(() => {
+                    battleArea.classList.remove('flash-gold');
+                }, 500);
+            } else if (type === 'silver') {
+                battleArea.classList.add('flash-silver');
+                setTimeout(() => {
+                    battleArea.classList.remove('flash-silver');
+                }, 500);
+            }
+        }
+
+        // HP減少処理
+        function damageHP(damagePercent) {
+            gameState.currentHP -= damagePercent;
+            if (gameState.currentHP <= 0) {
+                gameState.currentHP = 0;
+                // モンスター撃破
+                setTimeout(() => {
+                    defeatMonster();
+                }, 1500);  // エフェクト後に撃破
             }
         }
 
@@ -1348,6 +1549,7 @@
 
                 // エフェクト発動
                 shakeScreen();
+                flashBackground('gold');
                 createConfetti();
                 monsterDamage();
                 showDamageNumber(gameState.divisor);
@@ -1356,6 +1558,7 @@
                 const battleArea = document.getElementById('battleArea');
                 const battleRect = battleArea.getBoundingClientRect();
                 createParticles(rect.left - battleRect.left + rect.width / 2, rect.top - battleRect.top + rect.height / 2, 12, '⭐');
+                damageHP(40);  // HPを40%減少
             } else if (diff <= 2) {
                 rank = 'good';
                 icon = '👍';
@@ -1367,6 +1570,7 @@
                 playSound('good');
 
                 // エフェクト発動
+                flashBackground('silver');
                 monsterDamage();
                 showDamageNumber(Math.floor(gameState.divisor * 0.7));
                 const monster = document.getElementById('monsterElement');
@@ -1374,6 +1578,7 @@
                 const battleArea = document.getElementById('battleArea');
                 const battleRect = battleArea.getBoundingClientRect();
                 createParticles(rect.left - battleRect.left + rect.width / 2, rect.top - battleRect.top + rect.height / 2, 8, '✨');
+                damageHP(25);  // HPを25%減少
             } else {
                 rank = 'ok';
                 icon = '💡';
@@ -1385,6 +1590,7 @@
 
                 // 軽いエフェクトのみ
                 showDamageNumber(Math.floor(gameState.divisor * 0.3));
+                damageHP(10);  // HPを10%減少
             }
 
             gameState.totalCount++;
@@ -1431,6 +1637,7 @@
         // スコア更新
         function updateScore() {
             document.getElementById('comboCount').textContent = gameState.combo;
+            document.getElementById('defeatCount').textContent = gameState.defeatCount;
             document.getElementById('perfectCount').textContent = gameState.perfectCount;
             document.getElementById('goodCount').textContent = gameState.goodCount;
             document.getElementById('totalCount').textContent = gameState.totalCount;
