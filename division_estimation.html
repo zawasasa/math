@@ -322,6 +322,151 @@
             text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
         }
 
+        /* HPバー */
+        .hp-bar-container {
+            width: 80%;
+            max-width: 400px;
+            height: 30px;
+            background: #DDD;
+            border-radius: 15px;
+            margin: 20px auto;
+            overflow: hidden;
+            border: 3px solid var(--text);
+            position: relative;
+        }
+
+        .hp-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 50%, #CDDC39 100%);
+            width: 100%;
+            transition: width 0.8s ease-out, background 0.5s;
+            border-radius: 12px;
+        }
+
+        .hp-bar.low {
+            background: linear-gradient(90deg, #FF9800 0%, #FFC107 100%);
+        }
+
+        .hp-bar.critical {
+            background: linear-gradient(90deg, #F44336 0%, #FF5252 100%);
+            animation: pulse 0.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        /* ダメージ数値 */
+        .damage-number {
+            position: absolute;
+            font-size: 3rem;
+            font-weight: bold;
+            color: #FF6B6B;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            pointer-events: none;
+            animation: damageFloat 1s ease-out forwards;
+            z-index: 1000;
+        }
+
+        @keyframes damageFloat {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(-50px) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        /* パーティクル */
+        .particle {
+            position: absolute;
+            font-size: 2rem;
+            pointer-events: none;
+            animation: particleFloat 1.5s ease-out forwards;
+            z-index: 999;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(var(--tx), var(--ty)) rotate(720deg) scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* 画面シェイク */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        /* モンスター被ダメージ */
+        .monster.damaged {
+            animation: monsterDamage 0.5s;
+        }
+
+        @keyframes monsterDamage {
+            0%, 100% { transform: translateY(0) scale(1); filter: brightness(1); }
+            25% { transform: translateY(-10px) scale(1.1); filter: brightness(1.5); }
+            50% { transform: translateY(5px) scale(0.95); filter: brightness(0.8); }
+            75% { transform: translateY(-5px) scale(1.05); filter: brightness(1.2); }
+        }
+
+        /* コンボ炎エフェクト */
+        .combo-fire {
+            position: relative;
+        }
+
+        .combo-fire::before {
+            content: '🔥';
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2rem;
+            animation: fireFlicker 0.3s infinite;
+        }
+
+        @keyframes fireFlicker {
+            0%, 100% { transform: translateX(-50%) scale(1); opacity: 1; }
+            50% { transform: translateX(-50%) scale(1.2); opacity: 0.8; }
+        }
+
+        /* 紙吹雪 */
+        .confetti {
+            position: absolute;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: confettiFall 3s ease-out forwards;
+            z-index: 1001;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(500px) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
         .vs-divider {
             font-size: 2rem;
             font-weight: bold;
@@ -755,11 +900,16 @@
             </div>
 
             <!-- バトルエリア -->
-            <div class="battle-area">
-                <div class="monster">
+            <div class="battle-area" id="battleArea">
+                <div class="monster" id="monsterElement">
                     <div class="monster-icon" id="monsterIcon">👾</div>
                     <div class="hp-label">モンスターHP</div>
                     <div class="hp-value" id="hpValue">1234</div>
+
+                    <!-- HPバー -->
+                    <div class="hp-bar-container">
+                        <div class="hp-bar" id="hpBar"></div>
+                    </div>
                 </div>
 
                 <div class="vs-divider">÷</div>
@@ -950,6 +1100,9 @@
             document.getElementById('monsterIcon').textContent = monsters[Math.floor(Math.random() * monsters.length)];
             document.getElementById('feedback').classList.remove('show');
 
+            // HPバー更新
+            updateHPBar();
+
             // 入力モード切替
             switchInputMode();
         }
@@ -1038,6 +1191,123 @@
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
 
+        // === ビジュアルエフェクト関数 ===
+
+        // HPバー更新
+        function updateHPBar() {
+            const hpBar = document.getElementById('hpBar');
+            const maxHP = gameState.divisor * 100; // 最大HPの概算
+            const currentHP = gameState.dividend;
+            const percentage = Math.min(100, (currentHP / maxHP) * 100);
+
+            hpBar.style.width = percentage + '%';
+
+            // HP残量で色を変更
+            if (percentage < 30) {
+                hpBar.className = 'hp-bar critical';
+            } else if (percentage < 60) {
+                hpBar.className = 'hp-bar low';
+            } else {
+                hpBar.className = 'hp-bar';
+            }
+        }
+
+        // ダメージ数値表示
+        function showDamageNumber(damage) {
+            const battleArea = document.getElementById('battleArea');
+            const monster = document.getElementById('monsterElement');
+            const rect = monster.getBoundingClientRect();
+            const battleRect = battleArea.getBoundingClientRect();
+
+            const damageEl = document.createElement('div');
+            damageEl.className = 'damage-number';
+            damageEl.textContent = `-${damage}`;
+            damageEl.style.left = (rect.left - battleRect.left + rect.width / 2) + 'px';
+            damageEl.style.top = (rect.top - battleRect.top + rect.height / 2) + 'px';
+
+            battleArea.appendChild(damageEl);
+
+            setTimeout(() => {
+                damageEl.remove();
+            }, 1000);
+        }
+
+        // パーティクル生成
+        function createParticles(x, y, count, emoji) {
+            const battleArea = document.getElementById('battleArea');
+
+            for (let i = 0; i < count; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.textContent = emoji;
+
+                const angle = (Math.PI * 2 * i) / count;
+                const distance = 100 + Math.random() * 100;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+                particle.style.setProperty('--tx', tx + 'px');
+                particle.style.setProperty('--ty', ty + 'px');
+
+                battleArea.appendChild(particle);
+
+                setTimeout(() => {
+                    particle.remove();
+                }, 1500);
+            }
+        }
+
+        // 画面シェイク
+        function shakeScreen() {
+            const battleArea = document.getElementById('battleArea');
+            battleArea.classList.add('shake');
+            setTimeout(() => {
+                battleArea.classList.remove('shake');
+            }, 500);
+        }
+
+        // モンスター被ダメージアニメーション
+        function monsterDamage() {
+            const monster = document.getElementById('monsterElement');
+            monster.classList.add('damaged');
+            setTimeout(() => {
+                monster.classList.remove('damaged');
+            }, 500);
+        }
+
+        // 紙吹雪エフェクト
+        function createConfetti() {
+            const battleArea = document.getElementById('battleArea');
+            const confettiEmojis = ['🎉', '✨', '⭐', '🌟', '💫', '🎊'];
+
+            for (let i = 0; i < 20; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.textContent = confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)];
+                confetti.style.left = Math.random() * 600 + 'px';
+                confetti.style.top = '0px';
+                confetti.style.animationDelay = (Math.random() * 0.5) + 's';
+
+                battleArea.appendChild(confetti);
+
+                setTimeout(() => {
+                    confetti.remove();
+                }, 3000);
+            }
+        }
+
+        // コンボ炎エフェクト追加
+        function addComboFire() {
+            const comboElement = document.getElementById('comboCount');
+            if (gameState.combo >= 3) {
+                comboElement.parentElement.classList.add('combo-fire');
+            } else {
+                comboElement.parentElement.classList.remove('combo-fire');
+            }
+        }
+
         // 回答チェック
         function checkAnswer() {
             // 入力値取得
@@ -1075,6 +1345,17 @@
                 gameState.perfectCount++;
                 gameState.combo++;
                 playSound('perfect');
+
+                // エフェクト発動
+                shakeScreen();
+                createConfetti();
+                monsterDamage();
+                showDamageNumber(gameState.divisor);
+                const monster = document.getElementById('monsterElement');
+                const rect = monster.getBoundingClientRect();
+                const battleArea = document.getElementById('battleArea');
+                const battleRect = battleArea.getBoundingClientRect();
+                createParticles(rect.left - battleRect.left + rect.width / 2, rect.top - battleRect.top + rect.height / 2, 12, '⭐');
             } else if (diff <= 2) {
                 rank = 'good';
                 icon = '👍';
@@ -1084,6 +1365,15 @@
                 gameState.goodCount++;
                 gameState.combo++;
                 playSound('good');
+
+                // エフェクト発動
+                monsterDamage();
+                showDamageNumber(Math.floor(gameState.divisor * 0.7));
+                const monster = document.getElementById('monsterElement');
+                const rect = monster.getBoundingClientRect();
+                const battleArea = document.getElementById('battleArea');
+                const battleRect = battleArea.getBoundingClientRect();
+                createParticles(rect.left - battleRect.left + rect.width / 2, rect.top - battleRect.top + rect.height / 2, 8, '✨');
             } else {
                 rank = 'ok';
                 icon = '💡';
@@ -1092,6 +1382,9 @@
                 color = 'feedback-ok';
                 gameState.combo = 0;
                 playSound('ok');
+
+                // 軽いエフェクトのみ
+                showDamageNumber(Math.floor(gameState.divisor * 0.3));
             }
 
             gameState.totalCount++;
@@ -1141,6 +1434,9 @@
             document.getElementById('perfectCount').textContent = gameState.perfectCount;
             document.getElementById('goodCount').textContent = gameState.goodCount;
             document.getElementById('totalCount').textContent = gameState.totalCount;
+
+            // コンボ炎エフェクト
+            addComboFire();
         }
 
         // バッジチェック
