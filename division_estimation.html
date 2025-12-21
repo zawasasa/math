@@ -1736,6 +1736,15 @@
             const actualStep = startDigit + gameState.digitStep;
             document.getElementById('digitStepLabel').textContent = allLabels[actualStep];
 
+            // モンスターHPを現在の残りに更新（筆算のように）
+            if (gameState.digitStep > 0) {
+                // 2桁目以降は、残りの数を表示
+                document.getElementById('hpValue').textContent = gameState.currentRemainder;
+            } else {
+                // 1桁目は元の被除数を表示
+                document.getElementById('hpValue').textContent = gameState.dividend;
+            }
+
             // 桁ボックスの表示更新
             const boxes = ['digit100', 'digit10', 'digit1'];
             boxes.forEach((boxId, index) => {
@@ -1771,9 +1780,21 @@
             const container = document.getElementById('digitButtons');
             container.innerHTML = '';
 
-            // 百の位の場合、最大値を制限（通常0〜2程度）
+            // 商の桁数と開始位置を判定
+            const quotient = gameState.correctAnswer;
+            let startDigit = 2; // 0=百の位, 1=十の位, 2=一の位
+            if (quotient >= 100) {
+                startDigit = 0;
+            } else if (quotient >= 10) {
+                startDigit = 1;
+            }
+
+            // 現在の実際の桁位置
+            const currentDigitPlace = startDigit + gameState.digitStep;
+
+            // 百の位の場合のみ、最大値を制限（通常0〜2程度）
             let maxDigit = 9;
-            if (gameState.digitStep === 0) {
+            if (currentDigitPlace === 0) {
                 // 商の最大値から百の位の最大を推定
                 maxDigit = Math.min(2, Math.floor(gameState.correctAnswer / 100) + 1);
             }
