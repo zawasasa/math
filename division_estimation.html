@@ -198,16 +198,57 @@
             display: none;
         }
 
+        /* タブレット以上で2カラムレイアウト */
+        @media (min-width: 768px) {
+            .game-screen {
+                display: none; /* デフォルトは非表示 */
+            }
+
+            .game-screen.active {
+                display: grid !important;
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+                max-height: 100vh;
+                overflow: hidden;
+            }
+
+            .score-board {
+                grid-column: 1 / -1;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .badges-area {
+                grid-column: 1 / -1;
+                padding: 10px;
+                margin-bottom: 10px;
+            }
+
+            .battle-area {
+                grid-column: 1 / 2;
+                margin-bottom: 10px;
+            }
+
+            .input-area {
+                grid-column: 2 / 3;
+                margin-bottom: 10px;
+            }
+
+            .feedback, #gameOverScreen {
+                grid-column: 1 / -1;
+            }
+        }
+
         .score-board {
             background: var(--white);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 30px;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 20px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-around;
             flex-wrap: wrap;
-            gap: 15px;
+            gap: 10px;
         }
 
         .score-item {
@@ -215,14 +256,14 @@
         }
 
         .score-label {
-            font-size: 0.9rem;
+            font-size: 0.75rem;
             color: var(--text);
             opacity: 0.7;
-            margin-bottom: 5px;
+            margin-bottom: 3px;
         }
 
         .score-value {
-            font-size: 1.8rem;
+            font-size: 1.3rem;
             font-weight: bold;
             color: var(--text);
         }
@@ -230,32 +271,32 @@
         /* バッジエリア */
         .badges-area {
             background: var(--yellow);
-            border-radius: 20px;
-            padding: 20px;
-            margin-bottom: 30px;
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             text-align: center;
         }
 
         .badges-title {
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             font-weight: bold;
-            margin-bottom: 15px;
+            margin-bottom: 8px;
             color: var(--text);
         }
 
         .badges-list {
             display: flex;
-            gap: 15px;
+            gap: 8px;
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .badge {
             background: white;
-            border-radius: 15px;
-            padding: 15px;
-            min-width: 100px;
+            border-radius: 10px;
+            padding: 8px;
+            min-width: 60px;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             opacity: 0.3;
             transition: all 0.3s;
@@ -274,12 +315,12 @@
         }
 
         .badge-icon {
-            font-size: 2.5rem;
-            margin-bottom: 5px;
+            font-size: 1.5rem;
+            margin-bottom: 3px;
         }
 
         .badge-name {
-            font-size: 0.8rem;
+            font-size: 0.65rem;
             color: var(--text);
             font-weight: bold;
         }
@@ -287,36 +328,36 @@
         /* バトル画面 */
         .battle-area {
             background: var(--white);
-            border-radius: 20px;
-            padding: 40px 20px;
-            margin-bottom: 30px;
+            border-radius: 15px;
+            padding: 20px 15px;
+            margin-bottom: 15px;
             box-shadow: 0 6px 20px rgba(0,0,0,0.1);
             text-align: center;
         }
 
         .monster {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
             animation: float 3s ease-in-out infinite;
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+            50% { transform: translateY(-10px); }
         }
 
         .monster-icon {
-            font-size: 6rem;
-            margin-bottom: 15px;
-        }
-
-        .hp-label {
-            font-size: 1.2rem;
-            color: var(--text);
+            font-size: 4rem;
             margin-bottom: 10px;
         }
 
+        .hp-label {
+            font-size: 0.9rem;
+            color: var(--text);
+            margin-bottom: 5px;
+        }
+
         .hp-value {
-            font-size: 4rem;
+            font-size: 2.5rem;
             font-weight: bold;
             color: var(--orange);
             text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
@@ -325,13 +366,13 @@
         /* HPバー */
         .hp-bar-container {
             width: 80%;
-            max-width: 400px;
-            height: 30px;
+            max-width: 300px;
+            height: 20px;
             background: #DDD;
-            border-radius: 15px;
-            margin: 20px auto;
+            border-radius: 10px;
+            margin: 10px auto;
             overflow: hidden;
-            border: 3px solid var(--text);
+            border: 2px solid var(--text);
             position: relative;
         }
 
@@ -340,7 +381,7 @@
             background: linear-gradient(90deg, #4CAF50 0%, #8BC34A 50%, #CDDC39 100%);
             width: 100%;
             transition: width 0.8s ease-out, background 0.5s;
-            border-radius: 12px;
+            border-radius: 8px;
         }
 
         .hp-bar.low {
@@ -594,24 +635,24 @@
         }
 
         .vs-divider {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: bold;
             color: var(--text);
-            margin: 30px 0;
+            margin: 15px 0;
         }
 
         .attack-section {
-            margin-bottom: 30px;
+            margin-bottom: 15px;
         }
 
         .attack-label {
-            font-size: 1.2rem;
+            font-size: 0.9rem;
             color: var(--text);
-            margin-bottom: 10px;
+            margin-bottom: 5px;
         }
 
         .attack-value {
-            font-size: 3rem;
+            font-size: 2rem;
             font-weight: bold;
             color: var(--light-blue);
             text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
@@ -620,17 +661,17 @@
         /* 入力エリア */
         .input-area {
             background: var(--yellow);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
         .input-label {
-            font-size: 1.5rem;
+            font-size: 1.1rem;
             font-weight: bold;
             color: var(--text);
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             text-align: center;
         }
 
@@ -644,13 +685,13 @@
 
         .answer-input {
             font-family: var(--font-main);
-            font-size: 3rem;
+            font-size: 2rem;
             font-weight: bold;
             text-align: center;
-            width: 200px;
-            padding: 15px;
-            border: 4px solid var(--text);
-            border-radius: 15px;
+            width: 150px;
+            padding: 10px;
+            border: 3px solid var(--text);
+            border-radius: 12px;
             background: white;
             color: var(--text);
         }
@@ -780,15 +821,15 @@
 
         .digit-box {
             display: inline-block;
-            width: 60px;
-            height: 80px;
-            line-height: 80px;
-            font-size: 3rem;
+            width: 50px;
+            height: 60px;
+            line-height: 60px;
+            font-size: 2rem;
             font-weight: bold;
             color: var(--text);
             background: white;
-            border: 4px solid var(--text);
-            border-radius: 15px;
+            border: 3px solid var(--text);
+            border-radius: 12px;
             text-align: center;
         }
 
@@ -818,15 +859,15 @@
 
         .digit-btn {
             background: white;
-            border: 4px solid var(--text);
+            border: 3px solid var(--text);
             color: var(--text);
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: bold;
-            padding: 15px 25px;
-            border-radius: 15px;
+            padding: 10px 18px;
+            border-radius: 12px;
             cursor: pointer;
             transition: all 0.2s;
-            min-width: 70px;
+            min-width: 55px;
         }
 
         .digit-btn:hover {
@@ -842,13 +883,13 @@
         .submit-button {
             background: linear-gradient(135deg, #FF6B6B 0%, #FF5252 100%);
             color: white;
-            font-size: 1.8rem;
+            font-size: 1.3rem;
             font-weight: bold;
-            padding: 20px 50px;
+            padding: 12px 30px;
             border: none;
-            border-radius: 50px;
+            border-radius: 30px;
             cursor: pointer;
-            box-shadow: 0 6px 0 #D84343;
+            box-shadow: 0 4px 0 #D84343;
             transition: all 0.2s;
             display: block;
             margin: 0 auto;
@@ -1355,7 +1396,9 @@
         // ゲーム開始
         function startGame() {
             document.getElementById('titleScreen').classList.add('hidden');
-            document.getElementById('gameScreen').style.display = 'block';
+            const gameScreen = document.getElementById('gameScreen');
+            gameScreen.style.display = 'block';
+            gameScreen.classList.add('active');
             document.getElementById('gameOverScreen').style.display = 'none';
 
             // モードに応じて初期化
@@ -1593,8 +1636,23 @@
 
         // 位ごと表示更新
         function updateDigitDisplay() {
-            const stepLabels = ['百の位を見立てよう', '十の位を見立てよう', '一の位を見立てよう'];
-            document.getElementById('digitStepLabel').textContent = stepLabels[gameState.digitStep];
+            // 商の桁数を判定
+            const quotient = gameState.correctAnswer;
+            let numDigits = 1;
+            let startDigit = 2; // 0=百の位, 1=十の位, 2=一の位
+
+            if (quotient >= 100) {
+                numDigits = 3;
+                startDigit = 0;
+            } else if (quotient >= 10) {
+                numDigits = 2;
+                startDigit = 1;
+            }
+
+            // ステップラベル（実際の桁に応じて）
+            const allLabels = ['百の位を見立てよう', '十の位を見立てよう', '一の位を見立てよう'];
+            const actualStep = startDigit + gameState.digitStep;
+            document.getElementById('digitStepLabel').textContent = allLabels[actualStep];
 
             // 桁ボックスの表示更新
             const boxes = ['digit100', 'digit10', 'digit1'];
@@ -1602,17 +1660,26 @@
                 const box = document.getElementById(boxId);
                 box.classList.remove('active', 'filled');
 
-                if (index < gameState.digitStep) {
-                    // 入力済み
-                    box.textContent = gameState.digitInputs[index];
-                    box.classList.add('filled');
-                } else if (index === gameState.digitStep) {
-                    // 現在入力中
-                    box.textContent = '_';
-                    box.classList.add('active');
+                if (index < startDigit) {
+                    // この桁は使わない（非表示または薄く）
+                    box.style.opacity = '0.2';
+                    box.textContent = '—';
                 } else {
-                    // 未入力
-                    box.textContent = '_';
+                    box.style.opacity = '1';
+                    const relativeIndex = index - startDigit;
+
+                    if (relativeIndex < gameState.digitStep) {
+                        // 入力済み
+                        box.textContent = gameState.digitInputs[relativeIndex];
+                        box.classList.add('filled');
+                    } else if (relativeIndex === gameState.digitStep) {
+                        // 現在入力中
+                        box.textContent = '_';
+                        box.classList.add('active');
+                    } else {
+                        // 未入力
+                        box.textContent = '_';
+                    }
                 }
             });
         }
@@ -1646,7 +1713,16 @@
             // 次のステップへ
             gameState.digitStep++;
 
-            if (gameState.digitStep >= 3) {
+            // 商の桁数を判定
+            const quotient = gameState.correctAnswer;
+            let numDigits = 1;
+            if (quotient >= 100) {
+                numDigits = 3;
+            } else if (quotient >= 10) {
+                numDigits = 2;
+            }
+
+            if (gameState.digitStep >= numDigits) {
                 // 全桁入力完了
                 updateDigitDisplay();
                 // 少し待ってから判定
@@ -1662,10 +1738,30 @@
 
         // 位ごと入力の判定
         function checkDigitAnswer() {
+            // 商の桁数を判定
+            const quotient = gameState.correctAnswer;
+            let startDigit = 2; // 0=百の位, 1=十の位, 2=一の位
+
+            if (quotient >= 100) {
+                startDigit = 0;
+            } else if (quotient >= 10) {
+                startDigit = 1;
+            }
+
             // 入力から商を計算
-            gameState.userAnswer = gameState.digitInputs[0] * 100 +
-                                   gameState.digitInputs[1] * 10 +
-                                   gameState.digitInputs[2];
+            let answer = 0;
+            for (let i = 0; i < gameState.digitInputs.length; i++) {
+                const digitPlace = startDigit + i;
+                if (digitPlace === 0) {
+                    answer += gameState.digitInputs[i] * 100;
+                } else if (digitPlace === 1) {
+                    answer += gameState.digitInputs[i] * 10;
+                } else {
+                    answer += gameState.digitInputs[i];
+                }
+            }
+
+            gameState.userAnswer = answer;
 
             // 通常の判定処理へ
             checkAnswer();
@@ -1940,7 +2036,9 @@
         // タイトルに戻る
         function backToTitle() {
             stopTimer();
-            document.getElementById('gameScreen').style.display = 'none';
+            const gameScreen = document.getElementById('gameScreen');
+            gameScreen.style.display = 'none';
+            gameScreen.classList.remove('active');
             document.getElementById('titleScreen').classList.remove('hidden');
             document.getElementById('gameOverScreen').style.display = 'none';
             document.getElementById('submitButton').disabled = false;
