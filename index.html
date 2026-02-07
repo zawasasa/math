@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>ささっと算数アプリ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=M+PLUS+Rounded+1c:wght@800&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@500&family=M+PLUS+Rounded+1c:wght@800&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --orange: #FF9AA2;
@@ -26,9 +29,9 @@
         body {
             font-family: var(--font-main);
             background: linear-gradient(135deg, var(--light-green) 0%, var(--light-blue) 100%);
-            background-image: 
-                radial-gradient(rgba(255,255,255,0.3) 15%, transparent 16%),
-                radial-gradient(rgba(255,255,255,0.3) 15%, transparent 16%);
+            background-image:
+                radial-gradient(rgba(255, 255, 255, 0.3) 15%, transparent 16%),
+                radial-gradient(rgba(255, 255, 255, 0.3) 15%, transparent 16%);
             background-size: 40px 40px;
             background-position: 0 0, 20px 20px;
             min-height: 100vh;
@@ -52,7 +55,7 @@
             max-width: 800px;
             height: auto;
             border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
             margin-bottom: 20px;
         }
 
@@ -82,7 +85,7 @@
             background: var(--white);
             border-radius: 20px;
             padding: 30px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 3px solid transparent;
             position: relative;
@@ -101,7 +104,7 @@
 
         .game-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
             border-color: var(--orange);
         }
 
@@ -113,8 +116,15 @@
         }
 
         @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
         }
 
         .game-title {
@@ -233,6 +243,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <header class="header">
@@ -311,22 +322,22 @@
                 <a href="chocolatier_area.html" class="play-button">🎮 あそぶ</a>
             </div>
 
-            <!-- ゲーム5: 商の見立てバトル -->
+            <!-- ゲーム5: わり算マスター -->
             <div class="game-card">
-                <div class="game-icon">⚔️</div>
-                <h2 class="game-title">商の見立てバトル</h2>
+                <div class="game-icon">📐</div>
+                <h2 class="game-title">わり算マスター</h2>
                 <p class="game-description">
-                    モンスターとバトルしながら、割り算の「見立て力」を鍛えよう！筆算をせずに「だいたい何倍か」を感覚で掴む練習ができるよ。位を意識した見立てで、本物の計算感覚が身につく！
+                    日常生活の場面でわり算を使いこなそう！ストーリーモードで買い物やパーティーの問題を解いたり、バトルモードでモンスターと戦ったり、筆算モードで手順を学べるよ。
                 </p>
                 <ul class="game-features">
-                    <li>🎯 位ごと入力モード（おすすめ！）で位取りを意識</li>
-                    <li>♾️ エンドレス・⏱️ タイムアタック・❤️ サバイバルの3モード</li>
-                    <li>3段階の難易度（2桁÷2桁、3桁÷2桁、4桁÷3桁）</li>
-                    <li>4つの入力モード（位ごと・数字・3択・スライダー）</li>
-                    <li>HPバー＆モンスター撃破システム</li>
-                    <li>コンボ5回で⚡、10回で🌈の超エフェクト</li>
-                    <li>丸めて考えるヒントで理解を深める</li>
-                    <li>バッジコレクションで成長を実感</li>
+                    <li>📖 ストーリーモード：日常生活シナリオで学習</li>
+                    <li>✏️ 筆算モード：たてる・かける・ひく・おろす</li>
+                    <li>⚔️ バトルモード：モンスター撃破でわり算マスター</li>
+                    <li>📏 見積もりモード：概数で商の見当をつける練習</li>
+                    <li>💡 四捨五入・切り捨て・切り上げを選んで概数計算</li>
+                    <li>📊 成長グラフで概数力・計算力・余り理解力を追跡</li>
+                    <li>🎯 つまずき対応フィードバックで弱点克服</li>
+                    <li>3段階の難易度（かんたん・ふつう・むずかしい）</li>
                 </ul>
                 <a href="division_estimation.html" class="play-button">🎮 あそぶ</a>
             </div>
@@ -337,5 +348,5 @@
         </footer>
     </div>
 </body>
-</html>
 
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>時空の調律師：デシマル・クロック</title>
+    <style>
+        :root {
+            --bg-color: #1a120b;
+            --panel-color: #3c2a21;
+            --accent-gold: #d4a373;
+            --accent-copper: #b85c38;
+            --text-light: #e7dec8;
+            --lcd-green: #a7d129;
+            --error-red: #ff4d4d;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-light);
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+            touch-action: none;
+        }
+
+        #game-container {
+            position: relative;
+            width: 800px;
+            height: 600px;
+            background-color: var(--panel-color);
+            border: 8px solid #543a20;
+            border-radius: 15px;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8), inset 0 0 20px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        #header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--accent-gold);
+            padding-bottom: 10px;
+        }
+
+        .stat-box {
+            background: #000;
+            padding: 5px 15px;
+            border: 2px inset var(--accent-copper);
+            color: var(--lcd-green);
+            font-size: 1.2rem;
+            text-shadow: 0 0 5px var(--lcd-green);
+        }
+
+        #main-area {
+            flex-grow: 1;
+            position: relative;
+            background: radial-gradient(circle, #4a3427 0%, #2a1b12 100%);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #memoCanvas {
+            z-index: 10;
+        }
+
+        #input-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 50px);
+            gap: 5px;
+        }
+
+        .numpad button {
+            width: 50px;
+            height: 50px;
+            background: var(--accent-copper);
+            border: none;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border-radius: 5px;
+            box-shadow: 0 4px #7a3a22;
+        }
+
+        .numpad button:active {
+            box-shadow: 0 0px #7a3a22;
+            transform: translateY(4px);
+        }
+
+        .confirm-btn {
+            grid-column: span 3;
+            background: var(--lcd-green) !important;
+            color: #000 !important;
+            font-weight: bold;
+            box-shadow: 0 4px #6a8a1a !important;
+        }
+
+        #memo-tools {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 20;
+        }
+
+        .tool-btn {
+            padding: 10px;
+            background: rgba(0,0,0,0.8);
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #message-bar {
+            height: 50px;
+            background: #222;
+            margin-top: 15px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            padding: 0 20px;
+            color: var(--accent-gold);
+            font-weight: bold;
+        }
+
+        #overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            text-align: center;
+        }
+
+        .btn-start {
+            padding: 20px 60px;
+            font-size: 1.8rem;
+            background: var(--accent-gold);
+            color: var(--bg-color);
+            border: none;
+            border-radius: 40px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 0 30px var(--accent-gold);
+        }
+
+        #flash-effect {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 50;
+        }
+    </style>
+</head>
+<body>
+
+<div id="game-container">
+    <div id="flash-effect"></div>
+    <div id="header">
+        <div>RANK: <span id="rank-text">見習い</span></div>
+        <div class="stat-box">COMBO: <span id="combo-count">0</span></div>
+        <div class="stat-box">SCORE: <span id="clock-pts">00000</span></div>
+    </div>
+
+    <div id="main-area">
+        <canvas id="gameCanvas"></canvas>
+        <canvas id="memoCanvas"></canvas>
+        
+        <div id="memo-tools">
+            <button class="tool-btn" onclick="clearMemo()">🗑️ メモ消去</button>
+        </div>
+
+        <div id="input-panel">
+            <div class="numpad">
+                <button onclick="addInput('7')">7</button><button onclick="addInput('8')">8</button><button onclick="addInput('9')">9</button>
+                <button onclick="addInput('4')">4</button><button onclick="addInput('5')">5</button><button onclick="addInput('6')">6</button>
+                <button onclick="addInput('1')">1</button><button onclick="addInput('2')">2</button><button onclick="addInput('3')">3</button>
+                <button onclick="addInput('0')">0</button><button onclick="addInput('.')">.</button><button onclick="clearInput()">C</button>
+                <button class="confirm-btn" onclick="checkAnswer()">確定</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="message-bar">> <span id="guide-msg">システムを起動してください...</span></div>
+
+    <div id="overlay">
+        <div style="border: 2px solid var(--accent-gold); padding: 40px; border-radius: 20px; background: rgba(30,20,10,0.9);">
+            <h1 style="color:var(--accent-gold); font-size: 3.5rem; margin-bottom: 10px;">DECIMAL CLOCK</h1>
+            <p style="color: var(--accent-copper); font-weight: bold; margin-bottom: 30px;">時空の調律師：プロフェッショナル・デビュー</p>
+            <button class="btn-start" onclick="startGame()">ミッション開始</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    const memoCanvas = document.getElementById('memoCanvas');
+    const mctx = memoCanvas.getContext('2d');
+
+    const width = 760;
+    const height = 445;
+    canvas.width = memoCanvas.width = width;
+    canvas.height = memoCanvas.height = height;
+
+    const DIGIT_SPACING = 45; 
+
+    let gameState = 'title';
+    let combo = 0;
+    let score = 0;
+    let solvedCount = 0;
+    let currentProblem = null;
+    let particles = [];
+    let flashOpacity = 0;
+
+    let dotDivisor = { x: 0, y: 0, r: 6, hitR: 35, dragging: false, originalX: 0, movedCount: 0 };
+    let dotDividend = { x: 0, y: 0, r: 6, originalX: 0 };
+    let dotResult = { x: 0, y: 0, r: 6, alpha: 0, active: false };
+    let dotRemainder = { x: 0, y: 0, r: 6, alpha: 0, active: false };
+
+    let playerInput = "";
+    let isDrawing = false;
+    let lastX = 0, lastY = 0;
+
+    const problems = [
+        { a: 12.6, b: 0.3, ans: 42, rem: 0 },
+        { a: 7.25, b: 0.5, ans: 14.5, rem: 0 },
+        { a: 8.4, b: 0.04, ans: 210, rem: 0 },
+        { a: 5.6, b: 1.4, ans: 4, rem: 0 },
+        { a: 9.6, b: 0.16, ans: 60, rem: 0 },
+        { a: 6.5, b: 0.2, ans: 32, rem: 0.1 },
+        { a: 4.8, b: 0.06, ans: 80, rem: 0 },
+        { a: 0.72, b: 0.09, ans: 8, rem: 0 }
+    ];
+
+    function initMemo() {
+        mctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+        mctx.lineWidth = 2.5;
+        mctx.lineCap = "round";
+
+        const start = (e) => {
+            const p = getPos(e);
+            if (gameState === 'moving') {
+                const d = Math.hypot(p.x - dotDivisor.x, p.y - dotDivisor.y);
+                if (d < dotDivisor.hitR) { 
+                    dotDivisor.dragging = true; 
+                    return; 
+                }
+            }
+            isDrawing = true;
+            [lastX, lastY] = [p.x, p.y];
+        };
+
+        const move = (e) => {
+            const p = getPos(e);
+            if (dotDivisor.dragging) { 
+                handleDotDrag(p.x); 
+                return; 
+            }
+            if (!isDrawing) return;
+            mctx.beginPath(); 
+            mctx.moveTo(lastX, lastY); 
+            mctx.lineTo(p.x, p.y); 
+            mctx.stroke();
+            [lastX, lastY] = [p.x, p.y];
+        };
+
+        const end = () => {
+            isDrawing = false;
+            if (dotDivisor.dragging) { 
+                dotDivisor.dragging = false; 
+                checkDotPlacement(); 
+            }
+        };
+
+        memoCanvas.addEventListener('mousedown', start);
+        memoCanvas.addEventListener('mousemove', move);
+        window.addEventListener('mouseup', end);
+        memoCanvas.addEventListener('touchstart', (e) => { e.preventDefault(); start(e.touches[0]); }, { passive: false });
+        memoCanvas.addEventListener('touchmove', (e) => { e.preventDefault(); move(e.touches[0]); }, { passive: false });
+        memoCanvas.addEventListener('touchend', end);
+    }
+
+    function getPos(e) {
+        const r = memoCanvas.getBoundingClientRect();
+        return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+
+    function startGame() {
+        document.getElementById('overlay').style.display = 'none';
+        gameState = 'moving';
+        score = 0; combo = 0; solvedCount = 0;
+        initMemo();
+        nextProblem();
+        requestAnimationFrame(gameLoop);
+    }
+
+    // 不要な先頭のゼロを除去するユーティリティ
+    function cleanNumberString(s) {
+        // 小数点を除去した後の文字列から先頭の0を消す。ただし全部0なら一つ残す
+        let res = s.replace('.', ' ').split(' ').join('').replace(/^0+/, '');
+        return res === "" ? "0" : res;
+    }
+
+    function nextProblem() {
+        const p = problems[Math.floor(Math.random() * problems.length)];
+        currentProblem = { ...p };
+        playerInput = "";
+        
+        const baseX = 300, baseY = 200;
+        dotDivisor.movedCount = 0;
+        
+        const bStr = currentProblem.b.toString();
+        const bDotIdx = bStr.indexOf('.');
+        
+        // 小数点の位置：数字の直後
+        dotDivisor.x = baseX - 120 + (bDotIdx * DIGIT_SPACING) - 8;
+        dotDivisor.y = baseY + 8;
+        dotDivisor.originalX = dotDivisor.x;
+
+        const aStr = currentProblem.a.toString();
+        const aDotIdx = aStr.indexOf('.');
+        dotDividend.x = baseX + (aDotIdx * DIGIT_SPACING) - 8;
+        dotDividend.y = baseY + 8;
+        dotDividend.originalX = dotDividend.x;
+
+        dotResult.active = false; dotResult.alpha = 0;
+        dotRemainder.active = false; dotRemainder.alpha = 0;
+
+        document.getElementById('input-panel').style.display = 'none';
+        updateGuide("ドット（赤）を右にドラッグして、整数にしてください。");
+    }
+
+    function handleDotDrag(mouseX) {
+        const bStr = currentProblem.b.toString();
+        const bDecPlaces = bStr.indexOf('.') === -1 ? 0 : bStr.length - bStr.indexOf('.') - 1;
+        const maxX = dotDivisor.originalX + bDecPlaces * DIGIT_SPACING;
+
+        if (mouseX > dotDivisor.x + 20 && dotDivisor.x < maxX) {
+            dotDivisor.x += DIGIT_SPACING;
+            dotDividend.x += DIGIT_SPACING;
+            dotDivisor.movedCount++;
+        }
+    }
+
+    function checkDotPlacement() {
+        const bStr = currentProblem.b.toString();
+        const bDecPlaces = bStr.indexOf('.') === -1 ? 0 : bStr.length - bStr.indexOf('.') - 1;
+        
+        if (dotDivisor.movedCount >= bDecPlaces) {
+            gameState = 'calculating';
+            dotResult.active = true;
+            dotResult.x = dotDividend.x;
+            dotResult.y = 120;
+            setTimeout(() => {
+                document.getElementById('input-panel').style.display = 'flex';
+                updateGuide("準備完了。答えを入力してください。");
+            }, 500);
+        }
+    }
+
+    function checkAnswer() {
+        if (parseFloat(playerInput) === currentProblem.ans) {
+            flashOpacity = 0.5; solvedCount++;
+            score += 100 * (1 + combo * 0.1); combo++;
+            document.getElementById('clock-pts').innerText = Math.floor(score).toString().padStart(5, '0');
+            document.getElementById('combo-count').innerText = combo;
+            
+            if (currentProblem.rem > 0) {
+                dotRemainder.active = true;
+                dotRemainder.x = dotDividend.originalX;
+                dotRemainder.y = 350;
+            }
+            updateGuide("正解！回路が復旧しました。");
+            setTimeout(nextProblem, 2000);
+        } else {
+            combo = 0;
+            document.getElementById('combo-count').innerText = combo;
+            updateGuide("計算エラー。もう一度やり直しましょう。");
+        }
+    }
+
+    function clearMemo() { mctx.clearRect(0, 0, width, height); }
+    function updateGuide(msg) { document.getElementById('guide-msg').innerText = msg; }
+    function addInput(v) { playerInput += v; updateGuide("入力中: " + playerInput); }
+    function clearInput() { playerInput = ""; updateGuide("入力をクリアしました"); }
+
+    function draw() {
+        ctx.clearRect(0, 0, width, height);
+        if (flashOpacity > 0) {
+            flashOpacity -= 0.05;
+            document.getElementById('flash-effect').style.opacity = flashOpacity;
+        }
+
+        ctx.strokeStyle = "#d4a373";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(300, 150); ctx.lineTo(300, 250);
+        ctx.moveTo(300, 150); ctx.lineTo(550, 150);
+        ctx.stroke();
+
+        ctx.font = "bold 40px 'Courier New'";
+        ctx.fillStyle = "white";
+        if (currentProblem) {
+            // 割る数の描画
+            const bRaw = currentProblem.b.toString().replace('.', ' ');
+            // 先頭の不要な0を非表示にするが、配置用のインデックスは維持する
+            const bChars = bRaw.split('');
+            let firstNonZeroIdx = bRaw.search(/[1-9]/);
+            if (firstNonZeroIdx === -1) firstNonZeroIdx = bRaw.length - 1;
+
+            bChars.forEach((char, i) => {
+                // 先頭の連続する0は描画しない（空白にする）
+                if (char === '0' && i < firstNonZeroIdx) return;
+                ctx.fillText(char, 180 - 120 + (i * DIGIT_SPACING), 210);
+            });
+            
+            // 割られる数の描画
+            const aChars = currentProblem.a.toString().replace('.', ' ').split('');
+            aChars.forEach((char, i) => {
+                ctx.fillText(char, 320 + (i * DIGIT_SPACING), 210);
+            });
+        }
+
+        drawDot(dotDivisor.x, dotDivisor.y, dotDivisor.r, "#ff4d4d", dotDivisor.dragging);
+        drawDot(dotDividend.x, dotDividend.y, dotDividend.r, "#d4a373", false);
+
+        if (dotResult.active) {
+            dotResult.alpha = Math.min(1, dotResult.alpha + 0.1);
+            ctx.globalAlpha = dotResult.alpha;
+            drawDot(dotResult.x, dotResult.y, dotResult.r, "#a7d129", true);
+        }
+        if (dotRemainder.active) {
+            dotRemainder.alpha = Math.min(1, dotRemainder.alpha + 0.1);
+            ctx.globalAlpha = dotRemainder.alpha;
+            drawDot(dotRemainder.x, dotRemainder.y, dotRemainder.r, "#ff4d4d", true);
+        }
+        ctx.globalAlpha = 1;
+    }
+
+    function drawDot(x, y, r, color, glow) {
+        if (x === 0) return;
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = "white";
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        if (glow || gameState === 'moving') {
+            ctx.shadowBlur = glow ? 20 : 10;
+            ctx.shadowColor = color;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+        }
+    }
+
+    function gameLoop() { draw(); requestAnimationFrame(gameLoop); }
+</script>
+
+</body>
+</html>
