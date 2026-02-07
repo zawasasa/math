@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>アルファベット・ハンター</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --primary-color: #38bdf8;
+            --secondary-color: #6366f1;
+            --accent-color: #f43f5e;
+            --success-color: #22c55e;
+            --font-main: 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: var(--bg-color);
+            font-family: var(--font-main);
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* UI Layer */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            padding: 0 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            border-bottom: 2px solid #e2e8f0;
+            z-index: 100;
+            box-sizing: border-box;
+        }
+
+        /* Header Logo */
+        .header-logo {
+            height: 50px;
+            width: auto;
+            border-radius: 10px;
+            flex-shrink: 0;
+            margin-right: 10px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-box {
+            text-align: center;
+            min-width: 60px;
+            flex-grow: 1;
+        }
+
+        .stat-label {
+            font-size: 0.65rem;
+            color: #64748b;
+            font-weight: bold;
+        }
+
+        .stat-value {
+            font-size: 1rem;
+            color: #1e293b;
+            font-weight: 800;
+        }
+
+        .target-box {
+            background: white;
+            border: 4px solid var(--accent-color);
+            border-radius: 12px;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--accent-color);
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            animation: pulse 1.5s infinite;
+            flex-shrink: 0;
+            margin: 0 10px;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.08);
+            }
+        }
+
+        /* Play Area */
+        #play-area {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #f0f9ff 0%, #e0f2fe 100%);
+        }
+
+        .letter-bubble {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: white;
+            border: 3px solid var(--primary-color);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--secondary-color);
+            cursor: pointer;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            z-index: 10;
+            transition: transform 0.1s;
+        }
+
+        .letter-bubble.upside-down {
+            transform: rotate(180deg);
+        }
+
+        .letter-bubble.obstacle {
+            background: #334155;
+            border-color: #0f172a;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .letter-bubble.correct {
+            background-color: var(--success-color) !important;
+            color: white !important;
+            border-color: #16a34a !important;
+            transform: scale(0) !important;
+            pointer-events: none;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .letter-bubble.wrong {
+            background-color: #fee2e2 !important;
+            border-color: var(--accent-color) !important;
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-6px) rotate(-5deg);
+            }
+
+            75% {
+                transform: translateX(6px) rotate(5deg);
+            }
+        }
+
+        /* Modals */
+        #overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal {
+            background: white;
+            padding: 25px;
+            border-radius: 40px;
+            text-align: center;
+            width: 90%;
+            max-width: 420px;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            max-height: 95vh;
+            overflow-y: auto;
+        }
+
+        .game-thumbnail {
+            width: 100%;
+            max-width: 340px;
+            height: auto;
+            margin: -10px auto 15px;
+            border-radius: 30px;
+            display: block;
+            box-shadow: 0 12px 24px -10px rgba(99, 102, 241, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        h1 {
+            font-size: 1.7rem;
+            margin-bottom: 6px;
+            color: #0f172a;
+            letter-spacing: -0.025em;
+        }
+
+        p {
+            color: #64748b;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            line-height: 1.4;
+        }
+
+        .btn-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 14px;
+            border-radius: 20px;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:active {
+            transform: scale(0.96);
+        }
+
+        .btn-easy {
+            background: var(--success-color);
+        }
+
+        .btn-normal {
+            background: var(--secondary-color);
+        }
+
+        .btn-hard {
+            background: var(--accent-color);
+        }
+
+        .btn-gray {
+            background: #94a3b8;
+        }
+
+        .record-text {
+            font-size: 0.8rem;
+            font-weight: normal;
+            opacity: 0.9;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* Floating effects */
+        .sparkle {
+            position: absolute;
+            pointer-events: none;
+            background: #fbbf24;
+            border-radius: 50%;
+            width: 8px;
+            height: 8px;
+            animation: explode 0.6s ease-out forwards;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--tx), var(--ty)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .penalty-pop {
+            position: absolute;
+            color: var(--accent-color);
+            font-weight: 900;
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-60px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="game-container">
+        <div id="ui-layer">
+            <!-- Header Banner Logo -->
+            <img src="https://i.postimg.cc/7f1gvzfj/arufahe-ttohanta-samuneiru.png" alt="Logo" class="header-logo"
+                onerror="this.style.display='none'">
+
+            <div class="stat-box">
+                <div class="stat-label">タイム</div>
+                <div class="stat-value" id="timer">0.0</div>
+            </div>
+            <div class="target-box" id="next-letter">A</div>
+            <div class="stat-box">
+                <div class="stat-label">ベスト</div>
+                <div class="stat-value" id="best-time">---</div>
+            </div>
+        </div>
+        <div id="play-area"></div>
+    </div>
+
+    <div id="overlay">
+        <!-- Level Select (Top Menu) -->
+        <div id="menu-modal" class="modal">
+            <img src="https://i.postimg.cc/7f1gvzfj/arufahe-ttohanta-samuneiru.png" alt="アルファベットハンター"
+                class="game-thumbnail" onerror="this.style.display='none'">
+            <h1>アルファベット・ハンター</h1>
+            <p>AからZまで、じゅんばんにタップ！<br>キミのスピードにちょうせんだ！</p>
+            <div class="btn-stack">
+                <button class="btn btn-easy" onclick="selectLevel('easy')">らくらく<span
+                        class="record-text">そのまま表示</span></button>
+                <button class="btn btn-normal" onclick="selectLevel('normal')">むずかしい<span class="record-text">もじが
+                        ぎゃくさま</span></button>
+                <button class="btn btn-hard" onclick="selectLevel('hard')">超むずかしい<span class="record-text">ぎゃくさま ＋
+                        おじゃま虫</span></button>
+            </div>
+        </div>
+
+        <!-- Case Select -->
+        <div id="case-modal" class="modal" style="display:none;">
+            <h1 id="level-title"></h1>
+            <p>どっちの もじで あそぶ？</p>
+            <div class="btn-stack">
+                <button class="btn btn-normal" onclick="startGame('upper')">おおもじ (A-Z)</button>
+                <button class="btn btn-normal" onclick="startGame('lower')">こもじ (a-z)</button>
+                <button class="btn btn-gray" onclick="showMenu()">もどる</button>
+            </div>
+        </div>
+
+        <!-- Result -->
+        <div id="result-modal" class="modal" style="display:none;">
+            <h1 id="result-status">クリア！</h1>
+            <p>タイム: <span id="final-score">0.0</span>びょう</p>
+            <div id="new-record-tag"
+                style="color:var(--accent-color); font-weight:900; margin-bottom:15px; display:none; font-size:1.2rem;">
+                ✨しんきろく！✨</div>
+            <div class="btn-stack">
+                <button class="btn btn-hard" onclick="location.reload()">もういちど あそぶ</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Game State
+        let user = null;
+        let scores = {};
+        let db = null; // Firestore instance (null if offline)
+        let appId = 'default-alphabet-game';
+
+        let currentLevel = 'easy';
+        let currentCase = 'upper';
+        let currentIndex = 0;
+        let startTime = 0;
+        let penaltyTime = 0;
+        let timerRef = null;
+        let isRunning = false;
+        const alphabetUpper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+        const alphabetLower = "abcdefghijklmnopqrstuvwxyz".split("");
+        let currentAlphabet = [];
+
+        // --- Firebase Initialization (Robust Mode) ---
+        // Googleサイトなど外部で実行された場合、configがないためエラーになります。
+        // それを防ぐために try-catch と typeof チェックで囲みます。
+        try {
+            if (typeof __firebase_config !== 'undefined') {
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                db = getFirestore(app);
+                if (typeof __app_id !== 'undefined') appId = __app_id;
+
+                const initAuth = async () => {
+                    if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } else {
+                        await signInAnonymously(auth);
+                    }
+                };
+                initAuth();
+
+                onAuthStateChanged(auth, async (u) => {
+                    user = u;
+                    if (user && db) {
+                        const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'records', 'bestScores');
+                        try {
+                            const snap = await getDoc(docRef);
+                            if (snap.exists()) scores = snap.data();
+                        } catch (e) {
+                            console.log("Offline or permission error:", e);
+                        }
+                    }
+                });
+            } else {
+                console.log("Canvas configuration not found. Running in offline mode.");
+            }
+        } catch (e) {
+            console.warn("Firebase init skipped (Offline mode active):", e);
+        }
+
+        // Audio Synthesis
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(freq, type = 'sine', duration = 0.2) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        }
+
+        // UI Navigation
+        window.selectLevel = (lvl) => {
+            currentLevel = lvl;
+            document.getElementById('menu-modal').style.display = 'none';
+            document.getElementById('case-modal').style.display = 'block';
+            const titles = { easy: 'らくらく', normal: 'むずかしい', hard: '超むずかしい' };
+            document.getElementById('level-title').textContent = titles[lvl];
+        };
+
+        window.showMenu = () => {
+            document.getElementById('case-modal').style.display = 'none';
+            document.getElementById('menu-modal').style.display = 'block';
+        };
+
+        // Game Logic
+        window.startGame = (c) => {
+            currentCase = c;
+            currentAlphabet = c === 'upper' ? alphabetUpper : alphabetLower;
+            currentIndex = 0;
+            penaltyTime = 0;
+            isRunning = true;
+
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('play-area').innerHTML = '';
+
+            const key = `${currentLevel}_${currentCase}`;
+            document.getElementById('best-time').textContent = scores[key] ? scores[key].toFixed(1) : '---';
+
+            createBubbles();
+            startTime = Date.now();
+            timerRef = setInterval(updateTimer, 100);
+            updateUI();
+        };
+
+        function createBubbles() {
+            const pool = [...currentAlphabet];
+            if (currentLevel === 'hard') {
+                for (let i = 0; i < 6; i++) pool.push('👾');
+            }
+
+            // Shuffle
+            for (let i = pool.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [pool[i], pool[j]] = [pool[j], pool[i]];
+            }
+
+            const area = document.getElementById('play-area');
+            const w = area.clientWidth;
+            const h = area.clientHeight;
+
+            pool.forEach(char => {
+                const b = document.createElement('div');
+                b.className = 'letter-bubble';
+                if (currentLevel !== 'easy' && char !== '👾') b.classList.add('upside-down');
+                if (char === '👾') b.classList.add('obstacle');
+
+                b.textContent = char;
+                b.dataset.char = char;
+
+                const x = Math.random() * (w - 70) + 10;
+                const y = Math.random() * (h - 70) + 10;
+                b.style.left = '0'; b.style.top = '0';
+
+                const speed = currentLevel === 'easy' ? 0.8 : (currentLevel === 'normal' ? 1.4 : 2.2);
+                b.dataset.vx = (Math.random() - 0.5) * speed;
+                b.dataset.vy = (Math.random() - 0.5) * speed;
+                b.dataset.x = x; b.dataset.y = y;
+
+                const onHit = (e) => {
+                    e.preventDefault();
+                    handleTap(e, char, b);
+                };
+                b.addEventListener('mousedown', onHit);
+                b.addEventListener('touchstart', onHit);
+
+                area.appendChild(b);
+            });
+
+            requestAnimationFrame(loop);
+        }
+
+        function handleTap(e, char, el) {
+            if (!isRunning) return;
+            const x = e.clientX || (e.touches && e.touches[0].clientX);
+            const y = e.clientY || (e.touches && e.touches[0].clientY);
+
+            if (char === '👾') {
+                penaltyTime += 3;
+                playSound(150, 'sawtooth', 0.3);
+                showPenalty(x, y, '+3s');
+                el.classList.add('wrong');
+                setTimeout(() => el.classList.remove('wrong'), 400);
+                return;
+            }
+
+            if (char === currentAlphabet[currentIndex]) {
+                currentIndex++;
+                el.classList.add('correct');
+                playSound(880, 'sine', 0.15);
+                createSparkles(x, y);
+                updateUI();
+                if (currentIndex >= currentAlphabet.length) endGame();
+            } else {
+                penaltyTime += 1;
+                playSound(220, 'triangle', 0.2);
+                showPenalty(x, y, '+1s');
+                el.classList.add('wrong');
+                setTimeout(() => el.classList.remove('wrong'), 400);
+            }
+        }
+
+        function loop() {
+            if (!isRunning) return;
+            const bubbles = document.querySelectorAll('.letter-bubble:not(.correct)');
+            const w = document.getElementById('play-area').clientWidth;
+            const h = document.getElementById('play-area').clientHeight;
+            const size = 60;
+
+            bubbles.forEach(b => {
+                let x = parseFloat(b.dataset.x);
+                let y = parseFloat(b.dataset.y);
+                let vx = parseFloat(b.dataset.vx);
+                let vy = parseFloat(b.dataset.vy);
+
+                x += vx; y += vy;
+
+                if (x <= 0 || x >= w - size) vx *= -1;
+                if (y <= 0 || y >= h - size) vy *= -1;
+
+                b.dataset.x = x; b.dataset.y = y;
+                b.dataset.vx = vx; b.dataset.vy = vy;
+
+                const rot = b.classList.contains('upside-down') ? 'rotate(180deg)' : '';
+                b.style.transform = `translate(${x}px, ${y}px) ${rot}`;
+            });
+
+            requestAnimationFrame(loop);
+        }
+
+        function updateTimer() {
+            const time = (Date.now() - startTime) / 1000 + penaltyTime;
+            document.getElementById('timer').textContent = time.toFixed(1);
+        }
+
+        function updateUI() {
+            document.getElementById('next-letter').textContent = currentIndex < currentAlphabet.length ? currentAlphabet[currentIndex] : '✔';
+        }
+
+        function showPenalty(x, y, txt) {
+            const p = document.createElement('div');
+            p.className = 'penalty-pop';
+            p.textContent = txt;
+            p.style.left = x + 'px'; p.style.top = y + 'px';
+            document.body.appendChild(p);
+            setTimeout(() => p.remove(), 800);
+        }
+
+        function createSparkles(x, y) {
+            for (let i = 0; i < 8; i++) {
+                const s = document.createElement('div');
+                s.className = 'sparkle';
+                s.style.left = x + 'px'; s.style.top = y + 'px';
+                const tx = (Math.random() - 0.5) * 100;
+                const ty = (Math.random() - 0.5) * 100;
+                s.style.setProperty('--tx', `${tx}px`);
+                s.style.setProperty('--ty', `${ty}px`);
+                document.body.appendChild(s);
+                setTimeout(() => s.remove(), 600);
+            }
+        }
+
+        async function endGame() {
+            isRunning = false;
+            clearInterval(timerRef);
+            const finalTime = parseFloat(document.getElementById('timer').textContent);
+            const key = `${currentLevel}_${currentCase}`;
+
+            let isNew = false;
+            if (!scores[key] || finalTime < scores[key]) {
+                isNew = true;
+                scores[key] = finalTime;
+                // Only save if online (user and db exist)
+                if (user && db) {
+                    try {
+                        const docRef = doc(db, 'artifacts', appId, 'users', user.uid, 'records', 'bestScores');
+                        await setDoc(docRef, scores);
+                    } catch (e) {
+                        console.log("Save error (offline?)", e);
+                    }
+                }
+            }
+
+            setTimeout(() => {
+                document.getElementById('overlay').style.display = 'flex';
+                document.getElementById('case-modal').style.display = 'none';
+                document.getElementById('result-modal').style.display = 'block';
+                document.getElementById('final-score').textContent = finalTime.toFixed(1);
+                document.getElementById('new-record-tag').style.display = isNew ? 'block' : 'none';
+            }, 500);
+        }
+    </script>
+
+</body>
+
+</html>
